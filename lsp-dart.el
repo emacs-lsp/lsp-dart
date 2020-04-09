@@ -1,7 +1,7 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
 ;; Version: 1.0
-;; Package-Requires: ((emacs "25.1") (lsp-mode "6.0") (dash "2.14.1") (ht "2.0") (dash-functional "1.2.0") (lsp-treemacs))
+;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (ht "2.0") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
 
@@ -24,9 +24,11 @@
 
 ;;; Code:
 
+(require 'ht)
+(require 'f)
+(require 'dash)
 (require 'lsp-mode)
 (require 'lsp-treemacs)
-(require 'ht)
 
 (defgroup lsp-dart nil
   "LSP support for Dart, using dart analysis server."
