@@ -54,7 +54,7 @@ rather than the root workspace folder."
   :group 'lsp-dart)
 
 (defcustom lsp-dart-suggest-from-unimported-libraries t
-  "When set to nil, completion will not include synbols that are not already
+  "When set to nil, completion will not include symbols that are not already
 imported into the current file."
   :type 'boolean
   :group 'lsp-dart)

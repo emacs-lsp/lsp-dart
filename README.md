@@ -40,7 +40,7 @@ Beside the `lsp-mode` features, `lsp-dart` implements the [`dart_analysis_server
 * `lsp-dart-sdk-dir` - Install directory for dart-sdk.
 * `lsp-dart-server-command` - The analysis_server executable to use.
 * `lsp-dart-only-analyze-projects-with-open-files` - analysis will only be performed for projects that have open files rather than the root workspace folder.
-* `lsp-dart-suggest-from-unimported-libraries` - completion will not include synbols that are not already imported into the current file.
+* `lsp-dart-suggest-from-unimported-libraries` - completion will not include symbols that are not already imported into the current file.
 * `lsp-dart-closing-labels` - Enable the closing labels feature on server lsp.
 * `lsp-dart-closing-labels-prefix` - The prefix string to be concatened with the closing label.
 * `lsp-dart-closing-labels-size` - The font size factor to be multiplied by the closing labels font size.
