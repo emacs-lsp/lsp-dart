@@ -36,8 +36,10 @@
   :group 'applications
   :link '(url-link :tag "GitHub" "https://github.com/emacs-lisp/lsp-java"))
 
-(defcustom lsp-dart-sdk-dir "~/flutter/bin/cache/dart-sdk/"
-  "Install directory for dart-sdk."
+(defcustom lsp-dart-sdk-dir nil
+  "Install directory for dart-sdk.
+When nil, it will try to find the dart sdk from the dart or flutter executables
+in the PATH env."
   :group 'lsp-dart
   :risky t
   :type 'directory)
@@ -112,6 +114,16 @@ Defaults to side following treemacs default."
 
 
 ;;; Internal
+
+(defun lsp-dart--find-sdk-dir ()
+  "Find dart sdk by searching for dart executable or flutter cache dir."
+  (-when-let (dart (or (executable-find "dart")
+                       (-when-let (flutter (executable-find "flutter"))
+                         (expand-file-name "cache/dart-sdk/bin/dart"
+                                           (file-name-directory flutter)))))
+    (-> dart
+        (file-truename)
+        (locate-dominating-file "bin"))))
 
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.
@@ -252,9 +264,10 @@ It updates the Flutter outline view if it already exists."
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
-      `(,(expand-file-name (f-join lsp-dart-sdk-dir "bin/dart"))
-        ,(expand-file-name (f-join lsp-dart-sdk-dir "bin/snapshots/analysis_server.dart.snapshot"))
-        "--lsp")))
+      (let ((sdk-dir (or lsp-dart-sdk-dir (lsp-dart--find-sdk-dir))))
+        `(,(expand-file-name (f-join sdk-dir "bin/dart"))
+          ,(expand-file-name (f-join sdk-dir "bin/snapshots/analysis_server.dart.snapshot"))
+          "--lsp"))))
 
 (defun lsp-dart--handle-closing-labels (_workspace params)
   "Closing labels notification handling.
