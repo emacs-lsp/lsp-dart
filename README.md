@@ -4,7 +4,7 @@
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
-<img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> If you want to work with [Flutter](https://flutter.dev/), there are other packages that may help. See [Additional packages](#additional-packages) for more info.
+<img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development. See [Additional packages](#additional-packages) for more info.
 
 ## Quickstart
 
