@@ -48,19 +48,22 @@
   :group 'lsp-dart)
 
 (defcustom lsp-dart-only-analyze-projects-with-open-files t
-  "When set to non-nil, analysis will only be performed for projects that have open files
-rather than the root workspace folder."
+  "Analyze only open files.
+When set to non-nil, analysis will only be performed for projects that have
+open files rather than the root workspace folder."
   :type 'boolean
   :group 'lsp-dart)
 
 (defcustom lsp-dart-suggest-from-unimported-libraries t
-  "When set to nil, completion will not include symbols that are not already
+  "Import suggestions happens only for non imported symbols.
+When set to nil, completion will not include symbols that are not already
 imported into the current file."
   :type 'boolean
   :group 'lsp-dart)
 
 (defcustom lsp-dart-closing-labels t
-  "When set to non-nil, dart/textDocument/publishClosingLabel notifications will
+  "Enable the analysis server closing labels feature.
+When set to non-nil, dart/textDocument/publishClosingLabel notifications will
 be sent with information to render editor closing labels."
   :type 'boolean
   :group 'lsp-dart)
@@ -76,13 +79,15 @@ be sent with information to render editor closing labels."
   :group 'lsp-dart)
 
 (defcustom lsp-dart-outline t
-  "When set to non-nil, dart/textDocument/publishOutline notifications will
+  "Enable the analysis server outline custom method.
+When set to non-nil, dart/textDocument/publishOutline notifications will
 be sent with outline information for open files."
   :type 'boolean
   :group 'lsp-dart)
 
 (defcustom lsp-dart-flutter-outline t
-  "When set to non-nil, dart/textDocument/publishFlutterOutline notifications will
+  "Enable the analysis server Flutter outline custom method.
+When set to non-nil, dart/textDocument/publishFlutterOutline notifications will
 be sent with Flutter outline information for open files."
   :type 'boolean
   :group 'lsp-dart)
@@ -207,7 +212,7 @@ ITEMS is the outline items data."
    "*Flutter Outline*"))
 
 (defun lsp-dart--show-outline (ignore-focus?)
-  "Shows an outline tree.
+  "Show an outline tree.
 Focus on it if IGNORE-FOCUS? is nil."
   (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-outline"
                                                                                   (lsp-find-workspace 'lsp-find-workspace)))
@@ -218,7 +223,7 @@ Focus on it if IGNORE-FOCUS? is nil."
       (set-window-dedicated-p window t))))
 
 (defun lsp-dart--show-flutter-outline (ignore-focus?)
-  "Shows an Flutter outline tree.
+  "Show an Flutter outline tree.
 Focus on it if IGNORE-FOCUS? is nil."
   (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-flutter-outline"
                                                                                   (lsp-find-workspace 'lsp-find-workspace)))
@@ -295,13 +300,13 @@ PARAMS closing labels notification data sent from WORKSPACE."
 
 ;;;###autoload
 (defun lsp-dart-show-outline (ignore-focus?)
-  "Shows an outline tree and focus on it if IGNORE-FOCUS? is nil."
+  "Show an outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart--show-outline ignore-focus?))
 
 ;;;###autoload
 (defun lsp-dart-show-flutter-outline (ignore-focus?)
-  "Shows a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
+  "Show a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart--show-flutter-outline ignore-focus?))
 
