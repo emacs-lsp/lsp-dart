@@ -15,12 +15,15 @@ Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connec
 An example with a minimal configuration to start using `lsp-dart`:
 ```elisp
 (use-package lsp-mode :ensure t)
-(use-package lsp-ui :ensure t)
-(use-package company-lsp :ensure t)
 
 (use-package lsp-dart 
   :ensure t 
   :hook (dart-mode . lsp))
+
+;; Optional packages
+(use-package lsp-ui :ensure t)
+(use-package company-capf :ensure t)
+
 ```
 
 ## Features
@@ -58,8 +61,8 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
-* [company-lsp](https://github.com/tigersoldier/company-lsp) : LSP company backend.
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
+* [company-capf](https://github.com/company-mode/company-mode) : Completion backend support.
 * [flutter.el](https://github.com/amake/flutter.el) : Tool to run emulator and tests from emacs.
 * [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
 
