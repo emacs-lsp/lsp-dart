@@ -1,6 +1,6 @@
 # lsp-dart
 
-[![Build Status](https://travis-ci.com/emacs-lsp/lsp-dart.svg?branch=master)](https://travis-ci.com/emacs-lsp/lsp-dart)
+[![Build Status](https://travis-ci.com/emacs-lsp/lsp-dart.svg?branch=master)](https://travis-ci.com/emacs-lsp/lsp-dart)<img align="right" width="64" alt="dart_logo" src="https://user-images.githubusercontent.com/7820865/78992432-9acce080-7b11-11ea-8576-5c7b72e4be5d.png">
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
@@ -17,8 +17,12 @@ An example with a minimal configuration to start using `lsp-dart`:
   :hook (dart-mode . lsp))
 ```
 
+<img width="22" alt="flutter_logo" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> If you want to work with [Flutter](https://flutter.dev/), there are other packages that may help. See [Additional packages](#additional-packages) for more info.
+
 ## Features
-Beside the `lsp-mode` features, `lsp-dart` implements the [`dart_analysis_server` custom methods](https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods) features too.
+Besides the lsp-mode features, lsp-dart implements the custom methods features from the dart_analysis_server too.
+
+Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods features from the `dart_analysis_server` ](https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods).
 
 **Closing labels**
 
@@ -53,10 +57,12 @@ Beside the `lsp-mode` features, `lsp-dart` implements the [`dart_analysis_server
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
 * [company-lsp](https://github.com/tigersoldier/company-lsp) : LSP company backend.
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
+* [flutter.el](https://github.com/amake/flutter.el) : Tool to run emulator and tests from emacs.
+* [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
 
 ## FAQ
 
-* Q. Emacs can't find my package, it keeps searching up until the dart root package folder.
+* :grey_question: Emacs can't find my package, it keeps searching up until the dart root package folder.
 
 Configure projectile to find the package pubspec.yaml and set the folder as project root:
 ```elisp
