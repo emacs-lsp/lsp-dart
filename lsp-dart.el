@@ -181,6 +181,19 @@ ITEMS is the outline items data."
                      :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range)))))
            items))
 
+(defun lsp-dart--build-flutter-outline-widget-actions (uri range)
+  "Build the action options for the Flutter outline tree view.
+URI is the source of the outline.
+RANGE is the range for currently build item."
+  (-when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+    (with-current-buffer buffer
+        (goto-char (-> range lsp--range-to-region car))
+        (->> (lsp-code-actions-at-point)
+             (-filter (-lambda ((&hash "kind"))
+                        (and kind (equal "refactor" kind))))
+             (-map (-lambda ((action &as &hash "title"))
+                     `[,title (lsp-execute-code-action ,action)]))))))
+
 (defun lsp-dart--flutter-outline->tree (uri items)
   "Builds a Flutter outline tree.
 URI is the source of the outline.
@@ -204,24 +217,29 @@ ITEMS is the outline items data."
                      :children (lambda (&rest _)
                                  (unless (seq-empty-p children)
                                    (lsp-dart--flutter-outline->tree uri children)))
-                     :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range)))))
+                     :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range))
+                     :actions (when widget?
+                                (lsp-dart--build-flutter-outline-widget-actions uri range))
+                     :uri uri)))
            items))
 
 (defun lsp-dart--render-outline-tree (uri outline)
   "Render an outline view with the source URI and an OUTLINE data."
-  (lsp-treemacs-render
-   (lsp-dart--outline->tree uri outline)
-   "Outline"
-   t
-   "*Dart Outline*"))
+  (save-excursion
+    (lsp-treemacs-render
+     (lsp-dart--outline->tree uri outline)
+     "Outline"
+     t
+     "*Dart Outline*")))
 
 (defun lsp-dart--render-flutter-outline-tree (uri outline)
   "Render an Flutter outline view with the source URI and an OUTLINE data."
-  (lsp-treemacs-render
-   (lsp-dart--flutter-outline->tree uri outline)
-   "Flutter Outline"
-   t
-   "*Flutter Outline*"))
+  (save-excursion
+    (lsp-treemacs-render
+     (lsp-dart--flutter-outline->tree uri outline)
+     "Flutter Outline"
+     t
+     "*Flutter Outline*")))
 
 (defun lsp-dart--show-outline (ignore-focus?)
   "Show an outline tree.
