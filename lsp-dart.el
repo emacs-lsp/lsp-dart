@@ -44,6 +44,11 @@ in the PATH env."
   :risky t
   :type 'directory)
 
+(defcustom lsp-dart-flutter-command "flutter"
+  "Flutter command for running tests."
+  :group 'lsp-dart
+  :type 'string)
+
 (defcustom lsp-dart-server-command nil
   "The analysis_server executable to use."
   :type '(repeat string)
@@ -112,13 +117,18 @@ Defaults to side following treemacs default."
   :type 'list
   :group 'lsp-dart)
 
+(defcustom lsp-dart-test-code-lens t
+  "Enable the test code lens overlays."
+  :type 'boolean
+  :group 'lsp-dart)
+
 
 ;;; Internal
 
 (defun lsp-dart--find-sdk-dir ()
   "Find dart sdk by searching for dart executable or flutter cache dir."
   (-when-let (dart (or (executable-find "dart")
-                       (-when-let (flutter (executable-find "flutter"))
+                       (-when-let (flutter (executable-find lsp-dart-flutter-command))
                          (expand-file-name "cache/dart-sdk/bin/dart"
                                            (file-name-directory flutter)))))
     (-> dart
@@ -268,6 +278,9 @@ Focus on it if IGNORE-FOCUS? is nil."
 PARAMS outline notification data sent from WORKSPACE.
 It updates the outline view if it already exists."
   (lsp-workspace-set-metadata "current-outline" params workspace)
+  (when (and lsp-dart-test-code-lens
+             (lsp-dart-test-file-p (gethash "uri" params)))
+    (lsp-dart-check-test-code-lens params))
   (when (get-buffer-window "*Dart Outline*")
     (lsp-dart--show-outline t)))
 
@@ -325,6 +338,125 @@ PARAMS closing labels notification data sent from WORKSPACE."
                                              ("dart/textDocument/publishOutline" 'lsp-dart--handle-outline)
                                              ("dart/textDocument/publishFlutterOutline" 'lsp-dart--handle-flutter-outline))
                   :server-id 'dart_analysis_server))
+
+;;; test
+
+(defun lsp-dart--test-test-method-p (kind)
+  "Return non-nil if KIND is a test type."
+  (or (string= kind "UNIT_TEST_TEST")
+      (string= kind "UNIT_TEST_GROUP")))
+
+(defun lsp-dart--test-flutter-test-file-p (buffer)
+  "Return non-nil if the BUFFER appears to be a flutter test file."
+  (with-current-buffer buffer
+    (save-excursion
+      (goto-char (point-min))
+      (re-search-forward "^import 'package:flutter_test/flutter_test.dart';"
+                         nil t))))
+
+(defun lsp-dart--last-index-of (regex str &optional ignore-case)
+  "Find the last index of a REGEX in a string STR.
+IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
+  (let ((start 0)
+        (case-fold-search ignore-case)
+        idx)
+    (while (string-match regex str start)
+      (setq idx (match-beginning 0))
+      (setq start (match-end 0)))
+    idx))
+
+(defun lsp-dart--test-get-project-root ()
+  "Return the dart or flutter project root."
+  (locate-dominating-file default-directory "pubspec.yaml") )
+
+(defmacro lsp-dart--test-from-project-root (&rest body)
+  "Execute BODY with cwd set to the project root."
+  `(let ((project-root (lsp-dart--test-get-project-root)))
+     (if project-root
+         (let ((default-directory project-root))
+           ,@body)
+       (error "Dart or Flutter project not found (pubspec.yaml not found)"))))
+
+(defun lsp-dart--build-command (buffer)
+  "Build the dart or flutter build command.
+If the given BUFFER is a flutter test file, return the flutter command
+otherwise the dart command."
+  (let ((sdk-dir (or lsp-dart-sdk-dir (lsp-dart--find-sdk-dir))))
+    (if (lsp-dart--test-flutter-test-file-p buffer)
+        lsp-dart-flutter-command
+      (concat (file-name-as-directory sdk-dir) "bin/pub run"))))
+
+(defun lsp-dart--escape-test-name (name)
+  "Return the dart safe escaped test NAME."
+  (let ((escaped-str (regexp-quote name)))
+    (seq-doseq (char '("(" ")" "{" "}"))
+      (setq escaped-str (replace-regexp-in-string char
+                                                  (concat "\\" char)
+                                                  escaped-str nil t)))
+    escaped-str))
+
+(defun lsp-dart--run-test (buffer name)
+  "Run only test NAME from BUFFER file."
+  (interactive)
+  (lsp-dart--test-from-project-root
+   (let* ((test-file (file-relative-name (buffer-file-name buffer)
+                                         (lsp-dart--test-get-project-root)))
+          (open-paren-pos (cl-search "(" name))
+          (close-paren-pos (lsp-dart--last-index-of ")" name))
+          (test-name (substring name
+                                (+ open-paren-pos 2)
+                                (- close-paren-pos 1))))
+     (compilation-start (format "%s test %s %s"
+                                (lsp-dart--build-command buffer)
+                                (concat  "--name '" (lsp-dart--escape-test-name test-name) "'")
+                                test-file)
+                        t))))
+
+(defun lsp-dart--build-test-overlay (buffer name range)
+  "Build an overlay for a test NAME in BUFFER file.
+RANGE is the overlay range to build."
+  (-let* ((beg-position (gethash "character" (gethash "start" range)))
+          ((beg . _end) (lsp--range-to-region range))
+          (beg-line (progn (goto-char beg)
+                           (line-beginning-position)))
+          (spaces (make-string beg-position ?\s))
+          (overlay (make-overlay beg-line beg-line buffer)))
+    (overlay-put overlay 'lsp-dart-test-code-lens t)
+    (overlay-put overlay 'before-string
+                 (concat spaces
+                         (propertize "Run\n"
+                                     'help-echo "mouse-1, M-RET: Run this test"
+                                     'mouse-face 'lsp-lens-mouse-face
+                                     'local-map (-doto (make-sparse-keymap)
+                                                  (define-key [mouse-1] (lambda ()
+                                                                          (interactive)
+                                                                          (lsp-dart--run-test buffer name))))
+                                     'font-lock-face 'lsp-lens-face)))))
+
+(defun lsp-dart--add-test-code-lens (buffer items)
+  "Add test code lens to BUFFER for ITEMS."
+  (seq-doseq (item items)
+    (-let* (((&hash "children" "element"
+                    (&hash "kind" "name" "range")) item))
+      (when (lsp-dart--test-test-method-p kind)
+        (lsp-dart--build-test-overlay buffer name range))
+      (unless (seq-empty-p children)
+        (lsp-dart--add-test-code-lens buffer children)))))
+
+(defun lsp-dart-test-file-p (file-name)
+  "Return non-nil if FILE-NAME is a dart test files."
+  (string-match "_test.dart" file-name))
+
+(defun lsp-dart-check-test-code-lens (params)
+  "Check for test adding lens to it.
+PARAMS is the notification data from outline."
+  (-let* (((&hash "uri" "outline" (&hash "children")) params)
+          (buffer (lsp--buffer-for-file (lsp--uri-to-path uri))))
+    (when buffer
+      (with-current-buffer buffer
+        (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
+        (save-excursion
+          (lsp-dart--add-test-code-lens buffer children))))))
 
 
 ;;; Public interface

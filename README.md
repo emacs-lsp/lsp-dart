@@ -45,6 +45,12 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ![flutter-outline](https://github.com/emacs-lsp/lsp-dart/blob/master/screenshots/flutter-outline.png)
 
+### Run tests
+
+Run dart or flutter tests.
+
+![test](https://user-images.githubusercontent.com/7820865/79058546-cea92280-7c45-11ea-9a31-c55f3301f949.gif)
+
 ## Supported settings
 
 * `lsp-dart-sdk-dir` - Install directory for dart-sdk.
