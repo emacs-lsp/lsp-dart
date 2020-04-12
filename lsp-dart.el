@@ -409,9 +409,9 @@ If NAME is non nil, it will run only the test NAME."
                                   (+ (cl-search "(" name) 2)
                                   (- (lsp-dart--last-index-of ")" name) 1))))
           (test-arg (when name
-                      (concat  "--name '"
+                      (concat "--name '"
                                (lsp-dart--escape-test-name test-name)
-                               "'"))))
+                               "$'"))))
      (compilation-start (format "%s test %s %s"
                                 (lsp-dart--build-command buffer)
                                 (or test-arg "")
