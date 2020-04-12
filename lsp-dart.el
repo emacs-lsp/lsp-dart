@@ -34,7 +34,7 @@
   "LSP support for Dart, using dart analysis server."
   :prefix "lsp-dart-"
   :group 'applications
-  :link '(url-link :tag "GitHub" "https://github.com/emacs-lisp/lsp-java"))
+  :link '(url-link :tag "GitHub" "https://github.com/emacs-lsp/lsp-dart"))
 
 (defcustom lsp-dart-sdk-dir nil
   "Install directory for dart-sdk.
