@@ -343,7 +343,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
 
 ;;; test
 
-(defun lsp-dart--test-test-method-p (kind)
+(defun lsp-dart--test-method-p (kind)
   "Return non-nil if KIND is a test type."
   (or (string= kind "UNIT_TEST_TEST")
       (string= kind "UNIT_TEST_GROUP")))
@@ -388,6 +388,17 @@ otherwise the dart command."
         lsp-dart-flutter-command
       (concat (file-name-as-directory sdk-dir) "bin/pub run"))))
 
+(defun lsp-dart--build-test-name (names)
+  "Build the test name from a group of test NAMES."
+  (message "%s" (json-encode names))
+  (when (and names
+             (not (seq-empty-p names)))
+    (->> names
+         (--map (substring it
+                           (+ (cl-search "(" it) 2)
+                           (- (lsp-dart--last-index-of ")" it) 1)))
+         (--reduce (format "%s %s" acc it)))))
+
 (defun lsp-dart--escape-test-name (name)
   "Return the dart safe escaped test NAME."
   (let ((escaped-str (regexp-quote name)))
@@ -397,29 +408,28 @@ otherwise the dart command."
                                                   escaped-str nil t)))
     escaped-str))
 
-(defun lsp-dart--run-test (buffer &optional name)
-  "Run dart/Flutter test command in a compilation buffer for BUFFER file.
-If NAME is non nil, it will run only the test NAME."
+(defun lsp-dart--run-test (buffer &optional names kind)
+  "Run Dart/Flutter test command in a compilation buffer for BUFFER file.
+If NAMES is non nil, it will run only for KIND the test joining the name
+from NAMES."
   (interactive)
   (lsp-dart--test-from-project-root
    (let* ((test-file (file-relative-name (buffer-file-name buffer)
                                          (lsp-dart--test-get-project-root)))
-          (test-name (when name
-                       (substring name
-                                  (+ (cl-search "(" name) 2)
-                                  (- (lsp-dart--last-index-of ")" name) 1))))
-          (test-arg (when name
-                      (concat "--name '"
-                               (lsp-dart--escape-test-name test-name)
-                               "$'"))))
+          (test-name (lsp-dart--build-test-name names))
+          (group-kind? (string= kind "UNIT_TEST_GROUP"))
+          (test-arg (when test-name
+                      (concat "--name '^"
+                              (lsp-dart--escape-test-name test-name)
+                              (if group-kind? "'" "$'")))))
      (compilation-start (format "%s test %s %s"
                                 (lsp-dart--build-command buffer)
                                 (or test-arg "")
                                 test-file)
                         t))))
 
-(defun lsp-dart--build-test-overlay (buffer name range test-range)
-  "Build an overlay for a test NAME in BUFFER file.
+(defun lsp-dart--build-test-overlay (buffer names kind range test-range)
+  "Build an overlay for a test NAMES of KIND in BUFFER file.
 RANGE is the overlay range to build."
   (-let* ((beg-position (gethash "character" (gethash "start" range)))
           ((beg . end) (lsp--range-to-region range))
@@ -428,7 +438,8 @@ RANGE is the overlay range to build."
           (spaces (make-string beg-position ?\s))
           (overlay (make-overlay beg-line end buffer)))
     (overlay-put overlay 'lsp-dart-test-code-lens t)
-    (overlay-put overlay 'lsp-dart-test-name name)
+    (overlay-put overlay 'lsp-dart-test-names names)
+    (overlay-put overlay 'lsp-dart-test-kind kind)
     (overlay-put overlay 'lsp-dart-test-overlay-test-range (lsp--range-to-region test-range))
     (overlay-put overlay 'before-string
                  (concat spaces
@@ -438,18 +449,23 @@ RANGE is the overlay range to build."
                                      'local-map (-doto (make-sparse-keymap)
                                                  (define-key [mouse-1] (lambda ()
                                                                           (interactive)
-                                                                          (lsp-dart--run-test buffer name))))
+                                                                          (lsp-dart--run-test buffer names kind))))
                                      'font-lock-face 'lsp-lens-face)))))
 
-(defun lsp-dart--add-test-code-lens (buffer items)
-  "Add test code lens to BUFFER for ITEMS."
+(defun lsp-dart--add-test-code-lens (buffer items &optional names)
+  "Add test code lens to BUFFER for ITEMS.
+NAMES arg is optional and are the group of tests representing a test name."
   (seq-doseq (item items)
     (-let* (((&hash "children" "codeRange" test-range "element"
-                    (&hash "kind" "name" "range")) item))
-      (when (lsp-dart--test-test-method-p kind)
-        (lsp-dart--build-test-overlay buffer name range test-range))
+                    (&hash "kind" "name" "range")) item)
+            (test-kind? (lsp-dart--test-method-p kind))
+            (concatened-names (if test-kind?
+                                  (append names (list name))
+                                names)))
+      (when test-kind?
+        (lsp-dart--build-test-overlay buffer (append names (list name)) kind range test-range))
       (unless (seq-empty-p children)
-        (lsp-dart--add-test-code-lens buffer children)))))
+        (lsp-dart--add-test-code-lens buffer children concatened-names)))))
 
 (defun lsp-dart-test-file-p (file-name)
   "Return non-nil if FILE-NAME is a dart test files."
@@ -496,7 +512,9 @@ all test overlays in the current buffer."
                          ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
                    (and (< beg1 beg2)
                         (> end1 end2))) it)
-       (lsp-dart--run-test (current-buffer) (overlay-get it 'lsp-dart-test-name))))
+       (lsp-dart--run-test (current-buffer)
+                           (overlay-get it 'lsp-dart-test-names)
+                           (overlay-get it 'lsp-dart-test-kind))))
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()
