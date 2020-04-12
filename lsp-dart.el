@@ -128,11 +128,13 @@ Defaults to side following treemacs default."
 (defun lsp-dart--find-sdk-dir ()
   "Find dart sdk by searching for dart executable or flutter cache dir."
   (-when-let (dart (or (executable-find "dart")
-                       (-when-let (flutter (executable-find lsp-dart-flutter-command))
+                       (-when-let (flutter (-> lsp-dart-flutter-command
+                                               executable-find
+                                               file-truename))
                          (expand-file-name "cache/dart-sdk/bin/dart"
                                            (file-name-directory flutter)))))
     (-> dart
-        (file-truename)
+        file-truename
         (locate-dominating-file "bin"))))
 
 (defun lsp-dart--outline-kind->icon (kind)
@@ -412,23 +414,25 @@ otherwise the dart command."
                                 test-file)
                         t))))
 
-(defun lsp-dart--build-test-overlay (buffer name range)
+(defun lsp-dart--build-test-overlay (buffer name range test-range)
   "Build an overlay for a test NAME in BUFFER file.
 RANGE is the overlay range to build."
   (-let* ((beg-position (gethash "character" (gethash "start" range)))
-          ((beg . _end) (lsp--range-to-region range))
+          ((beg . end) (lsp--range-to-region range))
           (beg-line (progn (goto-char beg)
                            (line-beginning-position)))
           (spaces (make-string beg-position ?\s))
-          (overlay (make-overlay beg-line beg-line buffer)))
+          (overlay (make-overlay beg-line end buffer)))
     (overlay-put overlay 'lsp-dart-test-code-lens t)
+    (overlay-put overlay 'lsp-dart-test-name name)
+    (overlay-put overlay 'lsp-dart-test-overlay-test-range (lsp--range-to-region test-range))
     (overlay-put overlay 'before-string
                  (concat spaces
                          (propertize "Run\n"
-                                     'help-echo "mouse-1, M-RET: Run this test"
+                                     'help-echo "mouse-1: Run this test"
                                      'mouse-face 'lsp-lens-mouse-face
                                      'local-map (-doto (make-sparse-keymap)
-                                                  (define-key [mouse-1] (lambda ()
+                                                 (define-key [mouse-1] (lambda ()
                                                                           (interactive)
                                                                           (lsp-dart--run-test buffer name))))
                                      'font-lock-face 'lsp-lens-face)))))
@@ -436,10 +440,10 @@ RANGE is the overlay range to build."
 (defun lsp-dart--add-test-code-lens (buffer items)
   "Add test code lens to BUFFER for ITEMS."
   (seq-doseq (item items)
-    (-let* (((&hash "children" "element"
+    (-let* (((&hash "children" "codeRange" test-range "element"
                     (&hash "kind" "name" "range")) item))
       (when (lsp-dart--test-test-method-p kind)
-        (lsp-dart--build-test-overlay buffer name range))
+        (lsp-dart--build-test-overlay buffer name range test-range))
       (unless (seq-empty-p children)
         (lsp-dart--add-test-code-lens buffer children)))))
 
@@ -472,6 +476,23 @@ PARAMS is the notification data from outline."
   "Show a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart--show-flutter-outline ignore-focus?))
+
+;;;###autoload
+(defun lsp-dart-run-test-at-point ()
+  "Run test checking for the previous overlay at point.
+Run test of the overlay which has the smallest range of
+all test overlays in the current buffer."
+  (interactive)
+  (--> (overlays-in (point-min) (point-max))
+       (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
+                   (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
+                     (and (>= (point) beg)
+                          (<= (point) end)))) it)
+       (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
+                         ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
+                   (and (< beg1 beg2)
+                        (> end1 end2))) it)
+       (lsp-dart--run-test (current-buffer) (overlay-get it 'lsp-dart-test-name))))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))
