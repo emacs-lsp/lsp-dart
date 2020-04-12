@@ -47,7 +47,11 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ### Run tests
 
-Run dart or flutter tests.
+`lsp-dart-run-test-file` - Run all tests from current test buffer.
+
+`lsp-dart-run-test-at-point` - Run single test at point.
+
+Or run a test interactively: 
 
 ![test](https://user-images.githubusercontent.com/7820865/79058546-cea92280-7c45-11ea-9a31-c55f3301f949.gif)
 

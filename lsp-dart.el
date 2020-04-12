@@ -397,20 +397,24 @@ otherwise the dart command."
                                                   escaped-str nil t)))
     escaped-str))
 
-(defun lsp-dart--run-test (buffer name)
-  "Run only test NAME from BUFFER file."
+(defun lsp-dart--run-test (buffer &optional name)
+  "Run dart/Flutter test command in a compilation buffer for BUFFER file.
+If NAME is non nil, it will run only the test NAME."
   (interactive)
   (lsp-dart--test-from-project-root
    (let* ((test-file (file-relative-name (buffer-file-name buffer)
                                          (lsp-dart--test-get-project-root)))
-          (open-paren-pos (cl-search "(" name))
-          (close-paren-pos (lsp-dart--last-index-of ")" name))
-          (test-name (substring name
-                                (+ open-paren-pos 2)
-                                (- close-paren-pos 1))))
+          (test-name (when name
+                       (substring name
+                                  (+ (cl-search "(" name) 2)
+                                  (- (lsp-dart--last-index-of ")" name) 1))))
+          (test-arg (when name
+                      (concat  "--name '"
+                               (lsp-dart--escape-test-name test-name)
+                               "'"))))
      (compilation-start (format "%s test %s %s"
                                 (lsp-dart--build-command buffer)
-                                (concat  "--name '" (lsp-dart--escape-test-name test-name) "'")
+                                (or test-arg "")
                                 test-file)
                         t))))
 
@@ -493,6 +497,12 @@ all test overlays in the current buffer."
                    (and (< beg1 beg2)
                         (> end1 end2))) it)
        (lsp-dart--run-test (current-buffer) (overlay-get it 'lsp-dart-test-name))))
+
+;;;###autoload
+(defun lsp-dart-run-test-file ()
+  "Run dart/Flutter test command only for current buffer."
+  (interactive)
+  (lsp-dart--run-test (current-buffer)))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))
