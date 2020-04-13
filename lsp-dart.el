@@ -425,7 +425,8 @@ from NAMES."
                                 (lsp-dart--build-command buffer)
                                 (or test-arg "")
                                 test-file)
-                        t))))
+                        t
+                        (lambda (_) "*LSP Dart tests*")))))
 
 (defun lsp-dart--build-test-overlay (buffer names kind range test-range)
   "Build an overlay for a test NAMES of KIND in BUFFER file.
