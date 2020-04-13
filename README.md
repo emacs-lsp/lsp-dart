@@ -2,9 +2,10 @@
 
 <img align="right" width="64" alt="dart_logo" src="https://user-images.githubusercontent.com/7820865/78992432-9acce080-7b11-11ea-8576-5c7b72e4be5d.png">
 
+[![MELPA](https://melpa.org/packages/lsp-dart-badge.svg)](https://melpa.org/#/lsp-dart)
+[![MELPA](https://stable.melpa.org/packages/lsp-dart-badge.svg)](https://stable.melpa.org/#/lsp-dart)
 [![Build Status](https://travis-ci.com/emacs-lsp/lsp-dart.svg?branch=master)](https://travis-ci.com/emacs-lsp/lsp-dart) 
 [![Gitter](https://badges.gitter.im/emacs-lsp/lsp-mode.svg)](https://gitter.im/emacs-lsp/lsp-mode)
-
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
@@ -32,18 +33,18 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ### Closing labels
 
-![closing-labels](https://github.com/emacs-lsp/lsp-dart/blob/master/screenshots/closing-labels.png)
+![closing-labels](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/closing-labels.png)
 
 ### Tree views
 `lsp-dart` uses `lsp-treemacs` for rendering some tree views features.
 
 **`lsp-dart-show-outline`**
 
-![outline](https://github.com/emacs-lsp/lsp-dart/blob/master/screenshots/outline.png)
+![outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png)
 
 **`lsp-dart-show-flutter-outline`**
 
-![flutter-outline](https://user-images.githubusercontent.com/7820865/79131080-61e57380-7d7e-11ea-9703-b83e5b551c74.gif)
+![flutter-outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif)
 
 ## Supported settings
 
@@ -73,7 +74,8 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 :small_blue_diamond: Configure projectile to find the package pubspec.yaml and set the folder as project root:
 ```elisp
 (with-eval-after-load 'projectile
-  (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml"))
+  (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
+  (add-to-list 'projectile-project-root-files-bottom-up "BUILD"))
 ```
 
 :grey_question: `LSP :: No LSP server for dart-mode(check *lsp-log*).`
