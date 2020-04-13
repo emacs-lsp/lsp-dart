@@ -390,7 +390,6 @@ otherwise the dart command."
 
 (defun lsp-dart--build-test-name (names)
   "Build the test name from a group of test NAMES."
-  (message "%s" (json-encode names))
   (when (and names
              (not (seq-empty-p names)))
     (->> names
@@ -503,24 +502,26 @@ PARAMS is the notification data from outline."
 Run test of the overlay which has the smallest range of
 all test overlays in the current buffer."
   (interactive)
-  (--> (overlays-in (point-min) (point-max))
-       (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
-                   (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
-                     (and (>= (point) beg)
-                          (<= (point) end)))) it)
-       (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
-                         ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
-                   (and (< beg1 beg2)
-                        (> end1 end2))) it)
-       (lsp-dart--run-test (current-buffer)
-                           (overlay-get it 'lsp-dart-test-names)
-                           (overlay-get it 'lsp-dart-test-kind))))
+  (-some--> (overlays-in (point-min) (point-max))
+    (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
+                (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
+                  (and (>= (point) beg)
+                       (<= (point) end)))) it)
+    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
+                      ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
+                (and (< beg1 beg2)
+                     (> end1 end2))) it)
+    (lsp-dart--run-test (current-buffer)
+                        (overlay-get it 'lsp-dart-test-names)
+                        (overlay-get it 'lsp-dart-test-kind))))
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()
   "Run dart/Flutter test command only for current buffer."
   (interactive)
-  (lsp-dart--run-test (current-buffer)))
+  (if (lsp-dart-test-file-p (buffer-file-name))
+      (lsp-dart--run-test (current-buffer))
+    (user-error "Current buffer is not a Dart/Flutter test file")))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))
