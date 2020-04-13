@@ -42,7 +42,7 @@ When nil, it will try to find the dart sdk from the dart or flutter executables
 in the PATH env."
   :group 'lsp-dart
   :risky t
-  :type 'directory)
+  :type '(choice directory nil))
 
 (defcustom lsp-dart-server-command nil
   "The analysis_server executable to use."
@@ -71,7 +71,7 @@ be sent with information to render editor closing labels."
   :group 'lsp-dart)
 
 (defcustom lsp-dart-closing-labels-prefix " "
-  "The prefix string to be concatened with the closing label."
+  "The prefix string to be concatenated with the closing label."
   :type 'string
   :group 'lsp-dart)
 
