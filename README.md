@@ -51,9 +51,9 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-run-test-at-point` - Run single test at point.
 
-Or run a test interactively: 
+Running a test interactively: 
 
-![test](https://user-images.githubusercontent.com/7820865/79058546-cea92280-7c45-11ea-9a31-c55f3301f949.gif)
+![test](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif)
 
 ## Supported settings
 
