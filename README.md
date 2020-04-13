@@ -46,6 +46,16 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ![flutter-outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif)
 
+### Run tests
+
+`lsp-dart-run-test-file` - Run all tests from current test buffer.
+
+`lsp-dart-run-test-at-point` - Run single test at point.
+
+Running a test interactively: 
+
+![test](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif)
+
 ## Supported settings
 
 * `lsp-dart-sdk-dir` - Install directory for dart-sdk.
