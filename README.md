@@ -43,7 +43,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 **`lsp-dart-show-flutter-outline`**
 
-![flutter-outline](https://github.com/emacs-lsp/lsp-dart/blob/master/screenshots/flutter-outline.png)
+![flutter-outline](https://user-images.githubusercontent.com/7820865/79131080-61e57380-7d7e-11ea-9703-b83e5b551c74.gif)
 
 ## Supported settings
 
