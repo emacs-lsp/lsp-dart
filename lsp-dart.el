@@ -27,8 +27,11 @@
 (require 'ht)
 (require 'f)
 (require 'dash)
-(require 'lsp-mode)
 (require 'lsp-treemacs)
+
+(require 'lsp-mode)
+
+(defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 
 (defgroup lsp-dart nil
   "LSP support for Dart, using dart analysis server."
@@ -125,17 +128,33 @@ Defaults to side following treemacs default."
 
 ;;; Internal
 
-(defun lsp-dart--find-sdk-dir ()
-  "Find dart sdk by searching for dart executable or flutter cache dir."
-  (-when-let (dart (or (executable-find "dart")
-                       (-when-let (flutter (-> lsp-dart-flutter-command
-                                               executable-find
-                                               file-truename))
-                         (expand-file-name "cache/dart-sdk/bin/dart"
-                                           (file-name-directory flutter)))))
-    (-> dart
-        file-truename
-        (locate-dominating-file "bin"))))
+(defun lsp-dart--get-sdk-dir ()
+  "Return the dart sdk.
+Check for `lsp-dart-sdk-dir` otherwise search for dart executable or
+flutter cache dir."
+  (or lsp-dart-sdk-dir
+      (-when-let (dart (or (executable-find "dart")
+                           (-when-let (flutter (-> lsp-dart-flutter-command
+                                                   executable-find
+                                                   file-truename))
+                             (expand-file-name "cache/dart-sdk/bin/dart"
+                                               (file-name-directory flutter)))))
+        (-> dart
+            file-truename
+            (locate-dominating-file "bin")))))
+
+(defun lsp-dart--get-dart-version ()
+  "Retrieve the dart version from shell command."
+  (->> (concat (lsp-dart--get-sdk-dir) "bin/dart --version")
+       shell-command-to-string
+       split-string
+       (nth 3)))
+
+(defun lsp-dart--assert-sdk-min-version (version)
+  "Assert dart sdk min version is VERSION."
+  (cl-assert (string-prefix-p version (lsp-dart--get-dart-version))
+             t
+             "Feature not supported before dart SDK %s"))
 
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.
@@ -297,7 +316,7 @@ It updates the Flutter outline view if it already exists."
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
-      (let ((sdk-dir (or lsp-dart-sdk-dir (lsp-dart--find-sdk-dir))))
+      (let ((sdk-dir (lsp-dart--get-sdk-dir)))
         `(,(expand-file-name (f-join sdk-dir "bin/dart"))
           ,(expand-file-name (f-join sdk-dir "bin/snapshots/analysis_server.dart.snapshot"))
           "--lsp"))))
@@ -383,10 +402,9 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
   "Build the dart or flutter build command.
 If the given BUFFER is a flutter test file, return the flutter command
 otherwise the dart command."
-  (let ((sdk-dir (or lsp-dart-sdk-dir (lsp-dart--find-sdk-dir))))
-    (if (lsp-dart--test-flutter-test-file-p buffer)
-        lsp-dart-flutter-command
-      (concat (file-name-as-directory sdk-dir) "bin/pub run"))))
+  (if (lsp-dart--test-flutter-test-file-p buffer)
+      lsp-dart-flutter-command
+    (concat (file-name-as-directory (lsp-dart--get-sdk-dir)) "bin/pub run")))
 
 (defun lsp-dart--build-test-name (names)
   "Build the test name from a group of test NAMES."
@@ -426,7 +444,7 @@ from NAMES."
                                 (or test-arg "")
                                 test-file)
                         t
-                        (lambda (_) "*LSP Dart tests*")))))
+                        (lambda (_) lsp-dart-tests-buffer-name)))))
 
 (defun lsp-dart--build-test-overlay (buffer names kind range test-range)
   "Build an overlay for a test NAMES of KIND in BUFFER file.
@@ -489,12 +507,14 @@ PARAMS is the notification data from outline."
 (defun lsp-dart-show-outline (ignore-focus?)
   "Show an outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
+  (lsp-dart--assert-sdk-min-version "2.8.0")
   (lsp-dart--show-outline ignore-focus?))
 
 ;;;###autoload
 (defun lsp-dart-show-flutter-outline (ignore-focus?)
   "Show a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
+  (lsp-dart--assert-sdk-min-version "2.8.0")
   (lsp-dart--show-flutter-outline ignore-focus?))
 
 ;;;###autoload
