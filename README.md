@@ -36,7 +36,10 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 ![closing-labels](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/closing-labels.png)
 
 ### Tree views
+
 `lsp-dart` uses `lsp-treemacs` for rendering some tree views features.
+
+:warning: This feature is only available for Dart SDK version 2.8.0 (currently the dev branch) and above :warning:
 
 **`lsp-dart-show-outline`**
 
