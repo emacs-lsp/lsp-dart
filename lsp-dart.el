@@ -28,6 +28,7 @@
 (require 'f)
 (require 'dash)
 (require 'lsp-treemacs)
+(require 'lsp-dart-fringe)
 
 (require 'lsp-mode)
 
