@@ -59,6 +59,14 @@ Running a test interactively:
 
 ![test](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif)
 
+### Flutter colors
+
+Display the flutter colors on left fringe.
+
+![flutter-fringe-colors](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-fringe-colors.gif)
+
+You can disable the feature setting `lsp-dart-fringe-colors` to `nil`.
+
 ## Supported settings
 
 * `lsp-dart-sdk-dir` - Install directory for dart-sdk.
@@ -72,6 +80,7 @@ Running a test interactively:
 * `lsp-dart-flutter-outline` - Enable the Flutter outline tree view feature on server lsp.
 * `lsp-dart-outline-position-params` - The outline tree position params. Defaults to side.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
+* `lsp-dart-fringe-colors` - Enable the flutter colors on fringe. Defaults to t.
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
