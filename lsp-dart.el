@@ -28,9 +28,9 @@
 (require 'f)
 (require 'dash)
 (require 'lsp-treemacs)
-(require 'lsp-dart-fringe)
-
 (require 'lsp-mode)
+
+(require 'lsp-dart-fringe)
 
 (defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 
