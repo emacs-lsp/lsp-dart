@@ -1,7 +1,7 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
 ;; Version: 1.0
-;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (ht "2.0") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
+;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (dap-mode "0.3") (ht "2.0") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
 
@@ -31,6 +31,7 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-fringe)
+(require 'lsp-dart-dap)
 
 (defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 

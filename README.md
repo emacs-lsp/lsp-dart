@@ -67,6 +67,13 @@ Display the flutter colors on left fringe.
 
 You can disable the feature setting `lsp-dart-fringe-colors` to `nil`.
 
+### Debug
+
+For emacs debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart) to debug.
+You only need to run `dap-dart-setup` one time to setup the debugger.
+
+![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
+
 ## Supported settings
 
 * `lsp-dart-sdk-dir` - Install directory for dart-sdk.
