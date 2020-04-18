@@ -109,9 +109,9 @@
   nil nil nil
   (cond
    (lsp-dart-fringe-colors-mode
-    (add-hook 'lsp-on-change-hook #'lsp-dart-fringe--change-colors-handler nil t))
+    (add-hook 'lsp-on-idle-hook #'lsp-dart-fringe--change-colors-handler nil t))
    (t
-    (remove-hook 'lsp-on-change-hook #'lsp-dart-fringe--change-colors-handler t))))
+    (remove-hook 'lsp-on-idle-hook #'lsp-dart-fringe--change-colors-handler t))))
 
 (when lsp-dart-fringe-colors
   (add-hook 'lsp-after-open-hook
