@@ -9,7 +9,7 @@
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
-<img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development. See [Additional packages](#additional-packages) for more info.
+<img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development, for more info see [Additional packages](#additional-packages).
 
 ## Quickstart
 
@@ -29,7 +29,7 @@ An example with a minimal configuration to start using `lsp-dart`:
 
 ## Features
 
-Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods features from the `dart_analysis_server` ](https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods).
+Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods features from the `dart_analysis_server`](https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods).
 
 ### Closing labels
 
