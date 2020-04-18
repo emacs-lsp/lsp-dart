@@ -1,7 +1,6 @@
 ;;; lsp-dart-dap.el --- DAP support for lsp-dart -*- lexical-binding: t; -*-
 ;;
 ;; Version: 1.5
-;; Package-Requires: ((emacs "25.2") (dap-mode "0.3"))
 ;; Keywords: languages, extensions
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
 ;;
@@ -70,7 +69,7 @@
    "--no-package-lock" "--silent" "--no-save"))
 
 (dap-utils-github-extension-setup-function
- "lsp-dart-dap"
+ "dap-dart"
  "Dart-Code"
  "Dart-Code"
  lsp-dart-dap--extension-version
