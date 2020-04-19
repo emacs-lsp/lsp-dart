@@ -72,7 +72,7 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 
 ![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
 
-##### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) and above.
+##### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
 
 ## Supported settings
 
