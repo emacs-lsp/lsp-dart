@@ -39,11 +39,11 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart` uses `lsp-treemacs` for rendering some tree views features.
 
-**`lsp-dart-show-outline`** :warning:*
+**`lsp-dart-show-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
 ![outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png)
 
-**`lsp-dart-show-flutter-outline`** :warning:*
+**`lsp-dart-show-flutter-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
 ![flutter-outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif)
 
@@ -51,7 +51,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-run-test-file` - Run all tests from current test buffer.
 
-`lsp-dart-run-test-at-point` - Run single test at point. :warning:*
+`lsp-dart-run-test-at-point` - Run single test at point. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
 Running a test interactively: 
 
