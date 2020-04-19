@@ -39,13 +39,11 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart` uses `lsp-treemacs` for rendering some tree views features.
 
-:warning: This feature is only available for Dart SDK version 2.8.0 (currently the dev branch) and above :warning:
-
-**`lsp-dart-show-outline`**
+**`lsp-dart-show-outline`** :warning:*
 
 ![outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png)
 
-**`lsp-dart-show-flutter-outline`**
+**`lsp-dart-show-flutter-outline`** :warning:*
 
 ![flutter-outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif)
 
@@ -53,7 +51,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-run-test-file` - Run all tests from current test buffer.
 
-`lsp-dart-run-test-at-point` - Run single test at point.
+`lsp-dart-run-test-at-point` - Run single test at point. :warning:*
 
 Running a test interactively: 
 
@@ -73,6 +71,8 @@ For emacs debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/d
 You only need to run `dap-dart-setup` one time to setup the debugger.
 
 ![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
+
+:warning:* Feature only available for Dart SDK version 2.8.0 (currently the dev branch) and above :warning:
 
 ## Supported settings
 
