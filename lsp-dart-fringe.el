@@ -2,6 +2,7 @@
 ;;
 ;; Version: 1.4
 ;; Keywords: languages, extensions
+;; Package-Requires: ((emacs "25.2") (lsp-mode "6.0") (dash "2.14.1"))
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
 ;;
 ;; This program is free software; you can redistribute it and/or modify
@@ -28,10 +29,10 @@
 (require 'lsp-mode)
 (require 'lsp-dart-flutter-colors)
 
-(defconst color-name-pattern "Colors\\.\\([][:word:]\\[\\.]+\\)")
-(defconst color-hex-pattern "Color(0x\\(\\w\\{8\\}\\))")
-(defconst color-argb-pattern "Color.fromARGB(\\(\\w+\\), \\(\\w+\\), \\(\\w+\\), \\(\\w+\\))")
-(defconst color-rgbo-pattern "Color.fromRGBO(\\(\\w+\\), \\(\\w+\\), \\(\\w+\\), \\([0-9.]+\\))")
+(defconst lsp-dart-fringe-color-name-pattern "Colors\\.\\([][:word:]\\[\\.]+\\)")
+(defconst lsp-dart-fringe-color-hex-pattern "Color(0x\\(\\w\\{8\\}\\))")
+(defconst lsp-dart-fringe-color-argb-pattern "Color.fromARGB(\\(\\w+\\), \\(\\w+\\), \\(\\w+\\), \\(\\w+\\))")
+(defconst lsp-dart-fringe-color-rgbo-pattern "Color.fromRGBO(\\(\\w+\\), \\(\\w+\\), \\(\\w+\\), \\([0-9.]+\\))")
 
 (defcustom lsp-dart-fringe-colors t
   "Enable the color overlays on fringe."
@@ -73,23 +74,23 @@
     (remove-overlays (point-min) (point-max) 'lsp-dart-fringe-colors t)
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward color-name-pattern nil t)
+      (while (re-search-forward lsp-dart-fringe-color-name-pattern nil t)
         (let ((color (concat "#" (-> (match-string 1)
                                      (assoc lsp-dart-flutter-colors)
                                      cdr))))
           (lsp-dart-fringe--add-color color buffer (point-at-bol))))
       (goto-char (point-min))
-      (while (re-search-forward color-hex-pattern nil t)
+      (while (re-search-forward lsp-dart-fringe-color-hex-pattern nil t)
         (let ((color (concat "#" (substring (match-string 1) 2))))
           (lsp-dart-fringe--add-color color buffer (point-at-bol))))
       (goto-char (point-min))
-      (while (re-search-forward color-argb-pattern nil t)
+      (while (re-search-forward lsp-dart-fringe-color-argb-pattern nil t)
         (let ((color (lsp-dart-fringe--rgb-to-hex (match-string 2)
                                                    (match-string 3)
                                                    (match-string 4))))
           (lsp-dart-fringe--add-color color buffer (point-at-bol))))
       (goto-char (point-min))
-      (while (re-search-forward color-rgbo-pattern nil t)
+      (while (re-search-forward lsp-dart-fringe-color-rgbo-pattern nil t)
         (let ((color (lsp-dart-fringe--rgb-to-hex (match-string 1)
                                                    (match-string 2)
                                                    (match-string 3))))
