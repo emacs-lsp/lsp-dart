@@ -86,27 +86,19 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 
 * `lsp-dart-project-sdk-dir` - Install directory for dart-sdk.
 * `lsp-dart-project-flutter-command` - The flutter executable path. Defaults to "flutter" that may be in the `$PATH``.
-
 * `lsp-dart-server-command` - The analysis_server executable to use.
 * `lsp-dart-only-analyze-projects-with-open-files` - analysis will only be performed for projects that have open files rather than the root workspace folder.
 * `lsp-dart-suggest-from-unimported-libraries` - completion will not include symbols that are not already imported into the current file.
-
 * `lsp-dart-closing-labels` - Enable the closing labels feature on server lsp.
 * `lsp-dart-closing-labels-prefix` - The prefix string to be concatenated with the closing label.
 * `lsp-dart-closing-labels-size` - The font size factor to be multiplied by the closing labels font size.
-
 * `lsp-dart-outline` - Enable the outline tree view feature on server lsp.
 * `lsp-dart-outline-position-params` - The outline tree position params. Defaults to side.
-
 * `lsp-dart-flutter-outline` - Enable the Flutter outline tree view feature on server lsp.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
-
 * `lsp-dart-flutter-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
-
 * `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.
-
 * `lsp-dart-test-code-lens` - Enable the `Run` code lens on tests. Defaults to t.
-
 * `lsp-dart-dap-extension-version` - The debugger extension version. Defaults to [3.9.1](https://github.com/Dart-Code/Dart-Code/releases/tag/v3.9.1)
 * `lsp-dart-dap-debugger-path` - The debugger extension path.
 * `lsp-dart-dap-debugger-program` - The command to execute the debugger extension.
