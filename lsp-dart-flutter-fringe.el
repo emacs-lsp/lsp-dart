@@ -39,6 +39,12 @@
   :type 'boolean
   :group 'lsp-dart)
 
+(defcustom lsp-dart-flutter-fringe-color-check-interval 0.5
+  "The delay to check when state is idle.
+Increase for a better performance."
+  :type 'float
+  :group 'lsp-dart)
+
 (define-fringe-bitmap 'lsp-dart-flutter-fringe-color-bitmap
   [255 255 255 255 255 255 255 255 255])
 
@@ -103,7 +109,7 @@
   (when lsp-dart-flutter-fringe-colors-timer
     (cancel-timer lsp-dart-flutter-fringe-colors-timer))
   (setq lsp-dart-flutter-fringe-colors-timer
-        (run-with-idle-timer 0.3 nil #'lsp-dart-flutter-fringe--update-colors (current-buffer))))
+        (run-with-idle-timer lsp-dart-flutter-fringe-color-check-interval nil #'lsp-dart-flutter-fringe--update-colors (current-buffer))))
 
 (define-minor-mode lsp-dart-flutter-fringe-colors-mode
   "Mode for displaying colors in fringe."
