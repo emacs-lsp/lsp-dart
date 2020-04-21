@@ -63,7 +63,7 @@ Display the flutter colors on left fringe.
 
 ![flutter-fringe-colors](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-fringe-colors.gif)
 
-You can disable the feature setting `lsp-dart-fringe-colors` to `nil`.
+You can disable the feature setting `lsp-dart-flutter-fringe-colors` to `nil`.
 
 ### Flutter widget guides
 
@@ -95,7 +95,7 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 * `lsp-dart-flutter-outline` - Enable the Flutter outline tree view feature on server lsp.
 * `lsp-dart-outline-position-params` - The outline tree position params. Defaults to side.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
-* `lsp-dart-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
+* `lsp-dart-flutter-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
 * `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.
 
 ## Additional packages

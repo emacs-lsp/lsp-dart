@@ -30,9 +30,9 @@
 (require 'lsp-treemacs)
 (require 'lsp-mode)
 
-(require 'lsp-dart-fringe)
+(require 'lsp-dart-flutter-fringe)
 (require 'lsp-dart-dap)
-(require 'lsp-dart-widget-guide)
+(require 'lsp-dart-flutter-widget-guide)
 
 (defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 
@@ -319,7 +319,7 @@ PARAMS Flutter outline notification data sent from WORKSPACE.
 It updates the Flutter outline view if it already exists."
   (lsp-workspace-set-metadata "current-flutter-outline" params workspace)
   (when lsp-dart-flutter-widget-guides
-    (lsp-dart-widget-guide-check params))
+    (lsp-dart-flutter-widget-guide-check params))
   (when (get-buffer-window "*Flutter Outline*")
     (lsp-dart--show-flutter-outline t)))
 
