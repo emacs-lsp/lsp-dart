@@ -67,7 +67,7 @@ You can disable the feature setting `lsp-dart-fringe-colors` to `nil`.
 
 ### Flutter widget guides
 
-Display widget guide lines from parent to children widgets on flutter. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+Display widget guide lines from parent to child widgets on flutter. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
 ![flutter-widget-guides](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-widget-guides.png)
 
@@ -96,7 +96,7 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 * `lsp-dart-outline-position-params` - The outline tree position params. Defaults to side.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
 * `lsp-dart-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
-* `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to children widgets. Defaults to t.
+* `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
