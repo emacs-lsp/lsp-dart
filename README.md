@@ -65,6 +65,14 @@ Display the flutter colors on left fringe.
 
 You can disable the feature setting `lsp-dart-fringe-colors` to `nil`.
 
+### Flutter widget guides
+
+Display widget guide lines from parent to child widgets on flutter. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+
+![flutter-widget-guides](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-widget-guides.png)
+
+You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
+
 ### Debug
 
 For emacs debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart) to debug.
@@ -87,13 +95,14 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 * `lsp-dart-flutter-outline` - Enable the Flutter outline tree view feature on server lsp.
 * `lsp-dart-outline-position-params` - The outline tree position params. Defaults to side.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
-* `lsp-dart-fringe-colors` - Enable the flutter colors on fringe. Defaults to t.
+* `lsp-dart-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
+* `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
 * [company-capf](https://github.com/company-mode/company-mode) : Completion backend support.
-* [flutter.el](https://github.com/amake/flutter.el) : Tool to run emulator and tests from emacs.
+* [flutter.el](https://github.com/amake/flutter.el) : Tool to run emulator from emacs.
 * [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
 
 ## FAQ
