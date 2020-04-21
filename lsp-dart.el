@@ -136,6 +136,19 @@ Defaults to side following treemacs default."
              t
              "Feature not supported before dart SDK %s"))
 
+(defun lsp-dart--set-metadata (workspace params key-prefix)
+  "Save PARAMS in WORKSPACE metadata with KEY-PREFIX.
+The key is composed of the KEY-PREFIX with PARAMS uri path."
+  (-let* (((&hash "uri") params)
+          (uri-path (lsp--uri-to-path uri))
+          (key (concat key-prefix "--" uri-path)))
+    (lsp-workspace-set-metadata key params workspace)))
+
+(defun lsp-dart--get-metadata (buffer key-prefix)
+  "Return the metadata saved in current workspace of BUFFER for KEY-PREFIX."
+  (let ((key (concat key-prefix "--" (buffer-file-name buffer))))
+    (lsp-workspace-get-metadata key (lsp-find-workspace 'lsp-find-workspace))))
+
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.
 Kinds from https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/spec/generated/java/types/ElementKind.java"
@@ -252,22 +265,22 @@ ITEMS is the outline items data."
      t
      "*Flutter Outline*")))
 
-(defun lsp-dart--show-outline (ignore-focus?)
-  "Show an outline tree.
+(defun lsp-dart--show-outline (buffer ignore-focus?)
+  "Show an outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-outline"
-                                                                                  (lsp-find-workspace 'lsp-find-workspace)))
-          (buffer (lsp-dart--render-outline-tree uri children))
-          (window (display-buffer-in-side-window buffer lsp-dart-outline-position-params)))
+  (-let* ((current-outline (lsp-dart--get-metadata buffer "current-outline"))
+          ((&hash "uri" "outline" (&hash "children")) current-outline)
+          (tree-buffer (lsp-dart--render-outline-tree uri children))
+          (window (display-buffer-in-side-window tree-buffer lsp-dart-outline-position-params)))
     (unless ignore-focus?
       (select-window window)
       (set-window-dedicated-p window t))))
 
-(defun lsp-dart--show-flutter-outline (ignore-focus?)
-  "Show an Flutter outline tree.
+(defun lsp-dart--show-flutter-outline (buffer ignore-focus?)
+  "Show a Flutter outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-flutter-outline"
-                                                                                  (lsp-find-workspace 'lsp-find-workspace)))
+  (-let* ((current-outline (lsp-dart--get-metadata buffer "current-flutter-outline"))
+          ((&hash "uri" "outline" (&hash "children")) current-outline)
           (buffer (lsp-dart--render-flutter-outline-tree uri children))
           (window (display-buffer-in-side-window buffer lsp-dart-flutter-outline-position-params)))
     (unless ignore-focus?
@@ -278,22 +291,22 @@ Focus on it if IGNORE-FOCUS? is nil."
   "Outline notification handling.
 PARAMS outline notification data sent from WORKSPACE.
 It updates the outline view if it already exists."
-  (lsp-workspace-set-metadata "current-outline" params workspace)
+  (lsp-dart--set-metadata workspace params "current-outline")
   (when (and lsp-dart-test-code-lens
              (lsp-dart-test-file-p (gethash "uri" params)))
     (lsp-dart-test-check-code-lens params))
   (when (get-buffer-window "*Dart Outline*")
-    (lsp-dart--show-outline t)))
+    (lsp-dart--show-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
 
 (defun lsp-dart--handle-flutter-outline (workspace params)
   "Flutter outline notification handling.
 PARAMS Flutter outline notification data sent from WORKSPACE.
 It updates the Flutter outline view if it already exists."
-  (lsp-workspace-set-metadata "current-flutter-outline" params workspace)
+  (lsp-dart--set-metadata workspace params "current-flutter-outline")
   (when lsp-dart-flutter-widget-guides
     (lsp-dart-flutter-widget-guide-check params))
   (when (get-buffer-window "*Flutter Outline*")
-    (lsp-dart--show-flutter-outline t)))
+    (lsp-dart--show-flutter-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
 
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
@@ -350,14 +363,14 @@ PARAMS closing labels notification data sent from WORKSPACE."
   "Show an outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart--assert-sdk-min-version "2.8.0")
-  (lsp-dart--show-outline ignore-focus?))
+  (lsp-dart--show-outline (current-buffer) ignore-focus?))
 
 ;;;###autoload
 (defun lsp-dart-show-flutter-outline (ignore-focus?)
   "Show a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart--assert-sdk-min-version "2.8.0")
-  (lsp-dart--show-flutter-outline ignore-focus?))
+  (lsp-dart--show-flutter-outline (current-buffer) ignore-focus?))
 
 ;;;###autoload
 (defun lsp-dart-run-test-at-point ()
