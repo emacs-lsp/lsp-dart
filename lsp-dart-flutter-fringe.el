@@ -37,7 +37,7 @@
 (defcustom lsp-dart-flutter-fringe-colors t
   "Enable the color overlays on fringe."
   :type 'boolean
-  :group 'lsp-dart-flutter-fringe)
+  :group 'lsp-dart)
 
 (define-fringe-bitmap 'lsp-dart-flutter-fringe-color-bitmap
   [255 255 255 255 255 255 255 255 255])
@@ -53,7 +53,7 @@
         (ov (make-overlay point point buffer t t)))
     (defface face-name (lsp-dart-flutter-fringe--create-face hex)
       (format "Fringe color face %s." hex)
-      :group 'lsp-dart-flutter-fringe)
+      :group 'lsp-dart)
     (face-spec-set face-name (lsp-dart-flutter-fringe--create-face hex))
     (overlay-put ov 'lsp-dart-flutter-fringe-colors t)
     (overlay-put ov 'priority 1)

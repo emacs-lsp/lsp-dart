@@ -28,32 +28,25 @@
 (require 'dap-mode)
 (require 'dap-utils)
 
-(defcustom lsp-dart-dap--extension-version "3.9.1"
+(require 'lsp-dart-project)
+
+(defcustom lsp-dart-dap-extension-version "3.9.1"
   "The extension version."
-  :group 'lsp-dart-dap
+  :group 'lsp-dart
   :type 'string)
 
-(defcustom lsp-dart-dap--debugger-path
+(defcustom lsp-dart-dap-debugger-path
   (expand-file-name "github/Dart-Code.Dart-Code"
                     dap-utils-extension-path)
   "The path to dart vscode extension."
-  :group 'lsp-dart-dap
+  :group 'lsp-dart
   :type 'string)
 
 (defcustom lsp-dart-dap-debugger-program
-  `("node" ,(f-join lsp-dart-dap--debugger-path "extension/out/src/debug/dart_debug_entry.js"))
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/dart_debug_entry.js"))
   "The path to the dart debugger."
-  :group 'lsp-dart-dap
+  :group 'lsp-dart
   :type '(repeat string))
-
-(defcustom lsp-dart-dap-executable "dart"
-  "The dart executable from dart SDK dir."
-  :group 'lsp-dart-dap
-  :type 'string)
-
-(defun lsp-dart-dap--get-project-root ()
-  "Return the project root path."
-  (file-truename (locate-dominating-file default-directory "pubspec.yaml")))
 
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-debugger-program`."
@@ -63,18 +56,18 @@
      (lsp-async-start-process
       (lambda () (message "DAP Dart :: Setup done!"))
       (lambda () (message "DAP Dart :: Error setting up lsp-dart-dap, check if `npm` is on $PATH"))
-      (f-join lsp-dart-dap--debugger-path "extension/node_modules/typescript/bin/tsc")
-      "--project" (f-join lsp-dart-dap--debugger-path "extension")))
+      (f-join lsp-dart-dap-debugger-path "extension/node_modules/typescript/bin/tsc")
+      "--project" (f-join lsp-dart-dap-debugger-path "extension")))
    (lambda () (message "DAP Dart :: Error setting up lsp-dart-dap, check if `npm` is on $PATH"))
-   "npm" "install" "--prefix" (f-join lsp-dart-dap--debugger-path "extension")
+   "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
    "--no-package-lock" "--silent" "--no-save"))
 
 (dap-utils-github-extension-setup-function
  "dap-dart"
  "Dart-Code"
  "Dart-Code"
- lsp-dart-dap--extension-version
- lsp-dart-dap--debugger-path
+ lsp-dart-dap-extension-version
+ lsp-dart-dap-debugger-path
  #'lsp-dart-dap--setup-extension)
 
 (defun lsp-dart-dap--populate-start-file-args (conf)
@@ -82,10 +75,10 @@
   (-> conf
       (dap--put-if-absent :dap-server-path lsp-dart-dap-debugger-program)
       (dap--put-if-absent :type "dart")
-      (dap--put-if-absent :cwd (lsp-dart-dap--get-project-root))
+      (dap--put-if-absent :cwd (lsp-dart-project-get-root))
       (dap--put-if-absent :program (buffer-file-name))
       (dap--put-if-absent :name "Dart Debug")
-      (dap--put-if-absent :dartPath lsp-dart-dap-executable)
+      (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
       (dap--put-if-absent :debuggerType 0)
       (dap--put-if-absent :debugExternalLibraries nil)
       (dap--put-if-absent :debugSdkLibraries nil)))
