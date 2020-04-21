@@ -105,7 +105,7 @@ be sent with Flutter outline information for open files."
   :type 'boolean
   :group 'lsp-dart)
 
-(defcustom lsp-dart-flutter-widget-guide t
+(defcustom lsp-dart-flutter-widget-guides t
   "Enable showing ui guides for flutter widgets hierarchy."
   :type 'boolean
   :group 'lsp-dart)
@@ -318,7 +318,7 @@ It updates the outline view if it already exists."
 PARAMS Flutter outline notification data sent from WORKSPACE.
 It updates the Flutter outline view if it already exists."
   (lsp-workspace-set-metadata "current-flutter-outline" params workspace)
-  (when lsp-dart-flutter-widget-guide
+  (when lsp-dart-flutter-widget-guides
     (lsp-dart-widget-guide-check params))
   (when (get-buffer-window "*Flutter Outline*")
     (lsp-dart--show-flutter-outline t)))
