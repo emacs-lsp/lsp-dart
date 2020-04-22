@@ -118,7 +118,9 @@ Increase for a better performance."
    (lsp-dart-flutter-fringe-colors-mode
     (add-hook 'lsp-on-idle-hook #'lsp-dart-flutter-fringe--change-colors-handler nil t))
    (t
-    (remove-hook 'lsp-on-idle-hook #'lsp-dart-flutter-fringe--change-colors-handler t))))
+    (progn
+      (remove-overlays (point-min) (point-max) 'lsp-dart-flutter-fringe-colors t)
+      (remove-hook 'lsp-on-idle-hook #'lsp-dart-flutter-fringe--change-colors-handler t)))))
 
 (when lsp-dart-flutter-fringe-colors
   (add-hook 'lsp-after-open-hook
