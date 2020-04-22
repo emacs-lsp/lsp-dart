@@ -1,7 +1,7 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
-;; Version: 1.0
-;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (dap-mode "0.3") (ht "2.0") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
+;; Version: 1.6.7
+;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (dap-mode "0.3") (ht "2.0") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
 
@@ -122,6 +122,8 @@ Defaults to side following treemacs default."
 
 
 ;;; Internal
+
+(declare-function pkg-info-version-info "ext:pkg-info")
 
 (defun lsp-dart--get-dart-version ()
   "Retrieve the dart version from shell command."
@@ -357,6 +359,24 @@ PARAMS closing labels notification data sent from WORKSPACE."
 
 
 ;;; Public interface
+
+;;;###autoload
+(defun lsp-dart-version ()
+  "Get the lsp-dart version as string.
+
+The returned string includes the version from main file header,
+ the current time and the Emacs version.
+
+If the version number could not be determined, signal an error."
+  (interactive)
+  (if (require 'pkg-info nil t)
+      (let ((version (pkg-info-version-info 'lsp-dart)))
+        (message "%s %s at %s @ Emacs %s"
+                 (propertize "[LSP Dart]" 'face 'font-lock-keyword-face)
+                 version
+                 (format-time-string "%Y.%m.%d" (current-time))
+                 emacs-version))
+    (error "Cannot determine version without package 'pkg-info'")))
 
 ;;;###autoload
 (defun lsp-dart-show-outline (ignore-focus?)
