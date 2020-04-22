@@ -19,5 +19,9 @@ Before logging the bug please make sure that the issue is reproducible with late
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Version**
+Include here the result of: `M-x` `lsp-dart-version`
+{populate}
+
 **Logs**
 Please include the debug stack trace (if there is an error) and the content of Messages buffer with `lsp-print-io` set to t in case the bug is related to client->server communication.
