@@ -31,7 +31,7 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-project)
-(require 'lsp-dart-test)
+(require 'lsp-dart-test-support)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-flutter-fringe)
 (require 'lsp-dart-flutter-widget-guide)
@@ -293,8 +293,8 @@ PARAMS outline notification data sent from WORKSPACE.
 It updates the outline view if it already exists."
   (lsp-dart--set-metadata workspace params "current-outline")
   (when (and lsp-dart-test-code-lens
-             (lsp-dart-test-file-p (gethash "uri" params)))
-    (lsp-dart-test-check-code-lens params))
+             (lsp-dart-test-support-test-file-p (gethash "uri" params)))
+    (lsp-dart-test-support-check-code-lens params))
   (when (get-buffer-window "*Dart Outline*")
     (lsp-dart--show-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
 
@@ -387,7 +387,7 @@ all test overlays in the current buffer."
                       ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
                 (and (< beg1 beg2)
                      (> end1 end2))) it)
-    (lsp-dart-test-run (current-buffer)
+    (lsp-dart-test-support-run (current-buffer)
                         (overlay-get it 'lsp-dart-test-names)
                         (overlay-get it 'lsp-dart-test-kind))))
 
@@ -395,8 +395,8 @@ all test overlays in the current buffer."
 (defun lsp-dart-run-test-file ()
   "Run dart/Flutter test command only for current buffer."
   (interactive)
-  (if (lsp-dart-test-file-p (buffer-file-name))
-      (lsp-dart-test-run (current-buffer))
+  (if (lsp-dart-test-support-test-file-p (buffer-file-name))
+      (lsp-dart-test-support-run (current-buffer))
     (user-error "Current buffer is not a Dart/Flutter test file")))
 
 
