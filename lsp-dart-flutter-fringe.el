@@ -49,17 +49,17 @@ Increase for a better performance."
 
 (defun lsp-dart-flutter-fringe--create-face (hex)
   "Create a face for HEX color."
-  `((t :foreground ,hex
-       :weight bold)))
+  `((t :foreground ,hex)))
 
 (defun lsp-dart-flutter-fringe--add-color (hex buffer point)
   "Add color HEX overlay to BUFFER line at POINT."
-  (let ((face-name (make-symbol (concat "lsp-dart-flutter-fringe-colors-face-" hex)))
+  (let ((face-name (intern (concat "lsp-dart-futter-fringe-face-" (substring hex 1))))
         (ov (make-overlay point point buffer t t)))
-    (defface face-name (lsp-dart-flutter-fringe--create-face hex)
-      (format "Fringe color face %s." hex)
-      :group 'lsp-dart)
-    (face-spec-set face-name (lsp-dart-flutter-fringe--create-face hex))
+    (if (facep face-name)
+        (face-remap-add-relative face-name :foreground hex)
+      (eval`(defface ,face-name (lsp-dart-flutter-fringe--create-face ,hex)
+              (format "Fringe color face %s." ,hex)
+              :group 'lsp-dart)))
     (overlay-put ov 'lsp-dart-flutter-fringe-colors t)
     (overlay-put ov 'priority 1)
     (overlay-put ov 'before-string
