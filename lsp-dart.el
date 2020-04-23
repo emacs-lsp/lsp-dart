@@ -139,7 +139,7 @@ Defaults to side following treemacs default."
              "Feature not supported before dart SDK %s"))
 
 (defun lsp-dart--set-metadata (workspace params key-prefix)
-  "Save PARAMS in WORKSPACE metadata with KEY-PREFIX.
+  "Save in WORKSPACE the PARAMS metadata with KEY-PREFIX.
 The key is composed of the KEY-PREFIX with PARAMS uri path."
   (-let* (((&hash "uri") params)
           (uri-path (lsp--uri-to-path uri))
@@ -290,8 +290,8 @@ Focus on it if IGNORE-FOCUS? is nil."
       (set-window-dedicated-p window t))))
 
 (defun lsp-dart--handle-outline (workspace params)
-  "Outline notification handling.
-PARAMS outline notification data sent from WORKSPACE.
+  "Outline notification handling from WORKSPACE.
+PARAMS outline notification data sent.
 It updates the outline view if it already exists."
   (lsp-dart--set-metadata workspace params "current-outline")
   (when (and lsp-dart-test-code-lens
@@ -301,8 +301,8 @@ It updates the outline view if it already exists."
     (lsp-dart--show-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
 
 (defun lsp-dart--handle-flutter-outline (workspace params)
-  "Flutter outline notification handling.
-PARAMS Flutter outline notification data sent from WORKSPACE.
+  "Flutter outline notification handling from WORKSPACE.
+PARAMS Flutter outline notification data sent.
 It updates the Flutter outline view if it already exists."
   (lsp-dart--set-metadata workspace params "current-flutter-outline")
   (when lsp-dart-flutter-widget-guides

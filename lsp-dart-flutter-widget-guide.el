@@ -36,7 +36,7 @@
 (defconst lsp-dart-flutter-widget-guide-middle-corner "├")
 
 (defun lsp-dart-flutter-widget-guide--add-overlay-to (buffer line col string)
-  "Add a STRING overlay to BUFFER at LINE and COL."
+  "Add to BUFFER at LINE and COL a STRING overlay."
   (save-excursion
     (goto-char (point-min))
     (forward-line line)

@@ -114,8 +114,9 @@ from NAMES."
                         (lambda (_) lsp-dart-test-support-tests-buffer-name)))))
 
 (defun lsp-dart-test-support--build-overlay (buffer names kind range test-range)
-  "Build an overlay for a test NAMES of KIND in BUFFER file.
-RANGE is the overlay range to build."
+  "Build an overlay in BUFFER for a test NAMES of KIND.
+RANGE is the overlay range to build.
+TEST-RANGE is the test method range."
   (-let* ((beg-position (gethash "character" (gethash "start" range)))
           ((beg . end) (lsp--range-to-region range))
           (beg-line (progn (goto-char beg)

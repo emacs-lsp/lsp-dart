@@ -53,7 +53,7 @@ Increase for a better performance."
        :weight bold)))
 
 (defun lsp-dart-flutter-fringe--add-color (hex buffer point)
-  "Add color HEX overlay to line at POINT from BUFFER."
+  "Add color HEX overlay to BUFFER line at POINT."
   (let ((face-name (make-symbol (concat "lsp-dart-flutter-fringe-colors-face-" hex)))
         (ov (make-overlay point point buffer t t)))
     (defface face-name (lsp-dart-flutter-fringe--create-face hex)
