@@ -24,8 +24,6 @@
 
 ;;; Code:
 
-(require 'color)
-
 (require 'lsp-mode)
 (require 'lsp-dart-flutter-colors)
 
@@ -45,8 +43,9 @@ Increase for a better performance."
   :type 'float
   :group 'lsp-dart)
 
-(define-fringe-bitmap 'lsp-dart-flutter-fringe-color-bitmap
-  [255 255 255 255 255 255 255 255 255])
+(when (fboundp 'define-fringe-bitmap)
+  (define-fringe-bitmap 'lsp-dart-flutter-fringe-color-bitmap
+  [255 255 255 255 255 255 255 255 255]))
 
 (defun lsp-dart-flutter-fringe--create-face (hex)
   "Create a face for HEX color."
@@ -70,9 +69,10 @@ Increase for a better performance."
 
 (defun lsp-dart-flutter-fringe--rgb-to-hex (r g b)
   "Convert a R G B color into a hexadecimal color format."
-  (color-rgb-to-hex (/ (float (string-to-number r)) 255)
-                    (/ (float (string-to-number g)) 255)
-                    (/ (float (string-to-number b)) 255) 2))
+  (format "#%02x%02x%02x"
+          (string-to-number r)
+          (string-to-number g)
+          (string-to-number b)))
 
 (defun lsp-dart-flutter-fringe--update-colors (buffer)
   "Search for color patterns in BUFFER and if match, add a color overlay."
