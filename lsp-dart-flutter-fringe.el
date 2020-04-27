@@ -37,12 +37,6 @@
   :type 'boolean
   :group 'lsp-dart)
 
-(defcustom lsp-dart-flutter-fringe-color-check-interval 0.5
-  "The delay to check when state is idle.
-Increase for a better performance."
-  :type 'float
-  :group 'lsp-dart)
-
 (when (fboundp 'define-fringe-bitmap)
   (define-fringe-bitmap 'lsp-dart-flutter-fringe-color-bitmap
   [255 255 255 255 255 255 255 255 255]))
@@ -102,25 +96,16 @@ Increase for a better performance."
                                                    (match-string 3))))
           (lsp-dart-flutter-fringe--add-color color buffer (point-at-bol)))))))
 
-(defvar-local lsp-dart-flutter-fringe-colors-timer nil)
-
-(defun lsp-dart-flutter-fringe--change-colors-handler (&rest _rest)
-  "Handler that add/update colors on fringe."
-  (when lsp-dart-flutter-fringe-colors-timer
-    (cancel-timer lsp-dart-flutter-fringe-colors-timer))
-  (setq lsp-dart-flutter-fringe-colors-timer
-        (run-with-idle-timer lsp-dart-flutter-fringe-color-check-interval nil #'lsp-dart-flutter-fringe--update-colors (current-buffer))))
-
 (define-minor-mode lsp-dart-flutter-fringe-colors-mode
   "Mode for displaying colors in fringe."
   nil nil nil
   (cond
    (lsp-dart-flutter-fringe-colors-mode
-    (add-hook 'lsp-on-idle-hook #'lsp-dart-flutter-fringe--change-colors-handler nil t))
+    (add-hook 'lsp-on-change-hook (-partial #'lsp-dart-flutter-fringe--update-colors (current-buffer)) nil t))
    (t
     (progn
       (remove-overlays (point-min) (point-max) 'lsp-dart-flutter-fringe-colors t)
-      (remove-hook 'lsp-on-idle-hook #'lsp-dart-flutter-fringe--change-colors-handler t)))))
+      (remove-hook 'lsp-on-change-hook #'lsp-dart-flutter-fringe--update-colors t)))))
 
 (when lsp-dart-flutter-fringe-colors
   (add-hook 'lsp-after-open-hook

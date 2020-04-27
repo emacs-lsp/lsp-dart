@@ -101,7 +101,6 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 * `lsp-dart-flutter-outline` - Enable the Flutter outline tree view feature on server lsp.
 * `lsp-dart-flutter-outline-position-params` - The Flutter outline tree position params. Defaults to side.
 * `lsp-dart-flutter-fringe-colors` - Enable the Flutter colors on fringe. Defaults to t.
-* `lsp-dart-flutter-fringe-color-check-interval` - The interval to check for a color change when in idle state. Defaults to `0.5`.
 * `lsp-dart-flutter-widget-guides` - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.
 * `lsp-dart-test-code-lens` - Enable the `Run` code lens on tests. Defaults to t.
 * `lsp-dart-dap-extension-version` - The debugger extension version. Defaults to [3.9.1](https://github.com/Dart-Code/Dart-Code/releases/tag/v3.9.1)
