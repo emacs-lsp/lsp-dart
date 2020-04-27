@@ -371,11 +371,11 @@ If the version number could not be determined, signal an error."
   (interactive)
   (if (require 'pkg-info nil t)
       (let ((version (pkg-info-version-info 'lsp-dart)))
-        (message "%s %s at %s @ Emacs %s"
-                 (propertize "[LSP Dart]" 'face 'font-lock-keyword-face)
-                 version
-                 (format-time-string "%Y.%m.%d" (current-time))
-                 emacs-version))
+        (lsp-dart-project-log
+         "%s at %s @ Emacs %s"
+         version
+         (format-time-string "%Y.%m.%d" (current-time))
+         emacs-version))
     (error "Cannot determine version without package 'pkg-info'")))
 
 ;;;###autoload

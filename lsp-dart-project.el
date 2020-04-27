@@ -54,6 +54,12 @@ flutter cache dir."
             file-truename
             (locate-dominating-file "bin")))))
 
+(defun lsp-dart-project-get-pub-command ()
+  "Return the pub executable path from dart SDK path."
+  (-> (lsp-dart-project-get-sdk-dir)
+      file-name-as-directory
+      (concat "bin/pub")))
+
 (defun lsp-dart-project-dart-command ()
   "Return the dart executable from dart SDK dir."
   (expand-file-name "bin/dart" (lsp-dart-project-get-sdk-dir)))
@@ -61,6 +67,11 @@ flutter cache dir."
 (defun lsp-dart-project-get-root ()
   "Return the dart or flutter project root."
   (file-truename (locate-dominating-file default-directory "pubspec.yaml")))
+
+(defun lsp-dart-project-log (msg &rest args)
+  "Log MSG with ARGS and custom prefix."
+  (let ((prefix (propertize "[LSP Dart]" 'face 'font-lock-keyword-face)))
+    (apply #'message (concat prefix " " msg) args)))
 
 (provide 'lsp-dart-project)
 ;;; lsp-dart-project.el ends here

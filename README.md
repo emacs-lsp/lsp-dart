@@ -80,6 +80,8 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 
 ![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
 
+* You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-open-devtools`.
+
 ##### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
 
 ## Supported settings
@@ -103,6 +105,8 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 * `lsp-dart-dap-extension-version` - The debugger extension version. Defaults to [3.9.1](https://github.com/Dart-Code/Dart-Code/releases/tag/v3.9.1)
 * `lsp-dart-dap-debugger-path` - The debugger extension path.
 * `lsp-dart-dap-debugger-program` - The command to execute the debugger extension.
+* `lsp-dart-dap-devtools-theme` - The devtools theme when openning via `lsp-dart-dap-open-devtools`.
+* `lsp-dart-dap-devtools-hide-options` - What to hide when openning DevTools via `lsp-dart-dap-open-devtools``. Defatuls to "debugger".
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
