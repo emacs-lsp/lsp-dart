@@ -68,7 +68,7 @@ be sent with information to render editor closing labels."
   :type 'boolean
   :group 'lsp-dart)
 
-(defcustom lsp-dart-closing-labels-prefix " "
+(defcustom lsp-dart-closing-labels-prefix ""
   "The prefix string to be concatenated with the closing label."
   :type 'string
   :group 'lsp-dart)
