@@ -42,11 +42,27 @@
   :group 'lsp-dart
   :type 'string)
 
-(defcustom lsp-dart-dap-debugger-program
+(defcustom lsp-dart-dap-dart-debugger-program
   `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/dart_debug_entry.js"))
   "The path to the dart debugger."
   :group 'lsp-dart
   :type '(repeat string))
+
+(defcustom lsp-dart-dap-flutter-debugger-program
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/flutter_debug_entry.js"))
+  "The path to the Flutter debugger."
+  :group 'lsp-dart
+  :type '(repeat string))
+
+(defcustom lsp-dart-dap-debug-external-libraries nil
+  "If non-nil, enable the debug on external libraries."
+  :group 'lsp-dart
+  :type 'boolean)
+
+(defcustom lsp-dart-dap-debug-sdk-libraries nil
+  "If non-nil, enable the debug on Dart SDK libraries."
+  :group 'lsp-dart
+  :type 'boolean)
 
 (defcustom lsp-dart-dap-devtools-theme "dark"
   "The theme to Dart DevTools."
@@ -58,11 +74,26 @@
   :group 'lsp-dart
   :type 'string)
 
+(defcustom lsp-dart-dap-flutter-track-widget-creation t
+  "Whether to pass –track-widget-creation to Flutter apps.
+Required to support 'Inspect Widget'."
+  :group 'lsp-dart
+  :type 'string)
+
+(defcustom lsp-dart-dap-flutter-structured-errors t
+  "Whether to use Flutter's structured error support for improve error display."
+  :group 'lsp-dart
+  :type 'string)
+
+
+
+;;; Internal
+
 (defconst lsp-dart-dap--devtools-buffer-name "*LSP Dart - DevTools*")
 (defconst lsp-dart-dap--pub-list-pacakges-buffer-name "*LSP Dart - Pub list packages*")
 
 (defun lsp-dart-dap--setup-extension ()
-  "Setup dart debugger extension to run `lsp-dart-dap-debugger-program`."
+  "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
   (lsp-dart-project-log "Setting up DAP...")
   (lsp-async-start-process
    (lambda ()
@@ -83,26 +114,56 @@
  lsp-dart-dap-debugger-path
  #'lsp-dart-dap--setup-extension)
 
-(defun lsp-dart-dap--populate-start-file-args (conf)
-  "Populate CONF with the required arguments."
+(defun lsp-dart-dap--populate-dart-start-file-args (conf)
+  "Populate CONF with the required arguments for dart debug."
   (-> conf
-      (dap--put-if-absent :dap-server-path lsp-dart-dap-debugger-program)
-      (dap--put-if-absent :type "dart")
+      (dap--put-if-absent :dap-server-path lsp-dart-dap-dart-debugger-program)
       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
       (dap--put-if-absent :program (buffer-file-name))
-      (dap--put-if-absent :name "Dart Debug")
       (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
-      (dap--put-if-absent :debuggerType 0)
-      (dap--put-if-absent :debugExternalLibraries nil)
-      (dap--put-if-absent :debugSdkLibraries nil)))
+      (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
+      (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)))
 
-(dap-register-debug-provider "dart" 'lsp-dart-dap--populate-start-file-args)
-(dap-register-debug-template "Dart :: Run Configuration"
+(dap-register-debug-provider "dart" 'lsp-dart-dap--populate-dart-start-file-args)
+(dap-register-debug-template "Dart :: Debug"
                              (list :type "dart"
-                                   :cwd nil
                                    :request "launch"
-                                   :program nil
-                                   :name "Dart::Run"))
+                                   :name "Dart"))
+
+;; Flutter
+
+(defun lsp-dart-dap--flutter-get-or-create-device ()
+  "Return the device to debug or prompt to start it."
+  (ht ('id "emulator-5554")
+      ('name "device")))
+
+(defun lsp-dart-dap--populate-flutter-start-file-args (conf)
+  "Populate CONF with the required arguments for Flutter debug."
+  (-let* ((root (lsp-dart-project-get-root))
+          ((&hash "id" device-id "name" device-name) (lsp-dart-dap--flutter-get-or-create-device)))
+    (-> conf
+        (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
+        (dap--put-if-absent :cwd root)
+        (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
+        (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
+        (dap--put-if-absent :flutterPath (lsp-dart-project-get-flutter-path))
+        (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
+        (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
+        (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
+        (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
+        (dap--put-if-absent :deviceId device-id)
+        (dap--put-if-absent :deviceName device-name)
+        (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))
+
+(dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
+(dap-register-debug-template "Flutter :: Debug"
+                             (list :type "flutter"
+                                   :request "launch"
+                                   :flutterMode "debug"
+                                   :flutterPlatform "default"
+                                   :name "Flutter"))
+
+;; DevTools
 
 (cl-defmethod dap-handle-event ((_event (eql dart.debuggerUris)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -201,6 +262,9 @@ If it is already activated or after activated successfully, call CALLBACK."
                                            (theme ,lsp-dart-dap-devtools-theme))))
          (url (concat "http://" uri "?" params)))
     (browse-url url)))
+
+
+;;; Public interface
 
 ;;;###autoload
 (defun lsp-dart-dap-open-devtools ()
