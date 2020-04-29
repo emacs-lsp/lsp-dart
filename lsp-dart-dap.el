@@ -29,6 +29,7 @@
 (require 'dap-utils)
 
 (require 'lsp-dart-project)
+(require 'lsp-dart-flutter-daemon)
 
 (defcustom lsp-dart-dap-extension-version "3.9.1"
   "The extension version."
@@ -85,6 +86,10 @@ Required to support 'Inspect Widget'."
   :group 'lsp-dart
   :type 'string)
 
+(defcustom lsp-dart-dap-flutter-verbose-log nil
+  "Whether to enable logs from Flutter DAP."
+  :group 'lsp-dart
+  :type 'boolean)
 
 
 ;;; Internal
@@ -92,17 +97,25 @@ Required to support 'Inspect Widget'."
 (defconst lsp-dart-dap--devtools-buffer-name "*LSP Dart - DevTools*")
 (defconst lsp-dart-dap--pub-list-pacakges-buffer-name "*LSP Dart - Pub list packages*")
 
+(defun lsp-dart-dap-log (msg &rest args)
+  "Log MSG with ARGS adding lsp-dart-dap prefix."
+  (lsp-dart-project-log (concat
+                         (propertize "[DAP] "
+                                     'face 'font-lock-function-name-face)
+                         msg
+                         args)))
+
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
-  (lsp-dart-project-log "Setting up DAP...")
+  (lsp-dart-dap-log "Setting up debugger...")
   (lsp-async-start-process
    (lambda ()
      (lsp-async-start-process
-      (lambda () (lsp-dart-project-log "DAP setup done!"))
-      (lambda (_) (lsp-dart-project-log "Error setting up lsp-dart-dap, check if `npm` is on $PATH"))
+      (lambda () (lsp-dart-dap-log "Setup done!"))
+      (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
       (f-join lsp-dart-dap-debugger-path "extension/node_modules/typescript/bin/tsc")
       "--project" (f-join lsp-dart-dap-debugger-path "extension")))
-   (lambda (_) (lsp-dart-project-log "Error setting up lsp-dart-dap, check if `npm` is on $PATH"))
+   (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
    "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
    "--no-package-lock" "--silent" "--no-save"))
 
@@ -134,8 +147,17 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap--flutter-get-or-create-device ()
   "Return the device to debug or prompt to start it."
-  (ht ('id "emulator-5554")
-      ('name "device")))
+  (-let* ((devices (lsp-dart-flutter-daemon-get-emulators))
+          (chosen-device (dap--completing-read "Select a device to use: "
+                                               devices
+                                               (-lambda ((&hash "id" "name" "category" "platformType" platform))
+                                                 (format "%s - %s" platform (if name name id)))
+                                               nil
+                                               t))
+          (emulator (lsp-dart-flutter-daemon-launch chosen-device)))
+    (ht ('id "emulator-5554")
+        ('name "device"))
+    ))
 
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
@@ -162,6 +184,60 @@ Required to support 'Inspect Widget'."
                                    :flutterMode "debug"
                                    :flutterPlatform "default"
                                    :name "Flutter"))
+
+(defvar lsp-dart-dap--flutter-progress-reporter nil)
+
+(cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
+  "Handle debugger uris EVENT for SESSION with PARAMS."
+  (when lsp-dart-dap-flutter-verbose-log
+    (-let* (((&hash "message") params)
+            (msg (replace-regexp-in-string (regexp-quote "\n") "" message nil 'literal)))
+      (lsp-dart-dap-log msg))))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.launching)) _session params)
+  "Handle debugger uris EVENT for SESSION with PARAMS."
+  (let ((prefix (concat (propertize "[LSP Dart] "
+                                     'face 'font-lock-keyword-face)
+                         (propertize "[DAP] "
+                                     'face 'font-lock-function-name-face))))
+    (setq lsp-dart-dap--flutter-progress-reporter
+          (make-progress-reporter (concat prefix (gethash "message" params))))))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.launched)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS."
+  (when lsp-dart-dap--flutter-progress-reporter
+    (progress-reporter-done lsp-dart-dap--flutter-progress-reporter))
+  (lsp-dart-dap-log "Loading app..."))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.progress)) _session params)
+  "Handle debugger uris EVENT for SESSION with PARAMS."
+  (-let (((&hash "message") params)
+         (prefix (concat (propertize "[LSP Dart] "
+                                     'face 'font-lock-keyword-face)
+                         (propertize "[DAP] "
+                                     'face 'font-lock-function-name-face))))
+    (when (and message lsp-dart-dap--flutter-progress-reporter)
+      (progress-reporter-force-update lsp-dart-dap--flutter-progress-reporter nil (concat prefix message)))))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.firstFrame)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS."
+  (setq lsp-dart-dap--flutter-progress-reporter nil)
+  (lsp-dart-dap-log "App ready!"))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.serviceExtensionAdded)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.hotReloadRequest)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.debugMetrics)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
+(cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
+  "Handle debugger uris EVENT for SESSION with PARAMS.")
 
 ;; DevTools
 
@@ -208,13 +284,13 @@ If URI is not found on buffer, schedule re-check."
 
 (defun lsp-dart-dap--activate-devtools (callback)
   "Activate Dart Devtools via pub then call CALLBACK."
-  (lsp-dart-project-log "Activating DevTools...")
+  (lsp-dart-dap-log "Activating DevTools...")
   (let ((pub (lsp-dart-project-get-pub-command)))
     (lsp-async-start-process
      (lambda ()
-       (lsp-dart-project-log "DevTools activated successfully!")
+       (lsp-dart-dap-log "DevTools activated successfully!")
        (funcall callback))
-     (lambda (_) (lsp-dart-project-log "Could not Activate DevTools. \
+     (lambda (_) (lsp-dart-dap-log "Could not Activate DevTools. \
 Try to activate manually running 'pub global activate devtools'"))
      pub "global" "activate" "devtools")))
 
@@ -275,7 +351,7 @@ If it is already activated or after activated successfully, call CALLBACK."
     (when (and session vm-service-uri)
       (lsp-dart-dap--start-devtools
        (lambda (uri)
-         (lsp-dart-project-log "Openning DevTools at browser...")
+         (lsp-dart-dap-log "Openning DevTools at browser...")
          (lsp-dart-dap--open-devtools uri vm-service-uri))))))
 
 (provide 'lsp-dart-dap)
