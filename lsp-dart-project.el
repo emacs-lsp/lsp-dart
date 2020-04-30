@@ -39,15 +39,19 @@ in the PATH env."
   :group 'lsp-dart
   :type 'string)
 
+(defun lsp-dart-project-get-flutter-path ()
+  "Return the Flutter SDK path."
+  (-> lsp-dart-project-flutter-command
+      executable-find
+      file-truename))
+
 (defun lsp-dart-project-get-sdk-dir ()
   "Return the dart sdk.
 Check for `lsp-dart-project-sdk-dir` otherwise search for dart executable or
 flutter cache dir."
   (or lsp-dart-project-sdk-dir
       (-when-let (dart (or (executable-find "dart")
-                           (-when-let (flutter (-> lsp-dart-project-flutter-command
-                                                   executable-find
-                                                   file-truename))
+                           (-when-let (flutter (lsp-dart-project-get-flutter-path))
                              (expand-file-name "cache/dart-sdk/bin/dart"
                                                (file-name-directory flutter)))))
         (-> dart
@@ -66,12 +70,32 @@ flutter cache dir."
 
 (defun lsp-dart-project-get-root ()
   "Return the dart or flutter project root."
-  (file-truename (locate-dominating-file default-directory "pubspec.yaml")))
+  (-some-> default-directory
+    (locate-dominating-file "pubspec.yaml")
+    file-truename))
+
+(defun lsp-dart-project-get-entrypoint ()
+  "Return the dart or flutter project entrypoint."
+  (let* ((root (lsp-dart-project-get-root))
+         (lib-entry (expand-file-name "lib/main.dart" root))
+         (bin-entry (expand-file-name "bin/main.dart" root)))
+    (cond
+     ((file-exists-p lib-entry)
+      lib-entry)
+
+     ((file-exists-p bin-entry)
+      bin-entry))))
 
 (defun lsp-dart-project-log (msg &rest args)
   "Log MSG with ARGS and custom prefix."
   (let ((prefix (propertize "[LSP Dart]" 'face 'font-lock-keyword-face)))
     (apply #'message (concat prefix " " msg) args)))
+
+(defun lsp-dart-project-custom-log (prefix msg &rest args)
+  "Log with custom PREFIX the MSG and ARGS."
+  (let ((base-prefix (propertize "[LSP Dart]" 'face 'font-lock-keyword-face))
+        (custom-prefix (propertize prefix 'face 'font-lock-function-name-face)))
+    (apply #'message (concat base-prefix " " custom-prefix " " msg) args)))
 
 (provide 'lsp-dart-project)
 ;;; lsp-dart-project.el ends here
