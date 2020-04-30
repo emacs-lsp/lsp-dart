@@ -87,11 +87,7 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap-log (msg &rest args)
   "Log MSG with ARGS adding lsp-dart-dap prefix."
-  (lsp-dart-project-log (concat
-                         (propertize "[DAP] "
-                                     'face 'font-lock-function-name-face)
-                         msg
-                         args)))
+  (apply #'lsp-dart-project-custom-log "[DAP]" msg args))
 
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."

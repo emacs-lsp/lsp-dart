@@ -39,11 +39,9 @@
 
 (defun lsp-dart-flutter-daemon-log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
-  (lsp-dart-project-log (concat
-                         (propertize (concat "[FLUTTER " (upcase level) "] ")
-                                     'face 'font-lock-function-name-face)
-                         msg
-                         args)))
+  (apply #'lsp-dart-project-custom-log (concat "[FLUTTER " (upcase level) "] ")
+         msg
+         args))
 
 (defun lsp-dart-flutter-daemon--generate-command-id ()
   "Generate a random command id."

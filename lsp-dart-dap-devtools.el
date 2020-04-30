@@ -45,7 +45,7 @@
 
 (defun lsp-dart-dap-devtools-log (msg &rest args)
   "Custom logger for MSG and ARGS."
-  (lsp-dart-project-custom-log "[DEVTOOLS]" msg args))
+  (apply #'lsp-dart-project-custom-log "[DEVTOOLS]" msg args))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.debuggerUris)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
