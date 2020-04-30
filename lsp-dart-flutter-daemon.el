@@ -76,7 +76,7 @@ PARAMS is the optional method params."
          (replace-regexp-in-string (regexp-quote "\n") "" it nil 'literal)
          (replace-regexp-in-string (regexp-quote "][") "]\n[" it nil 'literal)
          (split-string it "\n")
-         (-map (lambda (el) (seq-first (lsp--read-json el))) it))))
+         (-map (lambda (el) (lsp-seq-first (lsp--read-json el))) it))))
 
 (defun lsp-dart-flutter-daemon-handle-events (raw-response)
   "Handle Flutter daemon events from RAW-RESPONSE."
