@@ -91,5 +91,11 @@ flutter cache dir."
   (let ((prefix (propertize "[LSP Dart]" 'face 'font-lock-keyword-face)))
     (apply #'message (concat prefix " " msg) args)))
 
+(defun lsp-dart-project-custom-log (prefix msg &rest args)
+  "Log MSG with custom PREFIX and ARGS."
+  (let ((base-prefix (propertize "[LSP Dart]" 'face 'font-lock-keyword-face))
+        (custom-prefix (propertize prefix 'face 'font-lock-function-name-face)))
+    (apply #'message (concat base-prefix " " custom-prefix " " msg) args)))
+
 (provide 'lsp-dart-project)
 ;;; lsp-dart-project.el ends here

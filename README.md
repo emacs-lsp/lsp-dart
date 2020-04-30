@@ -82,7 +82,7 @@ You only need to run `dap-dart-setup` one time to setup the debugger.
 
 #### DevTools
 
-You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-open-devtools`.
+You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.
 
 ##### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
 

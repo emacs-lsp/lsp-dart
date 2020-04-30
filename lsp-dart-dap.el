@@ -30,6 +30,7 @@
 
 (require 'lsp-dart-project)
 (require 'lsp-dart-flutter-daemon)
+(require 'lsp-dart-dap-devtools)
 
 (defcustom lsp-dart-dap-extension-version "3.9.1"
   "The extension version."
@@ -65,16 +66,6 @@
   :group 'lsp-dart
   :type 'boolean)
 
-(defcustom lsp-dart-dap-devtools-theme "dark"
-  "The theme to Dart DevTools."
-  :group 'lsp-dart
-  :type 'string)
-
-(defcustom lsp-dart-dap-devtools-hide-options "debugger"
-  "What to hide when openning Dart DevTools."
-  :group 'lsp-dart
-  :type 'string)
-
 (defcustom lsp-dart-dap-flutter-track-widget-creation t
   "Whether to pass –track-widget-creation to Flutter apps.
 Required to support 'Inspect Widget'."
@@ -93,9 +84,6 @@ Required to support 'Inspect Widget'."
 
 
 ;;; Internal
-
-(defconst lsp-dart-dap--devtools-buffer-name "*LSP Dart - DevTools*")
-(defconst lsp-dart-dap--pub-list-pacakges-buffer-name "*LSP Dart - Pub list packages*")
 
 (defun lsp-dart-dap-log (msg &rest args)
   "Log MSG with ARGS adding lsp-dart-dap prefix."
@@ -204,19 +192,19 @@ Call CALLBACK when the device is chosen and started successfully."
 (defvar lsp-dart-dap--flutter-progress-reporter nil)
 (defvar lsp-dart-dap--flutter-progress-reporter-timer nil)
 
-(defun lsp-dart-dap--flutter-progress-timer-cancel (_debug-session)
+(defun lsp-dart-dap--cancel-flutter-progress (_debug-session)
   "Cancel the Flutter progress timer for DEBUG-SESSION."
   (setq lsp-dart-dap--flutter-progress-reporter nil)
-  (setq lsp-dart-dap--flutter-progress-reporter-timer nil)
   (when lsp-dart-dap--flutter-progress-reporter-timer
     (cancel-timer lsp-dart-dap--flutter-progress-reporter-timer))
+  (setq lsp-dart-dap--flutter-progress-reporter-timer nil))
 
-  (add-hook 'dap-terminated-hook #'lsp-dart-dap--flutter-progress-timer-cancel)
+(add-hook 'dap-terminated-hook #'lsp-dart-dap--cancel-flutter-progress)
 
-  (defun lsp-dart-dap--flutter-progress-update ()
-    "Update the flutter progress reporter."
-    (when lsp-dart-dap--flutter-progress-reporter
-      (progress-reporter-update lsp-dart-dap--flutter-progress-reporter))))
+(defun lsp-dart-dap--flutter-tick-progress-update ()
+  "Update the flutter progress reporter."
+  (when lsp-dart-dap--flutter-progress-reporter
+    (progress-reporter-update lsp-dart-dap--flutter-progress-reporter)))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -228,13 +216,13 @@ Call CALLBACK when the device is chosen and started successfully."
 (cl-defmethod dap-handle-event ((_event (eql dart.launching)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
   (let ((prefix (concat (propertize "[LSP Dart] "
-                                     'face 'font-lock-keyword-face)
-                         (propertize "[DAP] "
-                                     'face 'font-lock-function-name-face))))
+                                    'face 'font-lock-keyword-face)
+                        (propertize "[DAP] "
+                                    'face 'font-lock-function-name-face))))
     (setq lsp-dart-dap--flutter-progress-reporter
           (make-progress-reporter (concat prefix (gethash "message" params))))
     (setq lsp-dart-dap--flutter-progress-reporter-timer
-          (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-progress-update))))
+          (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-tick-progress-update))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.launched)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -254,138 +242,23 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.firstFrame)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (lsp-dart-dap--flutter-progress-timer-cancel (dap--cur-session))
+  (lsp-dart-dap--cancel-flutter-progress (dap--cur-session))
   (lsp-dart-dap-log "App ready!"))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.serviceExtensionAdded)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.hotReloadRequest)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.debugMetrics)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
+  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
-  "Handle debugger uris EVENT for SESSION with PARAMS.")
-
-;; DevTools
-
-(cl-defmethod dap-handle-event ((_event (eql dart.debuggerUris)) _session params)
-  "Handle debugger uris EVENT for SESSION with PARAMS."
-  (-let* (((&hash "vmServiceUri" vm-service-uri) params))
-    (lsp-workspace-set-metadata "dart-debug-vm-service-uri" vm-service-uri)))
-
-(defun lsp-dart-dap--clean-buffer (buffer)
-  "Clean BUFFER content."
-  (when (get-buffer buffer)
-    (with-current-buffer buffer
-      (erase-buffer))))
-
-(defun lsp-dart-dap--buffer-whole-string (buffer)
-  "Return all content of BUFFER."
-  (with-current-buffer buffer
-    (save-restriction
-      (widen)
-      (buffer-substring-no-properties (point-min) (point-max)))))
-
-(defun lsp-dart-dap--check-devtools-uri (callback)
-  "Check for uri on devtools buffer and call CALLBACK with it.
-If URI is not found on buffer, schedule re-check."
-  (let ((content (lsp-dart-dap--buffer-whole-string lsp-dart-dap--devtools-buffer-name)))
-    (if (string= content "")
-        (run-with-idle-timer 0.3 nil #'lsp-dart-dap--check-devtools-uri callback)
-      (-let* (((&hash "params" (&hash "host" "port")) (lsp--read-json content))
-              (uri (concat host ":" (number-to-string port))))
-        (lsp-workspace-set-metadata "dart-debug-devtools-uri" uri)
-        (funcall callback uri)))))
-
-(defun lsp-dart-dap--devtools-activated-p ()
-  "Return non-nil if devtools is activated otherwise nil."
-  (lsp-dart-dap--clean-buffer lsp-dart-dap--pub-list-pacakges-buffer-name)
-  (let* ((pub (lsp-dart-project-get-pub-command))
-         (_proc (call-process pub
-                              nil
-                              lsp-dart-dap--pub-list-pacakges-buffer-name
-                              nil
-                              "global" "list"))
-         (content (lsp-dart-dap--buffer-whole-string lsp-dart-dap--pub-list-pacakges-buffer-name)))
-    (string-match-p "devtools \\([0-9]\\.[0-9]\\.[0-9]\\)" content)))
-
-(defun lsp-dart-dap--activate-devtools (callback)
-  "Activate Dart Devtools via pub then call CALLBACK."
-  (lsp-dart-dap-log "Activating DevTools...")
-  (let ((pub (lsp-dart-project-get-pub-command)))
-    (lsp-async-start-process
-     (lambda ()
-       (lsp-dart-dap-log "DevTools activated successfully!")
-       (funcall callback))
-     (lambda (_) (lsp-dart-dap-log "Could not Activate DevTools. \
-Try to activate manually running 'pub global activate devtools'"))
-     pub "global" "activate" "devtools")))
-
-(defun lsp-dart-dap--check-devtools-activated (callback)
-  "Check if devtools is activated otherwise prompt for activate it.
-If it is already activated or after activated successfully, call CALLBACK."
-  (if (lsp-dart-dap--devtools-activated-p)
-      (funcall callback)
-    (when (y-or-n-p "Dart DevTools needs to be activated with \
-'pub global activate devtools' to use this feature.\nActivate DevTools? ")
-      (lsp-dart-dap--activate-devtools callback))))
-
-(defun lsp-dart-dap--kill-devtools-proc (proc _session)
-  "Kill the devtools PROC process of SESSION."
-  (lsp-workspace-set-metadata "dart-debug-devtools-uri" nil)
-  (delete-process proc)
-  (lsp-dart-dap--clean-buffer lsp-dart-dap--devtools-buffer-name))
-
-(defvar-local lsp-dart-dap--check-devtools-uri-timer nil)
-
-(defun lsp-dart-dap--start-devtools (callback)
-  "Start Dart DevTools process and call CALLBACK after started successfully."
-  (lsp-dart-dap--check-devtools-activated
-   (lambda ()
-     (if-let ((uri (lsp-workspace-get-metadata "dart-debug-devtools-uri")))
-      (funcall callback uri)
-    (let* ((pub (lsp-dart-project-get-pub-command))
-           (proc (start-process "Start DevTools"
-                                lsp-dart-dap--devtools-buffer-name
-                                pub "global" "run" "devtools"
-                                "--machine"
-                                "--enable-notifications"
-                                "--try-ports" "10")))
-      (add-hook 'dap-terminated-hook (-partial #'lsp-dart-dap--kill-devtools-proc proc))
-      (when lsp-dart-dap--check-devtools-uri-timer
-        (cancel-timer lsp-dart-dap--check-devtools-uri-timer))
-      (setq lsp-dart-dap--check-devtools-uri-timer
-            (run-with-idle-timer 0.3 nil #'lsp-dart-dap--check-devtools-uri callback)))))))
-
-(defun lsp-dart-dap--open-devtools (uri vm-service-uri)
-  "Open DevTools URI with VM-SERVICE-URI param at browser."
-  (let* ((params (url-build-query-string `((ide Emacs)
-                                           (uri ,vm-service-uri)
-                                           (hide ,lsp-dart-dap-devtools-hide-options)
-                                           (theme ,lsp-dart-dap-devtools-theme))))
-         (url (concat "http://" uri "?" params)))
-    (browse-url url)))
-
-
-;;; Public interface
-
-;;;###autoload
-(defun lsp-dart-dap-open-devtools ()
-  "Open Dart DevTools for the current debug session."
-  (interactive)
-  (let ((session (dap--cur-session))
-        (vm-service-uri (lsp-workspace-get-metadata "dart-debug-vm-service-uri")))
-    (when (and session vm-service-uri)
-      (lsp-dart-dap--start-devtools
-       (lambda (uri)
-         (lsp-dart-dap-log "Openning DevTools at browser...")
-         (lsp-dart-dap--open-devtools uri vm-service-uri))))))
+  "Ignore this event.")
 
 (provide 'lsp-dart-dap)
 ;;; lsp-dart-dap.el ends here
