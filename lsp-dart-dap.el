@@ -145,37 +145,53 @@ Required to support 'Inspect Widget'."
 
 ;; Flutter
 
-(defun lsp-dart-dap--flutter-get-or-create-device ()
-  "Return the device to debug or prompt to start it."
-  (-let* ((devices (lsp-dart-flutter-daemon-get-emulators))
-          (chosen-device (dap--completing-read "Select a device to use: "
-                                               devices
-                                               (-lambda ((&hash "id" "name" "category" "platformType" platform))
-                                                 (format "%s - %s" platform (if name name id)))
-                                               nil
-                                               t))
-          (emulator (lsp-dart-flutter-daemon-launch chosen-device)))
-    (ht ('id "emulator-5554")
-        ('name "device"))
-    ))
+(declare-function all-the-icons-faicon "ext:all-the-icons")
+
+(defun lsp-dart-dap--device-label (id name platform)
+  "Return a friendly label for device with ID, NAME and PLATFORM.
+Check for icons if supports it."
+  (let* ((device-name (if name name id))
+         (default (concat platform " - " device-name)))
+    (if (featurep 'all-the-icons)
+        (pcase platform
+          ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green) " " device-name))
+          ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver) " " device-name))
+          (_ default))
+      default)))
+
+(defun lsp-dart-dap--flutter-get-or-create-device (callback)
+  "Return the device to debug or prompt to start it.
+Call CALLBACK when the device is chosen and started successfully."
+  (lsp-dart-flutter-daemon-get-emulators
+   (lambda (devices)
+     (-let* ((chosen-device (dap--completing-read "Select a device to use: "
+                                                  devices
+                                                  (-lambda ((&hash "id" "name" "platformType" platform))
+                                                    (lsp-dart-dap--device-label id name platform))
+                                                  nil
+                                                  t)))
+       (lsp-dart-flutter-daemon-launch chosen-device callback)))))
 
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
-  (-let* ((root (lsp-dart-project-get-root))
-          ((&hash "id" device-id "name" device-name) (lsp-dart-dap--flutter-get-or-create-device)))
-    (-> conf
-        (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
-        (dap--put-if-absent :cwd root)
-        (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
-        (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
-        (dap--put-if-absent :flutterPath (lsp-dart-project-get-flutter-path))
-        (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
-        (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
-        (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
-        (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-        (dap--put-if-absent :deviceId device-id)
-        (dap--put-if-absent :deviceName device-name)
-        (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))
+  (let ((pre-conf (-> conf
+                      (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
+                      (dap--put-if-absent :cwd (lsp-dart-project-get-root))
+                      (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
+                      (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
+                      (dap--put-if-absent :flutterPath (lsp-dart-project-get-flutter-path))
+                      (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
+                      (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
+                      (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
+                      (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries))))
+    (lambda (start-debugging-callback)
+      (lsp-dart-dap--flutter-get-or-create-device
+       (-lambda ((&hash "id" device-id "name" device-name))
+         (funcall start-debugging-callback
+                  (-> pre-conf
+                      (dap--put-if-absent :deviceId device-id)
+                      (dap--put-if-absent :deviceName device-name)
+                      (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
 (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
 (dap-register-debug-template "Flutter :: Debug"
@@ -186,6 +202,21 @@ Required to support 'Inspect Widget'."
                                    :name "Flutter"))
 
 (defvar lsp-dart-dap--flutter-progress-reporter nil)
+(defvar lsp-dart-dap--flutter-progress-reporter-timer nil)
+
+(defun lsp-dart-dap--flutter-progress-timer-cancel (_debug-session)
+  "Cancel the Flutter progress timer for DEBUG-SESSION."
+  (setq lsp-dart-dap--flutter-progress-reporter nil)
+  (setq lsp-dart-dap--flutter-progress-reporter-timer nil)
+  (when lsp-dart-dap--flutter-progress-reporter-timer
+    (cancel-timer lsp-dart-dap--flutter-progress-reporter-timer))
+
+  (add-hook 'dap-terminated-hook #'lsp-dart-dap--flutter-progress-timer-cancel)
+
+  (defun lsp-dart-dap--flutter-progress-update ()
+    "Update the flutter progress reporter."
+    (when lsp-dart-dap--flutter-progress-reporter
+      (progress-reporter-update lsp-dart-dap--flutter-progress-reporter))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -201,7 +232,9 @@ Required to support 'Inspect Widget'."
                          (propertize "[DAP] "
                                      'face 'font-lock-function-name-face))))
     (setq lsp-dart-dap--flutter-progress-reporter
-          (make-progress-reporter (concat prefix (gethash "message" params))))))
+          (make-progress-reporter (concat prefix (gethash "message" params))))
+    (setq lsp-dart-dap--flutter-progress-reporter-timer
+          (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-progress-update))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.launched)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -221,7 +254,7 @@ Required to support 'Inspect Widget'."
 
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.firstFrame)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (setq lsp-dart-dap--flutter-progress-reporter nil)
+  (lsp-dart-dap--flutter-progress-timer-cancel (dap--cur-session))
   (lsp-dart-dap-log "App ready!"))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
