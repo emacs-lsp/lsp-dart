@@ -24,7 +24,6 @@ An example with a minimal configuration to start using `lsp-dart`:
 ;; Optional packages
 (use-package lsp-ui :ensure t)
 (use-package company-capf :ensure t)
-
 ```
 
 ## Features
@@ -75,16 +74,22 @@ You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
 
 ### Debug
 
-For emacs debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart) to debug.
-You only need to run `dap-dart-setup` one time to setup the debugger.
+For debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart).
+You only need to run `dap-dart-setup` one time to setup the debugger to your Emacs and `dap-debug` to start the debug.
 
 ![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
+
+#### Flutter
+
+`lsp-dart` support Flutter debugging too via `dap-debug` with an option to select the device to debug.
+
+![flutter-debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-debug.gif)
 
 #### DevTools
 
 You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.
 
-##### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
+###### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
 
 ## Supported settings
 
@@ -105,7 +110,13 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 * `lsp-dart-test-code-lens` - Enable the `Run` code lens on tests. Defaults to t.
 * `lsp-dart-dap-extension-version` - The debugger extension version. Defaults to [3.9.1](https://github.com/Dart-Code/Dart-Code/releases/tag/v3.9.1)
 * `lsp-dart-dap-debugger-path` - The debugger extension path.
-* `lsp-dart-dap-debugger-program` - The command to execute the debugger extension.
+* `lsp-dart-dap-dart-debugger-program` - The command to execute the debugger extension on dart projects.
+* `lsp-dart-dap-flutter-debugger-program` - The command to execute the debugger extension on flutter projects.
+* `lsp-dart-dap-debug-external-libraries` - Whether to enable the debug on external libraries. Defaults to nil.
+* `lsp-dart-dap-debug-sdk-libraries` - Whether to enable the debug on Dart SDK libraries. Defaults to nil.
+* `lsp-dart-dap-flutter-track-widget-creation` - Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.
+* `lsp-dart-dap-flutter-structured-errors` - Whether to pass `–track-widget-creation` to Flutter apps. Required to support 'Inspect Widget'.
+* `lsp-dart-dap-flutter-verbose-log` - Whether to enable verbose logs from Flutter DAP.
 * `lsp-dart-dap-devtools-theme` - The devtools theme when openning via `lsp-dart-dap-open-devtools`.
 * `lsp-dart-dap-devtools-hide-options` - What to hide when openning DevTools via `lsp-dart-dap-open-devtools`. Defaults to `debugger`.
 
