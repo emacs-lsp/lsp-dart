@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="145"
+   height="145"
+   viewBox="0 0 145 144.99999"
+   enable-background="new 0 0 443 138.46"
+   xml:space="preserve"
+   sodipodi:docname="logo.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"><metadata
+   id="metadata40"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs38" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1017"
+   id="namedview36"
+   showgrid="false"
+   inkscape:zoom="1.6568849"
+   inkscape:cx="153.90327"
+   inkscape:cy="69.230003"
+   inkscape:window-x="0"
+   inkscape:window-y="27"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />
+<g
+   id="g33"
+   transform="translate(0,6.5400196)">
+	
+	
+	
+	<g
+   id="g31">
+		<path
+   d="M 31.65,109.5 8.38,86.23 C 5.62,83.4 3.91,79.4 3.91,75.49 3.91,73.68 4.93,70.85 5.7,69.23 L 27.18,24.49 Z"
+   id="path8"
+   inkscape:connector-curvature="0"
+   style="fill:#01579b" />
+		<path
+   d="M 111.3,28.96 88.03,5.69 C 86,3.65 81.77,1.22 78.19,1.22 c -3.08,0 -6.1,0.62 -8.05,1.79 L 27.19,24.49 Z"
+   id="path10"
+   inkscape:connector-curvature="0"
+   style="fill:#40c4ff" />
+		<polygon
+   points="59.39,137.24 115.77,137.24 115.77,113.08 73.71,99.65 35.23,113.08 "
+   id="polygon12"
+   style="fill:#40c4ff" />
+		<path
+   d="m 27.18,96.97 c 0,7.18 0.9,8.94 4.47,12.53 l 3.58,3.58 h 80.54 L 76.4,68.34 27.18,24.49 Z"
+   id="path14"
+   inkscape:connector-curvature="0"
+   style="fill:#29b6f6" />
+		<path
+   d="M 98.77,24.48 H 27.18 l 88.59,88.59 h 24.16 V 57.59 L 111.29,28.95 c -4.02,-4.03 -7.59,-4.47 -12.52,-4.47 z"
+   id="path16"
+   inkscape:connector-curvature="0"
+   style="fill:#01579b" />
+		<path
+   enable-background="new    "
+   d="M 32.55,110.39 C 28.97,106.8 28.08,103.26 28.08,96.97 V 25.38 l -0.89,-0.89 v 72.48 c -0.01,6.29 -0.01,8.03 5.36,13.42 l 2.68,2.68 v 0 z"
+   id="path18"
+   inkscape:connector-curvature="0"
+   style="opacity:0.2;fill:#ffffff" />
+		<polygon
+   enable-background="new    "
+   points="139.93,113.08 139.93,57.59 139.04,56.7 139.04,112.18 114.88,112.18 115.77,113.08 "
+   id="polygon20"
+   style="opacity:0.2;fill:#263238" />
+		<path
+   enable-background="new    "
+   d="m 111.3,28.96 c -4.44,-4.44 -8.07,-4.47 -13.42,-4.47 H 27.19 l 0.89,0.89 h 69.8 c 2.67,0 9.41,-0.45 13.42,3.58 z"
+   id="path22"
+   inkscape:connector-curvature="0"
+   style="opacity:0.2;fill:#ffffff" />
+		
+			<radialGradient
+   id="SVGID_1_"
+   cx="71.915001"
+   cy="62.217098"
+   r="68"
+   gradientTransform="matrix(1,0,0,-1,0,131.4443)"
+   gradientUnits="userSpaceOnUse">
+			<stop
+   offset="0"
+   style="stop-color:#FFFFFF;stop-opacity:0.1"
+   id="stop24" />
+			<stop
+   offset="1"
+   style="stop-color:#FFFFFF;stop-opacity:0"
+   id="stop26" />
+		</radialGradient>
+		<path
+   enable-background="new    "
+   d="M 139.04,56.7 111.3,28.96 88.03,5.69 C 86,3.65 81.77,1.22 78.19,1.22 c -3.08,0 -6.1,0.62 -8.05,1.79 L 27.19,24.49 5.71,69.23 c -0.77,1.63 -1.79,4.46 -1.79,6.26 0,3.91 1.72,7.9 4.47,10.74 l 21.44,21.29 c 0.51,0.63 1.11,1.27 1.82,1.98 l 0.89,0.89 2.68,2.68 23.27,23.27 0.89,0.89 h 55.48 0.89 v -24.16 h 24.16 v -0.06 -55.42 z"
+   id="path29"
+   inkscape:connector-curvature="0"
+   style="opacity:0.2;fill:url(#SVGID_1_)" />
+	</g>
+</g>
+</svg>
