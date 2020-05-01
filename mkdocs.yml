@@ -28,5 +28,6 @@ markdown_extensions:
 plugins:
   - search
   - awesome-pages
+  - git-revision-date-localized
 
 nav:
