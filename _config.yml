@@ -1,4 +1,9 @@
-theme: jekyll-theme-minimal
 title: lsp-dart
 description: Emacs Dart IDE using lsp-mode to connect to Dart Analysis Server.
 logo: https://raw.githubusercontent.com/emacs-lsp/lsp-mode/master/examples/logo.png
+
+theme: just-the-docs
+remote_theme: pmarsceill/just-the-docs
+
+# just-the-docs configs
+color_scheme: "dark"
