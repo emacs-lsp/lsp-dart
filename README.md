@@ -1,6 +1,6 @@
 # lsp-dart
 
-<img align="right" width="64" alt="dart_logo" src="https://user-images.githubusercontent.com/7820865/78992432-9acce080-7b11-11ea-8576-5c7b72e4be5d.png">
+<img align="right" width="64" alt="dart_logo" src="images/logo.svg">
 
 [![MELPA](https://melpa.org/packages/lsp-dart-badge.svg)](https://melpa.org/#/lsp-dart)
 [![MELPA stable](https://stable.melpa.org/packages/lsp-dart-badge.svg)](https://stable.melpa.org/#/lsp-dart)
@@ -9,7 +9,7 @@
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
-<img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development, for more info see [Additional packages](#additional-packages).
+<img width="22" alt="flutter_logo" align="top" src="images/flutter-mini-logo.png"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development, for more info see [Additional packages](#additional-packages).
 
 ## Quickstart
 
@@ -32,7 +32,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ### Closing labels
 
-![closing-labels](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/closing-labels.png)
+![closing-labels](images/closing-labels.png)
 
 ### Tree views
 
@@ -40,11 +40,11 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 **`lsp-dart-show-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
-![outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png)
+![outline](images/outline.png)
 
 **`lsp-dart-show-flutter-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
-![flutter-outline](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif)
+![flutter-outline](images/flutter-outline.gif)
 
 ### Run tests
 
@@ -54,13 +54,13 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 Running a test interactively: 
 
-![test](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif)
+![test](images/run-test.gif)
 
 ### Flutter colors
 
 Display the flutter colors on left fringe.
 
-![flutter-fringe-colors](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-fringe-colors.gif)
+![flutter-fringe-colors](images/flutter-fringe-colors.gif)
 
 You can disable the feature setting `lsp-dart-flutter-fringe-colors` to `nil`.
 
@@ -68,7 +68,7 @@ You can disable the feature setting `lsp-dart-flutter-fringe-colors` to `nil`.
 
 Display widget guide lines from parent to child widgets on flutter. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
 
-![flutter-widget-guides](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-widget-guides.png)
+![flutter-widget-guides](images/flutter-widget-guides.png)
 
 You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
 
@@ -77,13 +77,13 @@ You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
 For debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart).
 You only need to run `dap-dart-setup` one time to setup the debugger to your Emacs and `dap-debug` to start the debug.
 
-![debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif)
+![debug](images/debug.gif)
 
 #### Flutter
 
 `lsp-dart` support Flutter debugging too via `dap-debug` with an option to select the device to debug.
 
-![flutter-debug](https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-debug.gif)
+![flutter-debug](images/flutter-debug.gif)
 
 #### DevTools
 
