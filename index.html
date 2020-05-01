@@ -1,0 +1,632 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.4">
+    
+    
+      
+        <title>lsp-dart</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.c4007cdc.min.css">
+      
+        <link rel="stylesheet" href="assets/stylesheets/palette.8435c73a.min.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#3f51b5">
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lsp-dart" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="." title="lsp-dart" class="md-header-nav__button md-logo" aria-label="lsp-dart">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis md-ellipsis">
+          lsp-dart
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="lsp-dart" class="md-nav__button md-logo" aria-label="lsp-dart">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    lsp-dart
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        lsp-dart
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="." title="lsp-dart" class="md-nav__link md-nav__link--active">
+      lsp-dart
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+    <nav class="md-nav" aria-label="Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#closing-labels" class="md-nav__link">
+    Closing labels
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tree-views" class="md-nav__link">
+    Tree views
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-tests" class="md-nav__link">
+    Run tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-colors" class="md-nav__link">
+    Flutter colors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-widget-guides" class="md-nav__link">
+    Flutter widget guides
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    Debug
+  </a>
+  
+    <nav class="md-nav" aria-label="Debug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flutter" class="md-nav__link">
+    Flutter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devtools" class="md-nav__link">
+    DevTools
+  </a>
+  
+    <nav class="md-nav" aria-label="DevTools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above" class="md-nav__link">
+    :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-settings" class="md-nav__link">
+    Supported settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-packages" class="md-nav__link">
+    Additional packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    FAQ
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community" class="md-nav__link">
+    Community
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+    <nav class="md-nav" aria-label="Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#closing-labels" class="md-nav__link">
+    Closing labels
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tree-views" class="md-nav__link">
+    Tree views
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-tests" class="md-nav__link">
+    Run tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-colors" class="md-nav__link">
+    Flutter colors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flutter-widget-guides" class="md-nav__link">
+    Flutter widget guides
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    Debug
+  </a>
+  
+    <nav class="md-nav" aria-label="Debug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flutter" class="md-nav__link">
+    Flutter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devtools" class="md-nav__link">
+    DevTools
+  </a>
+  
+    <nav class="md-nav" aria-label="DevTools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above" class="md-nav__link">
+    :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-settings" class="md-nav__link">
+    Supported settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-packages" class="md-nav__link">
+    Additional packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    FAQ
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community" class="md-nav__link">
+    Community
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="lsp-dart">lsp-dart</h1>
+<p><img align="right" width="64" alt="dart_logo" src="https://user-images.githubusercontent.com/7820865/78992432-9acce080-7b11-11ea-8576-5c7b72e4be5d.png"></p>
+<p><a href="https://melpa.org/#/lsp-dart"><img alt="MELPA" src="https://melpa.org/packages/lsp-dart-badge.svg" /></a>
+<a href="https://stable.melpa.org/#/lsp-dart"><img alt="MELPA stable" src="https://stable.melpa.org/packages/lsp-dart-badge.svg" /></a>
+<a href="https://github.com/emacs-lsp/lsp-dart/actions"><img alt="CI" src="https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg" /></a> 
+<a href="https://gitter.im/emacs-lsp/lsp-mode"><img alt="Gitter" src="https://badges.gitter.im/emacs-lsp/lsp-mode.svg" /></a></p>
+<p>Emacs Dart IDE using <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> to connect to <a href="https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server">Dart Analysis Server</a>.</p>
+<p><img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p>An example with a minimal configuration to start using <code>lsp-dart</code>:</p>
+<pre><code class="elisp">(use-package lsp-mode :ensure t)
+
+(use-package lsp-dart 
+  :ensure t 
+  :hook (dart-mode . lsp))
+
+;; Optional packages
+(use-package lsp-ui :ensure t)
+(use-package company-capf :ensure t)
+</code></pre>
+
+<h2 id="features">Features</h2>
+<p>Besides the <code>lsp-mode</code> features, <code>lsp-dart</code> implements the <a href="https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods">custom methods features from the <code>dart_analysis_server</code></a>.</p>
+<h3 id="closing-labels">Closing labels</h3>
+<p><img alt="closing-labels" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/closing-labels.png" /></p>
+<h3 id="tree-views">Tree views</h3>
+<p><code>lsp-dart</code> uses <code>lsp-treemacs</code> for rendering some tree views features.</p>
+<p><strong><code>lsp-dart-show-outline</code></strong> <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
+<p><img alt="outline" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png" /></p>
+<p><strong><code>lsp-dart-show-flutter-outline</code></strong> <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
+<p><img alt="flutter-outline" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif" /></p>
+<h3 id="run-tests">Run tests</h3>
+<p><code>lsp-dart-run-test-file</code> - Run all tests from current test buffer.</p>
+<p><code>lsp-dart-run-test-at-point</code> - Run single test at point. <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
+<p>Running a test interactively: </p>
+<p><img alt="test" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif" /></p>
+<h3 id="flutter-colors">Flutter colors</h3>
+<p>Display the flutter colors on left fringe.</p>
+<p><img alt="flutter-fringe-colors" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-fringe-colors.gif" /></p>
+<p>You can disable the feature setting <code>lsp-dart-flutter-fringe-colors</code> to <code>nil</code>.</p>
+<h3 id="flutter-widget-guides">Flutter widget guides</h3>
+<p>Display widget guide lines from parent to child widgets on flutter. <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
+<p><img alt="flutter-widget-guides" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-widget-guides.png" /></p>
+<p>You can disable the feature setting <code>lsp-dart-flutter-widget-guides</code> to <code>nil</code>.</p>
+<h3 id="debug">Debug</h3>
+<p>For debugging, <code>lsp-dart</code> uses <a href="https://github.com/emacs-lsp/dap-mode#dart"><code>dap-mode</code></a>.
+You only need to run <code>dap-dart-setup</code> one time to setup the debugger to your Emacs and <code>dap-debug</code> to start the debug.</p>
+<p><img alt="debug" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif" /></p>
+<h4 id="flutter">Flutter</h4>
+<p><code>lsp-dart</code> support Flutter debugging too via <code>dap-debug</code> with an option to select the device to debug.</p>
+<p><img alt="flutter-debug" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-debug.gif" /></p>
+<h4 id="devtools">DevTools</h4>
+<p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-dap-devtools-open</code>.</p>
+<h6 id="warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above">:warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.</h6>
+<h2 id="supported-settings">Supported settings</h2>
+<ul>
+<li><code>lsp-dart-project-sdk-dir</code> - Install directory for dart-sdk.</li>
+<li><code>lsp-dart-project-flutter-command</code> - The flutter executable path. Defaults to "flutter" that may be in the <code>$PATH</code>.</li>
+<li><code>lsp-dart-server-command</code> - The analysis_server executable to use.</li>
+<li><code>lsp-dart-only-analyze-projects-with-open-files</code> - analysis will only be performed for projects that have open files rather than the root workspace folder.</li>
+<li><code>lsp-dart-suggest-from-unimported-libraries</code> - completion will not include symbols that are not already imported into the current file.</li>
+<li><code>lsp-dart-closing-labels</code> - Enable the closing labels feature on server lsp.</li>
+<li><code>lsp-dart-closing-labels-prefix</code> - The prefix string to be concatenated with the closing label.</li>
+<li><code>lsp-dart-closing-labels-size</code> - The font size factor to be multiplied by the closing labels font size.</li>
+<li><code>lsp-dart-outline</code> - Enable the outline tree view feature on server lsp.</li>
+<li><code>lsp-dart-outline-position-params</code> - The outline tree position params. Defaults to side.</li>
+<li><code>lsp-dart-flutter-outline</code> - Enable the Flutter outline tree view feature on server lsp.</li>
+<li><code>lsp-dart-flutter-outline-position-params</code> - The Flutter outline tree position params. Defaults to side.</li>
+<li><code>lsp-dart-flutter-fringe-colors</code> - Enable the Flutter colors on fringe. Defaults to t.</li>
+<li><code>lsp-dart-flutter-widget-guides</code> - Enable the Flutter widget guide lines from parent to child widgets. Defaults to t.</li>
+<li><code>lsp-dart-test-code-lens</code> - Enable the <code>Run</code> code lens on tests. Defaults to t.</li>
+<li><code>lsp-dart-dap-extension-version</code> - The debugger extension version. Defaults to <a href="https://github.com/Dart-Code/Dart-Code/releases/tag/v3.9.1">3.9.1</a></li>
+<li><code>lsp-dart-dap-debugger-path</code> - The debugger extension path.</li>
+<li><code>lsp-dart-dap-dart-debugger-program</code> - The command to execute the debugger extension on dart projects.</li>
+<li><code>lsp-dart-dap-flutter-debugger-program</code> - The command to execute the debugger extension on flutter projects.</li>
+<li><code>lsp-dart-dap-debug-external-libraries</code> - Whether to enable the debug on external libraries. Defaults to nil.</li>
+<li><code>lsp-dart-dap-debug-sdk-libraries</code> - Whether to enable the debug on Dart SDK libraries. Defaults to nil.</li>
+<li><code>lsp-dart-dap-flutter-track-widget-creation</code> - Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.</li>
+<li><code>lsp-dart-dap-flutter-structured-errors</code> - Whether to pass <code>–track-widget-creation</code> to Flutter apps. Required to support 'Inspect Widget'.</li>
+<li><code>lsp-dart-dap-flutter-verbose-log</code> - Whether to enable verbose logs from Flutter DAP.</li>
+<li><code>lsp-dart-dap-devtools-theme</code> - The devtools theme when openning via <code>lsp-dart-dap-open-devtools</code>.</li>
+<li><code>lsp-dart-dap-devtools-hide-options</code> - What to hide when openning DevTools via <code>lsp-dart-dap-open-devtools</code>. Defaults to <code>debugger</code>.</li>
+</ul>
+<h2 id="additional-packages">Additional packages</h2>
+<ul>
+<li><a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> : Flycheck, documentation and code actions support.</li>
+<li><a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a> : <code>lsp-mode</code> GUI controls implemented using treemacs.</li>
+<li><a href="https://github.com/company-mode/company-mode">company-capf</a> : Completion backend support.</li>
+<li><a href="https://github.com/amake/flutter.el">flutter.el</a> : Tool to run emulator from emacs.</li>
+<li><a href="https://github.com/ericdallo/hover.el">hover.el</a> : Tool to run flutter mobile apps from desktop without the need of an emulator.</li>
+</ul>
+<h2 id="faq">FAQ</h2>
+<p>:grey_question: Emacs can't find my package, it keeps searching up until the dart root package folder.</p>
+<p>:small_blue_diamond: Configure projectile to find the package pubspec.yaml and set the folder as project root:</p>
+<pre><code class="elisp">(with-eval-after-load 'projectile
+  (add-to-list 'projectile-project-root-files-bottom-up &quot;pubspec.yaml&quot;)
+  (add-to-list 'projectile-project-root-files-bottom-up &quot;BUILD&quot;))
+</code></pre>
+
+<p>:grey_question: <code>LSP :: No LSP server for dart-mode(check *lsp-log*).</code></p>
+<p>:small_blue_diamond: Try to set the <code>lsp-dart-project-sdk-dir</code> to the Dart SDK dir instalation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
+<h2 id="community">Community</h2>
+<p>All feedback and suggestions are welcome!</p>
+<p>You can <a href="https://github.com/emacs-lsp/lsp-dart/issues/new/choose">open a issue</a> or for a quick anwser, send a message on <a href="https://gitter.im/emacs-lsp/lsp-mode">Gitter</a>.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/vendor.83fe6e3c.min.js"></script>
+      <script src="assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: ".",
+          features: [],
+          search: Object.assign({
+            worker: "assets/javascripts/worker/search.37585f48.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
