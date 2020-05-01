@@ -1,7 +1,32 @@
-site_name: lsp-dart
+site_name: LSP Dart
+
+extra_css:
+  - stylesheets/extra.css
 
 theme:
   name: material
-  palette:
-    primary: indigo
-    accent: indigo
+  logo: images/logo.svg
+  favicon: images/logo.svg
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/emacs-lsp
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/yonchovski
+
+repo_name: emacs-lsp/lsp-dart
+repo_url: https://github.com/emacs-lsp/lsp-dart
+
+markdown_extensions:
+  - codehilite
+  - toc:
+      permalink: '#'
+
+plugins:
+  - search
+  - awesome-pages
+
+nav:

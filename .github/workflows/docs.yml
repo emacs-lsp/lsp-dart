@@ -14,8 +14,8 @@ jobs:
 
       - name: MkDocs
         run: |
-          mkdir -p docs
           cp README.md docs/README.md
+          cp -rf images docs
           docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
 
       - name: Deploy
