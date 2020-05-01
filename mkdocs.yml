@@ -1,0 +1,7 @@
+site_name: lsp-dart
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
