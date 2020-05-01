@@ -521,13 +521,13 @@
                 
                 
                 <h1 id="lsp-dart">lsp-dart<a class="headerlink" href="#lsp-dart" title="Permanent link">#</a></h1>
-<p><img align="right" width="64" alt="dart_logo" src="https://user-images.githubusercontent.com/7820865/78992432-9acce080-7b11-11ea-8576-5c7b72e4be5d.png"></p>
+<p><img align="right" width="64" alt="dart_logo" src="images/logo.svg"></p>
 <p><a href="https://melpa.org/#/lsp-dart"><img alt="MELPA" src="https://melpa.org/packages/lsp-dart-badge.svg" /></a>
 <a href="https://stable.melpa.org/#/lsp-dart"><img alt="MELPA stable" src="https://stable.melpa.org/packages/lsp-dart-badge.svg" /></a>
 <a href="https://github.com/emacs-lsp/lsp-dart/actions"><img alt="CI" src="https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg" /></a> 
 <a href="https://gitter.im/emacs-lsp/lsp-mode"><img alt="Gitter" src="https://badges.gitter.im/emacs-lsp/lsp-mode.svg" /></a></p>
 <p>Emacs Dart IDE using <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> to connect to <a href="https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server">Dart Analysis Server</a>.</p>
-<p><img width="22" alt="flutter_logo" align="top" src="https://user-images.githubusercontent.com/7820865/78991346-1aa57b80-7b0f-11ea-9992-25cd1a9ac974.png"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
+<p><img width="22" alt="flutter_logo" align="top" src="images/flutter-mini-logo.png"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">#</a></h2>
 <p>An example with a minimal configuration to start using <code>lsp-dart</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
@@ -545,33 +545,33 @@
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
 <p>Besides the <code>lsp-mode</code> features, <code>lsp-dart</code> implements the <a href="https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods">custom methods features from the <code>dart_analysis_server</code></a>.</p>
 <h3 id="closing-labels">Closing labels<a class="headerlink" href="#closing-labels" title="Permanent link">#</a></h3>
-<p><img alt="closing-labels" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/closing-labels.png" /></p>
+<p><img alt="closing-labels" src="images/closing-labels.png" /></p>
 <h3 id="tree-views">Tree views<a class="headerlink" href="#tree-views" title="Permanent link">#</a></h3>
 <p><code>lsp-dart</code> uses <code>lsp-treemacs</code> for rendering some tree views features.</p>
 <p><strong><code>lsp-dart-show-outline</code></strong> <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
-<p><img alt="outline" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/outline.png" /></p>
+<p><img alt="outline" src="images/outline.png" /></p>
 <p><strong><code>lsp-dart-show-flutter-outline</code></strong> <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
-<p><img alt="flutter-outline" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-outline.gif" /></p>
+<p><img alt="flutter-outline" src="images/flutter-outline.gif" /></p>
 <h3 id="run-tests">Run tests<a class="headerlink" href="#run-tests" title="Permanent link">#</a></h3>
 <p><code>lsp-dart-run-test-file</code> - Run all tests from current test buffer.</p>
 <p><code>lsp-dart-run-test-at-point</code> - Run single test at point. <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
 <p>Running a test interactively: </p>
-<p><img alt="test" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/run-test.gif" /></p>
+<p><img alt="test" src="images/run-test.gif" /></p>
 <h3 id="flutter-colors">Flutter colors<a class="headerlink" href="#flutter-colors" title="Permanent link">#</a></h3>
 <p>Display the flutter colors on left fringe.</p>
-<p><img alt="flutter-fringe-colors" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-fringe-colors.gif" /></p>
+<p><img alt="flutter-fringe-colors" src="images/flutter-fringe-colors.gif" /></p>
 <p>You can disable the feature setting <code>lsp-dart-flutter-fringe-colors</code> to <code>nil</code>.</p>
 <h3 id="flutter-widget-guides">Flutter widget guides<a class="headerlink" href="#flutter-widget-guides" title="Permanent link">#</a></h3>
 <p>Display widget guide lines from parent to child widgets on flutter. <a href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above">:warning:*</a></p>
-<p><img alt="flutter-widget-guides" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-widget-guides.png" /></p>
+<p><img alt="flutter-widget-guides" src="images/flutter-widget-guides.png" /></p>
 <p>You can disable the feature setting <code>lsp-dart-flutter-widget-guides</code> to <code>nil</code>.</p>
 <h3 id="debug">Debug<a class="headerlink" href="#debug" title="Permanent link">#</a></h3>
 <p>For debugging, <code>lsp-dart</code> uses <a href="https://github.com/emacs-lsp/dap-mode#dart"><code>dap-mode</code></a>.
 You only need to run <code>dap-dart-setup</code> one time to setup the debugger to your Emacs and <code>dap-debug</code> to start the debug.</p>
-<p><img alt="debug" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/debug.gif" /></p>
+<p><img alt="debug" src="images/debug.gif" /></p>
 <h4 id="flutter">Flutter<a class="headerlink" href="#flutter" title="Permanent link">#</a></h4>
 <p><code>lsp-dart</code> support Flutter debugging too via <code>dap-debug</code> with an option to select the device to debug.</p>
-<p><img alt="flutter-debug" src="https://raw.githubusercontent.com/emacs-lsp/lsp-dart/screenshots/flutter-debug.gif" /></p>
+<p><img alt="flutter-debug" src="images/flutter-debug.gif" /></p>
 <h4 id="devtools">DevTools<a class="headerlink" href="#devtools" title="Permanent link">#</a></h4>
 <p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-dap-devtools-open</code>.</p>
 <h6 id="warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above">:warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.<a class="headerlink" href="#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above" title="Permanent link">#</a></h6>
