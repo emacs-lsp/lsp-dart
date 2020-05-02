@@ -39,11 +39,11 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart` uses `lsp-treemacs` for rendering some tree views features.
 
-**`lsp-dart-show-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+**`lsp-dart-show-outline`** [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
 
 ![outline](images/outline.png)
 
-**`lsp-dart-show-flutter-outline`** [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+**`lsp-dart-show-flutter-outline`** [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
 
 ![flutter-outline](images/flutter-outline.gif)
 
@@ -51,7 +51,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-run-test-file` - Run all tests from current test buffer.
 
-`lsp-dart-run-test-at-point` - Run single test at point. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+`lsp-dart-run-test-at-point` - Run single test at point. [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
 
 Running a test interactively: 
 
@@ -67,7 +67,7 @@ You can disable the feature setting `lsp-dart-flutter-fringe-colors` to `nil`.
 
 ### Flutter widget guides
 
-Display widget guide lines from parent to child widgets on flutter. [:warning:*](#warning-features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-and-above)
+Display widget guide lines from parent to child widgets on flutter. [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
 
 ![flutter-widget-guides](images/flutter-widget-guides.png)
 
