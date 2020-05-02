@@ -16,6 +16,8 @@ extra:
       link: https://github.com/emacs-lsp
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/yonchovski
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/emacs-lsp/lsp-mode
 
 repo_name: emacs-lsp/lsp-dart
 repo_url: https://github.com/emacs-lsp/lsp-dart
@@ -32,5 +34,3 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
-
-nav:
