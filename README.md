@@ -1,4 +1,5 @@
-# lsp-dart
+lsp-dart
+=========
 
 <img align="right" width="64" alt="dart_logo" src="images/logo.svg">
 
