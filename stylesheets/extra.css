@@ -5,6 +5,10 @@
   --md-default-fg-color--light: #2E589B;
 }
 
+.md-grid {
+  max-width: 70rem;
+}
+
 .md-typeset a {
     color: #2E589B;
 }
