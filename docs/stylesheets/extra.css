@@ -1,6 +1,7 @@
 :root {
   --md-primary-fg-color: #1C2834;
   --md-accent-fg-color: #55B6F6;
+  --md-default-fg-color--light: #2E589B;
 }
 
 .md-typeset a {
