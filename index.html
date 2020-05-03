@@ -529,8 +529,8 @@
 <p>Emacs Dart IDE using <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> to connect to <a href="https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server">Dart Analysis Server</a>.</p>
 <p><img width="22" alt="flutter_logo" align="top" src="images/flutter-mini-logo.png"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">#</a></h2>
-<p>An example with a minimal configuration to start using <code>lsp-dart</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
+<p>An example with a minimal configuration to start using <code>lsp-dart</code>:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
 
 <span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span> 
   <span class="nb">:ensure</span> <span class="no">t</span> 
@@ -539,9 +539,7 @@
 <span class="c1">;; Optional packages</span>
 <span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ui</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">use-package</span> <span class="nv">company-capf</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
-</code></pre></div>
-
-
+</code></pre></div></p>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
 <p>Besides the <code>lsp-mode</code> features, <code>lsp-dart</code> implements the <a href="https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods">custom methods features from the <code>dart_analysis_server</code></a>.</p>
 <h3 id="closing-labels">Closing labels<a class="headerlink" href="#closing-labels" title="Permanent link">#</a></h3>
@@ -727,13 +725,11 @@ You only need to run <code>dap-dart-setup</code> one time to setup the debugger 
 </ul>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
 <p><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> Emacs can't find my package, it keeps searching up until the dart root package folder.</p>
-<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Configure projectile to find the package pubspec.yaml and set the folder as project root:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;projectile</span>
+<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Configure projectile to find the package pubspec.yaml and set the folder as project root:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;projectile</span>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;projectile-project-root-files-bottom-up</span> <span class="s">&quot;pubspec.yaml&quot;</span><span class="p">)</span>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;projectile-project-root-files-bottom-up</span> <span class="s">&quot;BUILD&quot;</span><span class="p">))</span>
-</code></pre></div>
-
-
+</code></pre></div></p>
 <p><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> <code>LSP :: No LSP server for dart-mode(check *lsp-log*).</code></p>
 <p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Try to set the <code>lsp-dart-project-sdk-dir</code> to the Dart SDK dir instalation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
 <h2 id="community">Community<a class="headerlink" href="#community" title="Permanent link">#</a></h2>
@@ -747,7 +743,7 @@ You only need to run <code>dap-dart-setup</code> one time to setup the debugger 
 <div class="md-source-date">
   <small>
     
-      Last update: May 2, 2020
+      Last update: May 3, 2020
     
   </small>
 </div>
