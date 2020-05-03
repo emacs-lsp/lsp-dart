@@ -23,6 +23,7 @@ repo_name: emacs-lsp/lsp-dart
 repo_url: https://github.com/emacs-lsp/lsp-dart
 
 markdown_extensions:
+  - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
