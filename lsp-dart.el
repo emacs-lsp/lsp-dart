@@ -159,12 +159,10 @@ The key is composed of the KEY-PREFIX with PARAMS uri path."
 
 (defun lsp-dart-library-folders ()
   "Return the library folders path to analyze."
-  (let* ((sdk-lib (expand-file-name "lib" (lsp-dart-project-get-sdk-dir)))
-         (dirs (lsp--directory-files-recursively sdk-lib ".dart")))
-    (--> dirs
-         (-map #'file-name-directory it)
-         (remove-duplicates it :test 'string=)
-         (append it lsp-dart-extra-library-directories))))
+  (let ((sdk-lib (expand-file-name "lib" (lsp-dart-project-get-sdk-dir))))
+    (if (string-prefix-p sdk-lib (buffer-file-name))
+        (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
+      lsp-dart-extra-library-directories)))
 
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.

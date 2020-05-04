@@ -99,6 +99,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-project-sdk-dir`                       | Install directory for dart-sdk                                                                          | `$PATH`                               |
 | `lsp-dart-project-flutter-command`               | The flutter executable path                                                                             | "flutter" that may be in the `$PATH`. |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file                     |
+| `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`                                 |
 | `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder | `t`                                   |
 | `lsp-dart-suggest-from-unimported-libraries`     | Completion will not include symbols that are not already imported into the current file.                | `t`                                   |
 | `lsp-dart-closing-labels`                        | Enable the closing labels feature on server lsp                                                         | `t`                                   |
