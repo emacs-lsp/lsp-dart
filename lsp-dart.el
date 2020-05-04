@@ -47,6 +47,12 @@
   :type '(repeat string)
   :group 'lsp-dart)
 
+(defcustom lsp-dart-extra-library-directories '()
+  "List of directories which will be considered to be libraries."
+  :risky t
+  :type '(repeat string)
+  :group 'lsp-dart)
+
 (defcustom lsp-dart-only-analyze-projects-with-open-files t
   "Analyze only open files.
 When set to non-nil, analysis will only be performed for projects that have
@@ -150,6 +156,15 @@ The key is composed of the KEY-PREFIX with PARAMS uri path."
   "Return the metadata saved in current workspace of BUFFER for KEY-PREFIX."
   (let ((key (concat key-prefix "--" (buffer-file-name buffer))))
     (lsp-workspace-get-metadata key (lsp-find-workspace 'lsp-find-workspace))))
+
+(defun lsp-dart-library-folders ()
+  "Return the library folders path to analyze."
+  (let* ((sdk-lib (expand-file-name "lib" (lsp-dart-project-get-sdk-dir)))
+         (dirs (lsp--directory-files-recursively sdk-lib ".dart")))
+    (--> dirs
+         (-map #'file-name-directory it)
+         (remove-duplicates it :test 'string=)
+         (append it lsp-dart-extra-library-directories))))
 
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.
@@ -352,6 +367,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
                     (closingLabels . ,lsp-dart-closing-labels)
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
+                  :library-folders-fn (lambda (_workspace) (lsp-dart-library-folders))
                   :notification-handlers (ht ("dart/textDocument/publishClosingLabels" 'lsp-dart--handle-closing-labels)
                                              ("dart/textDocument/publishOutline" 'lsp-dart--handle-outline)
                                              ("dart/textDocument/publishFlutterOutline" 'lsp-dart--handle-flutter-outline))
