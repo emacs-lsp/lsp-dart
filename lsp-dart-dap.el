@@ -182,7 +182,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
-;; (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
+(dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
 (dap-register-debug-template "Flutter :: Debug"
                              (list :type "flutter"))
 
