@@ -161,10 +161,8 @@ Call CALLBACK when the device is chosen and started successfully."
   "Populate CONF with the required arguments for Flutter debug."
   (let ((pre-conf (-> conf
                       (dap--put-if-absent :type "flutter")
-                      (dap--put-if-absent :name "Flutter")
                       (dap--put-if-absent :request "launch")
                       (dap--put-if-absent :flutterMode "debug")
-                      (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
                       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
                       (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
@@ -181,9 +179,10 @@ Call CALLBACK when the device is chosen and started successfully."
                   (-> pre-conf
                       (dap--put-if-absent :deviceId device-id)
                       (dap--put-if-absent :deviceName device-name)
+                      (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
-(dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
+;; (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
 (dap-register-debug-template "Flutter :: Debug"
                              (list :type "flutter"))
 

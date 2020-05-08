@@ -39,6 +39,11 @@ in the PATH env."
   :group 'lsp-dart
   :type 'string)
 
+(defcustom lsp-dart-project-use-dart-sdk-from-flutter t
+  "If Flutter SDK exists, whether to use Dart SDK from Flutter SDK."
+  :group 'lsp-dart
+  :type 'bool)
+
 (defun lsp-dart-project-get-flutter-path ()
   "Return the Flutter SDK path."
   (-> lsp-dart-project-flutter-command
@@ -50,13 +55,16 @@ in the PATH env."
 Check for `lsp-dart-project-sdk-dir` otherwise search for dart executable or
 flutter cache dir."
   (or lsp-dart-project-sdk-dir
-      (-when-let (dart (or (executable-find "dart")
-                           (-when-let (flutter (lsp-dart-project-get-flutter-path))
-                             (expand-file-name "cache/dart-sdk/bin/dart"
-                                               (file-name-directory flutter)))))
+      (-when-let (dart (if lsp-dart-project-use-dart-sdk-from-flutter
+                           (or (-when-let (flutter (lsp-dart-project-get-flutter-path))
+                                 (expand-file-name "cache/dart-sdk/bin/dart"
+                                                   (file-name-directory flutter)))
+                               (executable-find "dart"))
+                         (executable-find "dart")))
         (-> dart
             file-truename
-            (locate-dominating-file "bin")))))
+            (locate-dominating-file "bin")
+            file-truename))))
 
 (defun lsp-dart-project-get-pub-command ()
   "Return the pub executable path from dart SDK path."
