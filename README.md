@@ -161,6 +161,6 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 :small_blue_diamond: Try to set the `lsp-dart-project-sdk-dir` to the Dart SDK dir instalation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
 
 ## Community
-All feedback and suggestions are welcome!
+All feedback and suggestions are very welcome!
 
 You can [open a issue](https://github.com/emacs-lsp/lsp-dart/issues/new/choose) or for a quick anwser, send a message on [Gitter](https://gitter.im/emacs-lsp/lsp-mode).
