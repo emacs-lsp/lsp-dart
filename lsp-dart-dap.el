@@ -257,5 +257,19 @@ Call CALLBACK when the device is chosen and started successfully."
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
   "Ignore this event.")
 
+;;;###autoload
+(defun lsp-dart-dap-flutter-hot-restart ()
+  "Hot restart current Flutter debug session."
+  (interactive)
+  (seq-doseq (debug-session (dap--get-sessions))
+    (dap-request debug-session "hotRestart")))
+
+;;;###autoload
+(defun lsp-dart-dap-flutter-hot-reload ()
+  "Hot reload current Flutter debug session."
+  (interactive)
+  (seq-doseq (debug-session (dap--get-sessions))
+    (dap-request debug-session "hotReload")))
+
 (provide 'lsp-dart-dap)
 ;;; lsp-dart-dap.el ends here

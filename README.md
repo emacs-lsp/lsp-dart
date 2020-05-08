@@ -86,6 +86,11 @@ You only need to run `dap-dart-setup` one time to setup the debugger to your Ema
 
 ![flutter-debug](images/flutter-debug.gif)
 
+After the debug session has started, you can run:
+
+`lsp-dart-flutter-hot-restart` - Trigger Flutter hot restart on the debug sessions.
+`lsp-dart-flutter-hot-reload` - Trigger Flutter hot reload on the debug sessions.
+
 #### Custom templates
 
 You can register a custom template for debugging with `dap-register-debug-template`, check the following example:
@@ -111,6 +116,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | Variable                                         | Description                                                                                             | Default                               |
 |:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------|
 | `lsp-dart-project-sdk-dir`                       | Install directory for dart-sdk                                                                          | `$PATH`                               |
+| `lsp-dart-project-use-dart-sdk-from-flutter`     | Wheter to use the Dart SDK from the flutter installation of the  `lsp-dart-project-flutter-command`     | `t`                                   |
 | `lsp-dart-project-flutter-command`               | The flutter executable path                                                                             | "flutter" that may be in the `$PATH`. |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file                     |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`                                 |
