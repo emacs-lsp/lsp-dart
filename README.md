@@ -104,7 +104,7 @@ You can register a custom template for debugging with `dap-register-debug-templa
 
 You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.
 
-###### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
+###### :warning:* Features only available for Dart SDK version 2.8.0 or above.
 
 ## Supported settings
 
