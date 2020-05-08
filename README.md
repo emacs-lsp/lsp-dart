@@ -105,7 +105,7 @@ Both `:program` and `:args` are optional.
 A full list of supported parameters can be found in the source of
 the function `lsp-dart-dap--populate-flutter-start-file-args` in
 `lsp-dart-dap.el`. Several of these parameters can be configured by
-setting one of the [Supported settings](#Supported-settings) with
+setting one of the [Supported settings](#supported-settings) with
 matching names.
 
 #### DevTools
