@@ -86,6 +86,20 @@ You only need to run `dap-dart-setup` one time to setup the debugger to your Ema
 
 ![flutter-debug](images/flutter-debug.gif)
 
+#### Custom templates
+
+You can register a custom template for debugging with `dap-register-debug-template`, check the following example:
+
+```elisp
+(use-package lsp-dart 
+  :ensure t 
+  :hook (dart-mode . lsp)
+  :init
+  (dap-register-debug-template "Flutter :: Custom debug"
+                               (list :flutterPlatform "x86_64"
+                                     :args '("--flavor" "staging"))))
+```
+
 #### DevTools
 
 You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.

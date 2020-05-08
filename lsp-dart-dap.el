@@ -114,6 +114,9 @@ Required to support 'Inspect Widget'."
 (defun lsp-dart-dap--populate-dart-start-file-args (conf)
   "Populate CONF with the required arguments for dart debug."
   (-> conf
+      (dap--put-if-absent :type "dart")
+      (dap--put-if-absent :name "Dart")
+      (dap--put-if-absent :request "launch")
       (dap--put-if-absent :dap-server-path lsp-dart-dap-dart-debugger-program)
       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
       (dap--put-if-absent :program (buffer-file-name))
@@ -123,9 +126,7 @@ Required to support 'Inspect Widget'."
 
 (dap-register-debug-provider "dart" 'lsp-dart-dap--populate-dart-start-file-args)
 (dap-register-debug-template "Dart :: Debug"
-                             (list :type "dart"
-                                   :request "launch"
-                                   :name "Dart"))
+                             (list :type "dart"))
 
 ;; Flutter
 
@@ -159,6 +160,11 @@ Call CALLBACK when the device is chosen and started successfully."
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
   (let ((pre-conf (-> conf
+                      (dap--put-if-absent :type "flutter")
+                      (dap--put-if-absent :name "Flutter")
+                      (dap--put-if-absent :request "launch")
+                      (dap--put-if-absent :flutterMode "debug")
+                      (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
                       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
                       (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
@@ -179,11 +185,7 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
 (dap-register-debug-template "Flutter :: Debug"
-                             (list :type "flutter"
-                                   :request "launch"
-                                   :flutterMode "debug"
-                                   :flutterPlatform "default"
-                                   :name "Flutter"))
+                             (list :type "flutter"))
 
 (defvar lsp-dart-dap--flutter-progress-reporter nil)
 (defvar lsp-dart-dap--flutter-progress-reporter-timer nil)
