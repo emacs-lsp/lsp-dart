@@ -140,7 +140,7 @@ Defaults to side following treemacs default."
 
 (defun lsp-dart--assert-sdk-min-version (version)
   "Assert dart sdk min version is VERSION."
-  (cl-assert (version<= version (lsp-dart--get-dart-version))
+  (cl-assert (string< version (lsp-dart--get-dart-version))
              t
              "Feature not supported before dart SDK %s"))
 
