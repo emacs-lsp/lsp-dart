@@ -32,7 +32,7 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-dap-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.9.1"
+(defcustom lsp-dart-dap-extension-version "3.10.1"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
