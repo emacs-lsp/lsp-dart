@@ -114,14 +114,22 @@ After the debug session has started, you can run:
 You can register a custom template for debugging with `dap-register-debug-template`, check the following example:
 
 ```elisp
-(use-package lsp-dart 
-  :ensure t 
+(use-package lsp-dart
+  :ensure t
   :hook (dart-mode . lsp)
   :init
   (dap-register-debug-template "Flutter :: Custom debug"
                                (list :flutterPlatform "x86_64"
-                                     :args '("--flavor" "staging"))))
+                                     :program "lib/main_debug.dart"
+                                     :args '("--flavor" "customer_a"))))
 ```
+`flutterPlatform`,`:program`, and `:args` are all optional.
+
+A full list of supported parameters can be found in the source of
+the function `lsp-dart-dap--populate-flutter-start-file-args` in
+`lsp-dart-dap.el`. Several of these parameters can be configured by
+setting one of the [Supported settings](#supported-settings) with
+matching names.
 
 #### DevTools
 
