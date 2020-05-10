@@ -100,7 +100,7 @@ You can register a custom template for debugging with `dap-register-debug-templa
                                      :program "lib/main_debug.dart"
                                      :args '("--flavor" "customer_a"))))
 ```
-Both `:program` and `:args` are optional.
+`flutterPlatform`,`:program`, and `:args` are all optional.
 
 A full list of supported parameters can be found in the source of
 the function `lsp-dart-dap--populate-flutter-start-file-args` in
