@@ -14,17 +14,35 @@ Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connec
 
 ## Quickstart
 
-An example with a minimal configuration to start using `lsp-dart`:
-```elisp
-(use-package lsp-mode :ensure t)
+The following has a example to setup `lsp-dart`.
 
-(use-package lsp-dart
-  :ensure t
+```elisp
+;; Install use-package
+(condition-case nil
+    (require 'use-package)
+  (file-error
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
+   (package-refresh-contents)
+   (package-install 'use-package)
+   (require 'use-package)))
+
+(use-package lsp-mode :ensure t)
+(use-package lsp-dart 
+  :ensure t 
   :hook (dart-mode . lsp))
 
 ;; Optional packages
-(use-package lsp-ui :ensure t)
-(use-package company-capf :ensure t)
+(use-package projectile :ensure t) ;; project management
+(use-package yasnippet
+  :ensure t
+  :config (yas-global-mode)) ;; snipets
+(use-package lsp-ui :ensure t) ;; UI for LSP
+(use-package company :ensure t) ;; Auto-complete
+
+;; Optional Flutter packages
+(use-package hover :ensure t) ;; run app from desktop without emulator
 ```
 
 ## Features
@@ -86,6 +104,11 @@ You only need to run `dap-dart-setup` one time to setup the debugger to your Ema
 
 ![flutter-debug](images/flutter-debug.gif)
 
+After the debug session has started, you can run:
+
+`lsp-dart-flutter-hot-restart` - Trigger Flutter hot restart on the debug sessions.
+`lsp-dart-flutter-hot-reload` - Trigger Flutter hot reload on the debug sessions.
+
 #### Custom templates
 
 You can register a custom template for debugging with `dap-register-debug-template`, check the following example:
@@ -112,13 +135,14 @@ matching names.
 
 You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.
 
-###### :warning:* Features only available for Dart SDK version 2.8.0 (currently the dev branch) or above.
+###### :warning:* Features only available for Dart SDK version 2.8.0 or above.
 
 ## Supported settings
 
 | Variable                                         | Description                                                                                             | Default                               |
 |:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------|
 | `lsp-dart-project-sdk-dir`                       | Install directory for dart-sdk                                                                          | `$PATH`                               |
+| `lsp-dart-project-use-dart-sdk-from-flutter`     | Wheter to use the Dart SDK from the flutter installation of the  `lsp-dart-project-flutter-command`     | `t`                                   |
 | `lsp-dart-project-flutter-command`               | The flutter executable path                                                                             | "flutter" that may be in the `$PATH`. |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file                     |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`                                 |
@@ -169,6 +193,6 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 :small_blue_diamond: Try to set the `lsp-dart-project-sdk-dir` to the Dart SDK dir instalation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
 
 ## Community
-All feedback and suggestions are welcome!
+All feedback and suggestions are very welcome!
 
 You can [open a issue](https://github.com/emacs-lsp/lsp-dart/issues/new/choose) or for a quick anwser, send a message on [Gitter](https://gitter.im/emacs-lsp/lsp-mode).

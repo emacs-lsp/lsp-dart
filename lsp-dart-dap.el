@@ -32,7 +32,7 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-dap-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.9.1"
+(defcustom lsp-dart-dap-extension-version "3.10.1"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
@@ -161,10 +161,8 @@ Call CALLBACK when the device is chosen and started successfully."
   "Populate CONF with the required arguments for Flutter debug."
   (let ((pre-conf (-> conf
                       (dap--put-if-absent :type "flutter")
-                      (dap--put-if-absent :name "Flutter")
                       (dap--put-if-absent :request "launch")
                       (dap--put-if-absent :flutterMode "debug")
-                      (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
                       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
                       (dap--put-if-absent :program (lsp-dart-project-get-entrypoint))
@@ -181,6 +179,7 @@ Call CALLBACK when the device is chosen and started successfully."
                   (-> pre-conf
                       (dap--put-if-absent :deviceId device-id)
                       (dap--put-if-absent :deviceName device-name)
+                      (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
 (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
@@ -257,6 +256,20 @@ Call CALLBACK when the device is chosen and started successfully."
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
   "Ignore this event.")
+
+;;;###autoload
+(defun lsp-dart-dap-flutter-hot-restart ()
+  "Hot restart current Flutter debug session."
+  (interactive)
+  (seq-doseq (debug-session (dap--get-sessions))
+    (dap-request debug-session "hotRestart")))
+
+;;;###autoload
+(defun lsp-dart-dap-flutter-hot-reload ()
+  "Hot reload current Flutter debug session."
+  (interactive)
+  (seq-doseq (debug-session (dap--get-sessions))
+    (dap-request debug-session "hotReload")))
 
 (provide 'lsp-dart-dap)
 ;;; lsp-dart-dap.el ends here

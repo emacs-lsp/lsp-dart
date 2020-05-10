@@ -35,3 +35,7 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
+
+google_analytics:
+  - UA-165661257-3
+  - auto

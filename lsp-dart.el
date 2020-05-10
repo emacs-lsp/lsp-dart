@@ -1,6 +1,6 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
-;; Version: 1.8.3
+;; Version: 1.8.9
 ;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (dap-mode "0.3") (ht "2.0") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://github.com/emacs-lsp/lsp-dart.el
@@ -140,7 +140,7 @@ Defaults to side following treemacs default."
 
 (defun lsp-dart--assert-sdk-min-version (version)
   "Assert dart sdk min version is VERSION."
-  (cl-assert (string-prefix-p version (lsp-dart--get-dart-version))
+  (cl-assert (string< version (lsp-dart--get-dart-version))
              t
              "Feature not supported before dart SDK %s"))
 
