@@ -1,4 +1,5 @@
 site_name: LSP Dart
+site_url: https://emacs-lsp.github.io/lsp-dart
 
 extra_css:
   - stylesheets/extra.css
