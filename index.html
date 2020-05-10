@@ -612,15 +612,21 @@ You only need to run <code>dap-dart-setup</code> one time to setup the debugger 
 <code>lsp-dart-flutter-hot-reload</code> - Trigger Flutter hot reload on the debug sessions.</p>
 <h4 id="custom-templates">Custom templates<a class="headerlink" href="#custom-templates" title="Permanent link">#</a></h4>
 <p>You can register a custom template for debugging with <code>dap-register-debug-template</code>, check the following example:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span> 
-  <span class="nb">:ensure</span> <span class="no">t</span> 
+<p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span>
+  <span class="nb">:ensure</span> <span class="no">t</span>
   <span class="nb">:hook</span> <span class="p">(</span><span class="nv">dart-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">)</span>
   <span class="nb">:init</span>
   <span class="p">(</span><span class="nv">dap-register-debug-template</span> <span class="s">&quot;Flutter :: Custom debug&quot;</span>
                                <span class="p">(</span><span class="nf">list</span> <span class="nb">:flutterPlatform</span> <span class="s">&quot;x86_64&quot;</span>
-                                     <span class="nb">:args</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;--flavor&quot;</span> <span class="s">&quot;staging&quot;</span><span class="p">))))</span>
+                                     <span class="nb">:program</span> <span class="s">&quot;lib/main_debug.dart&quot;</span>
+                                     <span class="nb">:args</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;--flavor&quot;</span> <span class="s">&quot;customer_a&quot;</span><span class="p">))))</span>
 </code></pre></div>
-
+<code>flutterPlatform</code>,<code>:program</code>, and <code>:args</code> are all optional.</p>
+<p>A full list of supported parameters can be found in the source of
+the function <code>lsp-dart-dap--populate-flutter-start-file-args</code> in
+<code>lsp-dart-dap.el</code>. Several of these parameters can be configured by
+setting one of the <a href="#supported-settings">Supported settings</a> with
+matching names.</p>
 <h4 id="devtools">DevTools<a class="headerlink" href="#devtools" title="Permanent link">#</a></h4>
 <p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-dap-devtools-open</code>.</p>
 <h6 id="features-only-available-for-dart-sdk-version-280-or-above"><img alt="⚠" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/26a0.svg" title=":warning:" />* Features only available for Dart SDK version 2.8.0 or above.<a class="headerlink" href="#features-only-available-for-dart-sdk-version-280-or-above" title="Permanent link">#</a></h6>
@@ -804,7 +810,7 @@ You only need to run <code>dap-dart-setup</code> one time to setup the debugger 
 <div class="md-source-date">
   <small>
     
-      Last update: May 9, 2020
+      Last update: May 10, 2020
     
   </small>
 </div>
