@@ -1,6 +1,12 @@
 site_name: LSP Dart
 site_url: https://emacs-lsp.github.io/lsp-dart
 
+nav:
+  - Home: README.md
+  - Changelog: CHANGELOG.md
+  - LSP Mode:
+      - LSP Mode: https://emacs-lsp.github.io/lsp-mode
+
 extra_css:
   - stylesheets/extra.css
 
@@ -10,6 +16,8 @@ theme:
   favicon: images/logo.svg
   icon:
     repo: fontawesome/brands/github
+  features:
+    - tabs
 
 extra:
   social:
