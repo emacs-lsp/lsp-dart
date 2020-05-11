@@ -421,17 +421,27 @@ all test overlays in the current buffer."
                       ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
                 (and (< beg1 beg2)
                      (> end1 end2))) it)
-    (lsp-dart-test-support-run (current-buffer)
-                        (overlay-get it 'lsp-dart-test-names)
-                        (overlay-get it 'lsp-dart-test-kind))))
+    (lsp-dart-test-support-run (overlay-get it 'lsp-dart-test))))
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()
   "Run dart/Flutter test command only for current buffer."
   (interactive)
   (if (lsp-dart-test-support-test-file-p (buffer-file-name))
-      (lsp-dart-test-support-run (current-buffer))
+      (lsp-dart-test-support-run (->> (current-buffer) buffer-name file-truename (make-lsp-dart-test :file-name)))
     (user-error "Current buffer is not a Dart/Flutter test file")))
+
+;;;###autoload
+(defun lsp-dart-visit-last-test ()
+  "Visit the last ran test going to test definition."
+  (interactive)
+  (lsp-dart-test-support-visit-last-test))
+
+;;;###autoload
+(defun lsp-dart-run-last-test ()
+  "Visit the last ran test going to test definition."
+  (interactive)
+  (lsp-dart-test-support-run-last-test))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))

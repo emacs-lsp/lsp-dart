@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'lsp-mode)
 
 (require 'lsp-dart-project)
@@ -32,6 +33,12 @@
 
 
 ;;; Internal
+
+(cl-defstruct lsp-dart-test
+  (file-name nil)
+  (names nil)
+  (position nil)
+  (kind nil))
 
 (defun lsp-dart-test-support--test-kind-p (kind)
   "Return non-nil if KIND is a test type."
@@ -92,13 +99,16 @@ otherwise the dart command."
                                                   escaped-str nil t)))
     escaped-str))
 
-(defun lsp-dart-test-support-run (buffer &optional names kind)
+(defun lsp-dart-test-support-run (test)
   "Run Dart/Flutter test command in a compilation buffer for BUFFER file.
-If NAMES is non nil, it will run only for KIND the test joining the name
-from NAMES."
+If TEST is non nil, it will run only this test."
   (interactive)
   (lsp-dart-test-support--from-project-root
-   (let* ((test-file (file-relative-name (buffer-file-name buffer)
+   (let* ((file-name (lsp-dart-test-file-name test))
+          (buffer (get-file-buffer file-name))
+          (names (lsp-dart-test-names test))
+          (kind (lsp-dart-test-kind test))
+          (test-file (file-relative-name file-name
                                          (lsp-dart-project-get-root)))
           (test-name (lsp-dart-test-support--build-test-name names))
           (group-kind? (string= kind "UNIT_TEST_GROUP"))
@@ -106,6 +116,8 @@ from NAMES."
                       (concat "--name '^"
                               (lsp-dart-test-support--escape-test-name test-name)
                               (if group-kind? "'" "$'")))))
+     (when names
+       (lsp-workspace-set-metadata "last-ran-test" test))
      (compilation-start (format "%s test %s %s"
                                 (lsp-dart-test-support--build-command buffer)
                                 (or test-arg "")
@@ -122,10 +134,13 @@ TEST-RANGE is the test method range."
           (beg-line (progn (goto-char beg)
                            (line-beginning-position)))
           (spaces (make-string beg-position ?\s))
-          (overlay (make-overlay beg-line end buffer)))
+          (overlay (make-overlay beg-line end buffer))
+          (test (make-lsp-dart-test :file-name (buffer-file-name buffer)
+                                    :names names
+                                    :position beg
+                                    :kind kind)))
     (overlay-put overlay 'lsp-dart-test-code-lens t)
-    (overlay-put overlay 'lsp-dart-test-names names)
-    (overlay-put overlay 'lsp-dart-test-kind kind)
+    (overlay-put overlay 'lsp-dart-test test)
     (overlay-put overlay 'lsp-dart-test-overlay-test-range (lsp--range-to-region test-range))
     (overlay-put overlay 'before-string
                  (concat spaces
@@ -135,7 +150,7 @@ TEST-RANGE is the test method range."
                                      'local-map (-doto (make-sparse-keymap)
                                                  (define-key [mouse-1] (lambda ()
                                                                           (interactive)
-                                                                          (lsp-dart-test-support-run buffer names kind))))
+                                                                          (lsp-dart-test-support-run test))))
                                      'font-lock-face 'lsp-lens-face)))))
 
 (defun lsp-dart-test-support--add-code-lens (buffer items &optional names)
@@ -167,6 +182,28 @@ PARAMS is the notification data from outline."
 (defun lsp-dart-test-support-test-file-p (file-name)
   "Return non-nil if FILE-NAME is a dart test files."
   (string-match "_test.dart" file-name))
+
+(defun lsp-dart-test-support-run-last-test ()
+  "Visit the last ran test going to the test definition."
+  (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
+      (lsp-dart-test-support-run test)
+    (lsp-dart-project-log "No last test found.")))
+
+(defun lsp-dart-test-support-visit-last-test ()
+  "Visit the last ran test going to the test definition."
+  (-if-let* ((test (lsp-workspace-get-metadata "last-ran-test"))
+             (file-name (lsp-dart-test-file-name test))
+             (buffer (or (get-file-buffer file-name)
+                         (find-file file-name)))
+             (position (lsp-dart-test-position test)))
+      (if-let ((window (get-buffer-window buffer 'visible)))
+          (progn
+            (select-window window)
+            (goto-char position))
+        (with-current-buffer buffer
+          (switch-to-buffer buffer nil t)
+          (goto-char position)))
+    (lsp-dart-project-log "No last test found.")))
 
 
 (provide 'lsp-dart-test-support)

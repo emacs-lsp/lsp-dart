@@ -71,6 +71,10 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-run-test-at-point` - Run single test at point. [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
 
+`lsp-dart-visit-last-test` - Go to last ran test.
+
+`lsp-dart-run-last-test` - Run last ran test.
+
 Running a test interactively: 
 
 ![test](images/run-test.gif)
