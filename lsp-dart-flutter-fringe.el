@@ -3,7 +3,7 @@
 ;; Version: 1.4
 ;; Keywords: languages, extensions
 ;; Package-Requires: ((emacs "25.2") (lsp-mode "6.0") (dash "2.14.1"))
-;; URL: https://github.com/emacs-lsp/lsp-dart.el
+;; URL: https://emacs-lsp.github.io/lsp-dart
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
