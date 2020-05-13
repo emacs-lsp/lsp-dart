@@ -50,9 +50,21 @@
   :group 'lsp-dart
   :type '(repeat string))
 
+(defcustom lsp-dart-dap-dart-test-debugger-program
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/dart_test_debug_entry.js"))
+  "The path to the dart test debugger."
+  :group 'lsp-dart
+  :type '(repeat string))
+
 (defcustom lsp-dart-dap-flutter-debugger-program
   `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/flutter_debug_entry.js"))
   "The path to the Flutter debugger."
+  :group 'lsp-dart
+  :type '(repeat string))
+
+(defcustom lsp-dart-dap-flutter-test-debugger-program
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/flutter_test_debug_entry.js"))
+  "The path to the dart test debugger."
   :group 'lsp-dart
   :type '(repeat string))
 
@@ -65,6 +77,11 @@
   "If non-nil, enable the debug on Dart SDK libraries."
   :group 'lsp-dart
   :type 'boolean)
+
+(defcustom lsp-dart-dap-vm-additional-args ""
+  "Additional args for dart debugging VM."
+  :group 'lsp-dart
+  :type 'string)
 
 (defcustom lsp-dart-dap-flutter-track-widget-creation t
   "Whether to pass –track-widget-creation to Flutter apps.
@@ -103,6 +120,8 @@ Required to support 'Inspect Widget'."
    "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
    "--no-package-lock" "--silent" "--no-save"))
 
+;; Dart
+
 (dap-utils-github-extension-setup-function
  "dap-dart"
  "Dart-Code"
@@ -121,12 +140,34 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :cwd (lsp-dart-project-get-root))
       (dap--put-if-absent :program (buffer-file-name))
       (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
+      (dap--put-if-absent :pubPath (lsp-dart-project-get-pub-command))
+      (dap--put-if-absent :pubSnapshotPath (lsp-dart-project-pub-snapshot-command))
+      (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
       (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
       (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)))
 
 (dap-register-debug-provider "dart" 'lsp-dart-dap--populate-dart-start-file-args)
 (dap-register-debug-template "Dart :: Debug"
                              (list :type "dart"))
+
+(defun lsp-dart-dap-debug-dart-test (path args)
+  "Start dart test debugging from PATH with ARGS."
+  (-> (list :name "Tests"
+            :type "dart"
+            :request "launch"
+            :dap-server-path lsp-dart-dap-dart-test-debugger-program
+            :noDebug nil
+            :shouldConnectDebugger t
+            :cwd (lsp-dart-project-get-root)
+            :dartPath (lsp-dart-project-dart-command)
+            :pubPath (lsp-dart-project-get-pub-command)
+            :pubSnapshotPath (lsp-dart-project-pub-snapshot-command)
+            :vmAdditionalArgs lsp-dart-dap-vm-additional-args
+            :debugExternalLibraries lsp-dart-dap-debug-external-libraries
+            :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries
+            :program path
+            :args args)
+      dap-start-debugging))
 
 ;; Flutter
 
@@ -179,6 +220,7 @@ Call CALLBACK when the device is chosen and started successfully."
                   (-> pre-conf
                       (dap--put-if-absent :deviceId device-id)
                       (dap--put-if-absent :deviceName device-name)
+                      (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
                       (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
@@ -256,6 +298,30 @@ Call CALLBACK when the device is chosen and started successfully."
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
   "Ignore this event.")
+
+(cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
+  "Ignore this event.")
+
+(defun lsp-dart-dap-debug-flutter-test (path args)
+  "Start dart test debugging from PATH with ARGS."
+  (-> (list :name "Tests"
+            :type "flutter"
+            :request "launch"
+            :dap-server-path lsp-dart-dap-flutter-test-debugger-program
+            :noDebug nil
+            :shouldConnectDebugger t
+            :cwd (lsp-dart-project-get-root)
+            :dartPath (lsp-dart-project-dart-command)
+            :pubPath (lsp-dart-project-get-pub-command)
+            :pubSnapshotPath (lsp-dart-project-pub-snapshot-command)
+            :flutterPath (lsp-dart-project-get-flutter-path)
+            :flutterMode "debug"
+            :vmAdditionalArgs lsp-dart-dap-vm-additional-args
+            :debugExternalLibraries lsp-dart-dap-debug-external-libraries
+            :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries
+            :program path
+            :args args)
+      dap-start-debugging))
 
 ;;;###autoload
 (defun lsp-dart-dap-flutter-hot-restart ()

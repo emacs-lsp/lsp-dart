@@ -72,6 +72,12 @@ flutter cache dir."
       file-name-as-directory
       (concat "bin/pub")))
 
+(defun lsp-dart-project-pub-snapshot-command ()
+  "Return the pub snapshot executable path from dart SDK path."
+  (-> (lsp-dart-project-get-sdk-dir)
+      file-name-as-directory
+      (concat "bin/snapshots/pub.dart.snapshot")))
+
 (defun lsp-dart-project-dart-command ()
   "Return the dart executable from dart SDK dir."
   (expand-file-name "bin/dart" (lsp-dart-project-get-sdk-dir)))

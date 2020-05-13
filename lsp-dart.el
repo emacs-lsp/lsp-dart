@@ -31,8 +31,8 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-project)
-(require 'lsp-dart-test-support)
 (require 'lsp-dart-dap)
+(require 'lsp-dart-test-support)
 (require 'lsp-dart-flutter-fringe)
 (require 'lsp-dart-flutter-widget-guide)
 
