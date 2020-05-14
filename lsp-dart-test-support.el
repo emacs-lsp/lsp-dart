@@ -83,7 +83,7 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
 If the given BUFFER is a flutter test file, return the flutter command
 otherwise the dart command."
   (if (lsp-dart-test-support--flutter-test-file-p buffer)
-      lsp-dart-project-flutter-command
+      (lsp-dart-project-flutter-command)
     (concat (lsp-dart-project-pub-command) " run")))
 
 (defun lsp-dart-test-support--build-test-name (names)

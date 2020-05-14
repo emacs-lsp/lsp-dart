@@ -50,7 +50,7 @@
 (defun lsp-dart-flutter-daemon--start ()
   "Start the Flutter daemon."
   (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name)))
-    (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer lsp-dart-project-flutter-command nil "daemon")
+    (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-project-flutter-command) nil "daemon")
     (with-current-buffer buffer
       (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
         (lsp-dart-flutter-daemon-mode)))
