@@ -217,6 +217,20 @@ PARAMS is the notification data from outline."
   "Return non-nil if FILE-NAME is a dart test files."
   (string-match "_test.dart" file-name))
 
+(defun lsp-dart-test-support-test-overlay-at-point ()
+  "Return test overlay at point.
+Return the overlay which has the smallest range of all test overlays in
+the current buffer."
+  (-some--> (overlays-in (point-min) (point-max))
+    (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
+                (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
+                  (and (>= (point) beg)
+                       (<= (point) end)))) it)
+    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
+                      ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
+                (and (< beg1 beg2)
+                     (> end1 end2))) it)))
+
 (defun lsp-dart-test-support-run-last-test ()
   "Run last ran test."
   (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
