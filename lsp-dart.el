@@ -30,6 +30,7 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-utils)
+(require 'lsp-dart-closing-labels)
 (require 'lsp-dart-outline)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-flutter-fringe)
@@ -65,23 +66,6 @@ imported into the current file."
   :type 'boolean
   :group 'lsp-dart)
 
-(defcustom lsp-dart-closing-labels t
-  "Enable the analysis server closing labels feature.
-When set to non-nil, dart/textDocument/publishClosingLabel notifications will
-be sent with information to render editor closing labels."
-  :type 'boolean
-  :group 'lsp-dart)
-
-(defcustom lsp-dart-closing-labels-prefix ""
-  "The prefix string to be concatenated with the closing label."
-  :type 'string
-  :group 'lsp-dart)
-
-(defcustom lsp-dart-closing-labels-size 0.9
-  "The font size factor to be multiplied by the closing labels font size."
-  :type 'float
-  :group 'lsp-dart)
-
 
 ;;; Internal
 
@@ -101,29 +85,6 @@ be sent with information to render editor closing labels."
         ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
         "--lsp")))
 
-(defun lsp-dart--handle-closing-labels (_workspace params)
-  "Closing labels notification handling.
-PARAMS closing labels notification data sent from WORKSPACE."
-  (-let* (((&hash "uri" "labels") params)
-          (buffer (lsp--buffer-for-file (lsp--uri-to-path uri))))
-    (when buffer
-      (with-current-buffer buffer
-        (remove-overlays (point-min) (point-max) 'lsp-dart-closing-labels t)
-        (seq-doseq (label-ht labels)
-          (save-excursion
-            (-let* ((label (gethash "label" label-ht))
-                    (range (gethash "range" label-ht))
-                    ((beg . end) (lsp--range-to-region range))
-                    (end-line (progn
-                                (goto-char end)
-                                (line-end-position)))
-                    (overlay (make-overlay beg end-line buffer)))
-              (overlay-put overlay 'lsp-dart-closing-labels t)
-              (overlay-put overlay 'after-string (propertize (concat lsp-dart-closing-labels-prefix " " label)
-                                                             'display `((height ,lsp-dart-closing-labels-size))
-                                                             'cursor t
-                                                             'font-lock-face 'font-lock-comment-face)))))))))
-
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection 'lsp-dart--server-command)
@@ -136,7 +97,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
                   :library-folders-fn (lambda (_workspace) (lsp-dart-library-folders))
-                  :notification-handlers (ht ("dart/textDocument/publishClosingLabels" #'lsp-dart--handle-closing-labels)
+                  :notification-handlers (ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
                                              ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
                                              ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline))
                   :server-id 'dart_analysis_server))
