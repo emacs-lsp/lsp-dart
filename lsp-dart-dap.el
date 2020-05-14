@@ -25,7 +25,7 @@
 
 (require 'lsp-dart-utils)
 (require 'lsp-dart-flutter-daemon)
-(require 'lsp-dart-dap-devtools)
+(require 'lsp-dart-devtools)
 
 (defcustom lsp-dart-dap-extension-version "3.10.1"
   "The extension version."

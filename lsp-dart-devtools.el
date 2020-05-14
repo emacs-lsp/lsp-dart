@@ -1,4 +1,4 @@
-;;; lsp-dart-dap-devtools.el --- Support for Dart DevTools on debugger -*- lexical-binding: t; -*-
+;;; lsp-dart-devtools.el --- Support for Dart DevTools on debugger -*- lexical-binding: t; -*-
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -155,5 +155,5 @@ If it is already activated or after activated successfully, call CALLBACK."
          (lsp-dart-dap-devtools-log "Openning at browser...")
          (lsp-dart-dap-devtools--open uri vm-service-uri))))))
 
-(provide 'lsp-dart-dap-devtools)
-;;; lsp-dart-dap-devtools.el ends here
+(provide 'lsp-dart-devtools)
+;;; lsp-dart-devtools.el ends here
