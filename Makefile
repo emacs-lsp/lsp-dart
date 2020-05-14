@@ -61,7 +61,7 @@ clean:
 
 tag:
 	$(eval TAG := $(filter-out $@,$(MAKECMDGOALS)))
-	sed -i "s/;; Version: [0-9].[0-9].[0-9]/;; Version: $(TAG)/g" lsp-dart.el
+	sed -i "s/;; Version: [0-9]\+.[0-9]\+.[0-9]\+/;; Version: $(TAG)/g" lsp-dart.el
 	git add lsp-dart.el
 	git commit -m "Bump lsp-dart: $(TAG)"
 	git tag $(TAG)
