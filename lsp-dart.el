@@ -308,8 +308,8 @@ PARAMS outline notification data sent.
 It updates the outline view if it already exists."
   (lsp-dart--set-metadata workspace params "current-outline")
   (when (and lsp-dart-test-code-lens
-             (lsp-dart-test-support-test-file-p (gethash "uri" params)))
-    (lsp-dart-test-support-check-code-lens params))
+             (lsp-dart-test-file-p (gethash "uri" params)))
+    (lsp-dart-test-check-code-lens params))
   (when (get-buffer-window "*Dart Outline*")
     (lsp-dart--show-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
 
@@ -404,50 +404,6 @@ If the version number could not be determined, signal an error."
   (interactive "P")
   (lsp-dart--assert-sdk-min-version "2.8.0")
   (lsp-dart--show-flutter-outline (current-buffer) ignore-focus?))
-
-;;;###autoload
-(defun lsp-dart-run-test-at-point ()
-  "Run test at point.
-Search for the last test overlay."
-  (interactive)
-  (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
-      (lsp-dart-test-support-run (overlay-get overlay 'lsp-dart-test))
-    (lsp-dart-log "No test found at point.")))
-
-;;;###autoload
-(defun lsp-dart-debug-test-at-point ()
-  "Debug test at point.
-Search for the last test overlay."
-  (interactive)
-  (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
-      (lsp-dart-test-support-debug (overlay-get overlay 'lsp-dart-test))
-    (lsp-dart-log "No test found at point.")))
-
-;;;###autoload
-(defun lsp-dart-run-test-file ()
-  "Run dart/Flutter test command only for current buffer."
-  (interactive)
-  (if (lsp-dart-test-support-test-file-p (buffer-file-name))
-      (lsp-dart-test-support-run (->> (current-buffer) buffer-name file-truename (make-lsp-dart-test :file-name)))
-    (user-error "Current buffer is not a Dart/Flutter test file")))
-
-;;;###autoload
-(defun lsp-dart-visit-last-test ()
-  "Visit the last ran test going to test definition."
-  (interactive)
-  (lsp-dart-test-support-visit-last-test))
-
-;;;###autoload
-(defun lsp-dart-run-last-test ()
-  "Run the last ran test."
-  (interactive)
-  (lsp-dart-test-support-run-last-test))
-
-;;;###autoload
-(defun lsp-dart-debug-last-test ()
-  "Debug the last ran test."
-  (interactive)
-  (lsp-dart-test-support-debug-last-test))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))
