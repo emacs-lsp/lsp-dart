@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.10.0
+* Support for debugging Dart/Flutter tests. 
+* Add "Debug" code lens on tests.
+* Add `lsp-dart-debug-test-at-point` command. 
+* Add `lsp-dart-debug-last-test` command. 
+
+## 1.9.0
+* Add `lsp-dart-visit-last-test` command.
+* Add `lsp-dart-run-last-test` command.
+
 ## 1.8.0
 * Flutter debug support using DAP.
 * Flutter DevTools support debugging.
