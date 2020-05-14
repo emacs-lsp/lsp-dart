@@ -68,10 +68,15 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 ### Run/Debug tests
 
 `lsp-dart-run-test-file` - Run all tests from current test buffer.
+
 `lsp-dart-run-test-at-point` - Run single test at point.
+
 `lsp-dart-debug-test-at-point` - Debug single test at point.
+
 `lsp-dart-visit-last-test` - Go to last ran test.
+
 `lsp-dart-run-last-test` - Run last ran test.
+
 `lsp-dart-debug-last-test` - Debug last ran test.
 
 Running a test interactively: 
