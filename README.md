@@ -148,39 +148,38 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 ## Supported settings
 
-| Variable                                         | Description                                                                                             | Default                               |
-|:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------|
-| `lsp-dart-project-sdk-dir`                       | Install directory for dart-sdk                                                                          | `$PATH`                               |
-| `lsp-dart-project-use-dart-sdk-from-flutter`     | Wheter to use the Dart SDK from the flutter installation of the  `lsp-dart-project-flutter-command`     | `t`                                   |
-| `lsp-dart-project-flutter-command`               | The flutter executable path                                                                             | "flutter" that may be in the `$PATH`. |
-| `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file                     |
-| `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`                                 |
-| `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder | `t`                                   |
-| `lsp-dart-suggest-from-unimported-libraries`     | Completion will not include symbols that are not already imported into the current file.                | `t`                                   |
-| `lsp-dart-closing-labels`                        | Enable the closing labels feature on server lsp                                                         | `t`                                   |
-| `lsp-dart-closing-labels-prefix`                 | The prefix string to be concatenated with the closing label                                             | `""`                                  |
-| `lsp-dart-closing-labels-size`                   | The font size factor to be multiplied by the closing labels font size                                   | 0.9                                   |
-| `lsp-dart-outline`                               | Enable the outline tree view feature on server lsp                                                      | `t`                                   |
-| `lsp-dart-outline-position-params`               | The outline tree position params.                                                                       | Left side                             |
-| `lsp-dart-flutter-outline`                       | Wheter to enable the Flutter outline tree view feature on server lsp                                    | `t`                                   |
-| `lsp-dart-flutter-outline-position-params`       | The Flutter outline tree position params                                                                | Left side                             |
-| `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                    | `t`                                   |
-| `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                      | `t`                                   |
-| `lsp-dart-test-code-lens`                        | Enable the `Run` code lens on tests.                                                                    | `t`                                   |
-| `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                         | 3.10.1                                |
-| `lsp-dart-dap-debugger-path`                     | The debugger extension path                                                                             | Check source file                     |
-| `lsp-dart-dap-dart-debugger-program`             | The command to execute the debugger extension on dart projects.                                         | Check source file                     |
-| `lsp-dart-dap-dart-test-debugger-program`        | The command to execute the test debugger extension on dart projects.                                    | Check source file                     |
-| `lsp-dart-dap-flutter-debugger-program`          | The command to execute the debugger extension on flutter projects.                                      | Check source file                     |
-| `lsp-dart-dap-flutter-test-debugger-program`     | The command to execute the test debugger extension on flutter projects.                                 | Check source file                     |
-| `lsp-dart-dap-debug-external-libraries`          | Whether to enable the debug on external libraries                                                       | `nil`                                 |
-| `lsp-dart-dap-debug-sdk-libraries`               | Whether to enable the debug on Dart SDK libraries                                                       | `nil`                                 |
-| `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.                                               | `""`                                  |
-| `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.           | `t`                                   |
-| `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                            | `t`                                   |
-| `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                         | `nil`                                 |
-| `lsp-dart-dap-devtools-theme`                    | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                       | `"dark"`                              |
-| `lsp-dart-dap-devtools-hide-options`             | What to hide when openning DevTools via `lsp-dart-dap-open-devtools`                                    | `debugger`                            |
+| Variable                                         | Description                                                                                             | Default           |
+|:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:------------------|
+| `lsp-dart-project-sdk-dir`                       | The optional Dart SDK path.                                                                             | `nil`             |
+| `lsp-dart-project-flutter-sdk-dir`               | The optional Flutter SDK path.                                                                          | `nil`             |
+| `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file |
+| `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`             |
+| `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder | `t`               |
+| `lsp-dart-suggest-from-unimported-libraries`     | Completion will not include symbols that are not already imported into the current file.                | `t`               |
+| `lsp-dart-closing-labels`                        | Enable the closing labels feature on server lsp                                                         | `t`               |
+| `lsp-dart-closing-labels-prefix`                 | The prefix string to be concatenated with the closing label                                             | `""`              |
+| `lsp-dart-closing-labels-size`                   | The font size factor to be multiplied by the closing labels font size                                   | 0.9               |
+| `lsp-dart-outline`                               | Enable the outline tree view feature on server lsp                                                      | `t`               |
+| `lsp-dart-outline-position-params`               | The outline tree position params.                                                                       | Left side         |
+| `lsp-dart-flutter-outline`                       | Wheter to enable the Flutter outline tree view feature on server lsp                                    | `t`               |
+| `lsp-dart-flutter-outline-position-params`       | The Flutter outline tree position params                                                                | Left side         |
+| `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                    | `t`               |
+| `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                      | `t`               |
+| `lsp-dart-test-code-lens`                        | Enable the `Run` code lens on tests.                                                                    | `t`               |
+| `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                         | 3.10.1            |
+| `lsp-dart-dap-debugger-path`                     | The debugger extension path                                                                             | Check source file |
+| `lsp-dart-dap-dart-debugger-program`             | The command to execute the debugger extension on dart projects.                                         | Check source file |
+| `lsp-dart-dap-dart-test-debugger-program`        | The command to execute the test debugger extension on dart projects.                                    | Check source file |
+| `lsp-dart-dap-flutter-debugger-program`          | The command to execute the debugger extension on flutter projects.                                      | Check source file |
+| `lsp-dart-dap-flutter-test-debugger-program`     | The command to execute the test debugger extension on flutter projects.                                 | Check source file |
+| `lsp-dart-dap-debug-external-libraries`          | Whether to enable the debug on external libraries                                                       | `nil`             |
+| `lsp-dart-dap-debug-sdk-libraries`               | Whether to enable the debug on Dart SDK libraries                                                       | `nil`             |
+| `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.                                               | `""`              |
+| `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.           | `t`               |
+| `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                            | `t`               |
+| `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                         | `nil`             |
+| `lsp-dart-dap-devtools-theme`                    | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                       | `"dark"`          |
+| `lsp-dart-dap-devtools-hide-options`             | What to hide when openning DevTools via `lsp-dart-dap-open-devtools`                                    | `debugger`        |
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.

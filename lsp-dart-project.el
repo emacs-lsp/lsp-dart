@@ -27,60 +27,80 @@
 (require 'dash)
 
 (defcustom lsp-dart-project-sdk-dir nil
-  "Install directory for dart-sdk.
-When nil, it will try to find the dart sdk from the dart or flutter executables
-in the PATH env."
+  "Path to the Dart SDK.
+If nil, lsp-dart will attempt to find it from the PATH environment variable.
+When editing a Flutter project, the version of Dart included in the Flutter SDK
+is used in preference."
   :group 'lsp-dart
   :risky t
   :type '(choice directory nil))
 
-(defcustom lsp-dart-project-flutter-command "flutter"
-  "Flutter command for running tests."
+(defcustom lsp-dart-project-flutter-sdk-dir nil
+  "Path to the Flutter SDK.
+If nil, Dart Code will attempt to find it from the project folder,
+FLUTTER_ROOT environment variable and the PATH environment variable."
   :group 'lsp-dart
-  :type 'string)
+  :risky t
+  :type '(choice directory nil))
 
-(defcustom lsp-dart-project-use-dart-sdk-from-flutter t
-  "If Flutter SDK exists, whether to use Dart SDK from Flutter SDK."
-  :group 'lsp-dart
-  :type 'bool)
+
+;; Internal
 
-(defun lsp-dart-project-get-flutter-path ()
-  "Return the Flutter SDK path."
-  (-> lsp-dart-project-flutter-command
-      executable-find
-      file-truename))
+(defun lsp-dart-project--flutter-project-p ()
+  "Return non-nil if buffer is a flutter project."
+  (when-let (pubspec-path (-some->> (lsp-dart-project-get-root)
+                            (expand-file-name "pubspec.yaml")))
+    (with-temp-buffer
+      (insert-file-contents pubspec-path)
+      (goto-char (point-min))
+      (re-search-forward "sdk\s*:\s*flutter" nil t))))
+
+
+;; SDKs
 
 (defun lsp-dart-project-get-sdk-dir ()
-  "Return the dart sdk.
-Check for `lsp-dart-project-sdk-dir` otherwise search for dart executable or
-flutter cache dir."
+  "Return the Dart SDK path.
+Check for PATH environment variable.
+When editing a Flutter project, the version of Dart included in the Flutter SDK
+is used in preference."
   (or lsp-dart-project-sdk-dir
-      (-when-let (dart (if lsp-dart-project-use-dart-sdk-from-flutter
-                           (or (-when-let (flutter (lsp-dart-project-get-flutter-path))
-                                 (expand-file-name "cache/dart-sdk/bin/dart"
-                                                   (file-name-directory flutter)))
-                               (executable-find "dart"))
-                         (executable-find "dart")))
-        (-> dart
-            file-truename
-            (locate-dominating-file "bin")
-            file-truename))))
+      (when (lsp-dart-project--flutter-project-p)
+        (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-project-get-flutter-sdk-dir)))
+      (-some-> (executable-find "dart")
+        file-truename
+        (locate-dominating-file "bin")
+        file-truename)))
+
+(defun lsp-dart-project-get-flutter-sdk-dir ()
+  "Return the Flutter SDK path.
+Check for `lsp-dart-project-flutter-sdk-dir` then
+flutter executable on PATH then
+FLUTTER_ROOT environment variable."
+  (or lsp-dart-project-flutter-sdk-dir
+      (-some-> (executable-find "flutter")
+        file-truename
+        (locate-dominating-file "bin")
+        file-truename)
+      (getenv "FLUTTER_ROOT")))
 
 (defun lsp-dart-project-pub-command ()
-  "Return the pub executable path from dart SDK path."
-  (-> (lsp-dart-project-get-sdk-dir)
-      file-name-as-directory
-      (concat "bin/pub")))
+  "Return the pub executable path from Dart SDK path."
+  (expand-file-name "bin/pub" (lsp-dart-project-get-sdk-dir)))
 
 (defun lsp-dart-project-pub-snapshot-command ()
-  "Return the pub snapshot executable path from dart SDK path."
-  (-> (lsp-dart-project-get-sdk-dir)
-      file-name-as-directory
-      (concat "bin/snapshots/pub.dart.snapshot")))
+  "Return the pub snapshot executable path from Dart SDK path."
+  (expand-file-name "bin/snapshots/pub.dart.snapshot" (lsp-dart-project-get-sdk-dir)))
 
 (defun lsp-dart-project-dart-command ()
-  "Return the dart executable from dart SDK dir."
+  "Return the dart executable from Dart SDK dir."
   (expand-file-name "bin/dart" (lsp-dart-project-get-sdk-dir)))
+
+(defun lsp-dart-project-flutter-command ()
+  "Return the flutter executable from Flutter SDK dir."
+  (expand-file-name "bin/flutter" (lsp-dart-project-get-flutter-sdk-dir)))
+
+
+;; Project
 
 (defun lsp-dart-project-get-root ()
   "Return the dart or flutter project root."
@@ -99,6 +119,9 @@ flutter cache dir."
 
      ((file-exists-p bin-entry)
       bin-entry))))
+
+
+;; Log
 
 (defun lsp-dart-project-log (msg &rest args)
   "Log MSG with ARGS and custom prefix."

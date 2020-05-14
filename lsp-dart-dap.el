@@ -131,7 +131,7 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
       (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
       (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-      (dap--put-if-absent :flutterPath (lsp-dart-project-get-flutter-path))
+      (dap--put-if-absent :flutterPath (lsp-dart-project-flutter-command))
       (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
       (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)))
 

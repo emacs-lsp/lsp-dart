@@ -148,7 +148,7 @@ Starts the daemon if is not running yet."
   "Major mode for `lsp-dart-flutter-daemon--start`."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
-  (setenv "PATH" (concat (lsp-dart-project-get-flutter-path) ":" (getenv "PATH"))))
+  (setenv "PATH" (concat (lsp-dart-project-flutter-command) ":" (getenv "PATH"))))
 
 (provide 'lsp-dart-flutter-daemon)
 ;;; lsp-dart-flutter-daemon.el ends here

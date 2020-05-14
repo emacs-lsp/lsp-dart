@@ -133,7 +133,7 @@ Defaults to side following treemacs default."
 
 (defun lsp-dart--get-dart-version ()
   "Retrieve the dart version from shell command."
-  (->> (concat (lsp-dart-project-get-sdk-dir) "bin/dart --version")
+  (->> (concat (lsp-dart-project-dart-command) " --version")
        shell-command-to-string
        split-string
        (nth 3)))
@@ -326,10 +326,9 @@ It updates the Flutter outline view if it already exists."
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
-      (let ((sdk-dir (lsp-dart-project-get-sdk-dir)))
-        `(,(expand-file-name (f-join sdk-dir "bin/dart"))
-          ,(expand-file-name (f-join sdk-dir "bin/snapshots/analysis_server.dart.snapshot"))
-          "--lsp"))))
+      `(,(lsp-dart-project-dart-command)
+        ,(expand-file-name (f-join (lsp-dart-project-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
+        "--lsp")))
 
 (defun lsp-dart--handle-closing-labels (_workspace params)
   "Closing labels notification handling.

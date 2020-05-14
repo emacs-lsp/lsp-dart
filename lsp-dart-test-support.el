@@ -84,7 +84,7 @@ If the given BUFFER is a flutter test file, return the flutter command
 otherwise the dart command."
   (if (lsp-dart-test-support--flutter-test-file-p buffer)
       lsp-dart-project-flutter-command
-    (concat (file-name-as-directory (lsp-dart-project-get-sdk-dir)) "bin/pub run")))
+    (concat (lsp-dart-project-pub-command) " run")))
 
 (defun lsp-dart-test-support--build-test-name (names)
   "Build the test name from a group of test NAMES."
