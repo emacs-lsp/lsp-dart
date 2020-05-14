@@ -1,4 +1,4 @@
-;;; lsp-dart-project.el --- Functions for lsp-dart -*- lexical-binding: t; -*-
+;;; lsp-dart-utils.el --- Functions for lsp-dart -*- lexical-binding: t; -*-
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -129,5 +129,5 @@ FLUTTER_ROOT environment variable."
         (custom-prefix (propertize prefix 'face 'font-lock-function-name-face)))
     (apply #'message (concat base-prefix " " custom-prefix " " msg) args)))
 
-(provide 'lsp-dart-project)
-;;; lsp-dart-project.el ends here
+(provide 'lsp-dart-utils)
+;;; lsp-dart-utils.el ends here

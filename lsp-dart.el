@@ -30,7 +30,7 @@
 (require 'lsp-treemacs)
 (require 'lsp-mode)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-test-support)
 (require 'lsp-dart-flutter-fringe)

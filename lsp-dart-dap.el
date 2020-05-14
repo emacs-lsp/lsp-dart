@@ -23,7 +23,7 @@
 (require 'dap-mode)
 (require 'dap-utils)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-dap-devtools)
 

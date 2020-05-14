@@ -23,7 +23,7 @@
 (require 'lsp-mode)
 (require 'dap-mode)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 
 (defcustom lsp-dart-dap-devtools-theme "dark"
   "The theme to Dart DevTools."

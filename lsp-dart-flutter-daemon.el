@@ -24,7 +24,7 @@
 (require 'ht)
 (require 'lsp-mode)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 
 (defconst lsp-dart-flutter-daemon-buffer-name "*LSP Dart - Flutter daemon*")
 (defconst lsp-dart-flutter-daemon-name "LSP Dart - Flutter daemon")

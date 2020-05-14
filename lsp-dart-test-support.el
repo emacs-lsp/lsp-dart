@@ -22,7 +22,7 @@
 (require 'cl-lib)
 (require 'lsp-mode)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 (require 'lsp-dart-dap)
 
 (defconst lsp-dart-test-support-tests-buffer-name "*LSP Dart tests*")
