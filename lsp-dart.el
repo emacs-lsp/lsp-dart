@@ -439,9 +439,15 @@ all test overlays in the current buffer."
 
 ;;;###autoload
 (defun lsp-dart-run-last-test ()
-  "Visit the last ran test going to test definition."
+  "Run the last ran test."
   (interactive)
   (lsp-dart-test-support-run-last-test))
+
+;;;###autoload
+(defun lsp-dart-debug-last-test ()
+  "Debug the last ran test."
+  (interactive)
+  (lsp-dart-test-support-debug-last-test))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))

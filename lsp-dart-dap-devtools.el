@@ -79,7 +79,7 @@ If URI is not found on buffer, schedule re-check."
 (defun lsp-dart-dap-devtools--activated-p ()
   "Return non-nil if devtools is activated otherwise nil."
   (lsp-dart-dap-devtools--clean-buffer lsp-dart-dap-devtools--pub-list-packages-buffer-name)
-  (let* ((pub (lsp-dart-project-get-pub-command))
+  (let* ((pub (lsp-dart-project-pub-command))
          (_proc (call-process pub
                               nil
                               lsp-dart-dap-devtools--pub-list-packages-buffer-name
@@ -91,7 +91,7 @@ If URI is not found on buffer, schedule re-check."
 (defun lsp-dart-dap-devtools--activate (callback)
   "Activate Dart Devtools via pub then call CALLBACK."
   (lsp-dart-dap-devtools-log "Activating...")
-  (let ((pub (lsp-dart-project-get-pub-command)))
+  (let ((pub (lsp-dart-project-pub-command)))
     (lsp-async-start-process
      (lambda ()
        (lsp-dart-dap-devtools-log "Activated successfully!")
@@ -123,7 +123,7 @@ If it is already activated or after activated successfully, call CALLBACK."
    (lambda ()
      (if-let ((uri (lsp-workspace-get-metadata "dart-debug-devtools-uri")))
       (funcall callback uri)
-    (let* ((pub (lsp-dart-project-get-pub-command))
+    (let* ((pub (lsp-dart-project-pub-command))
            (proc (start-process "Start DevTools"
                                 lsp-dart-dap-devtools--buffer-name
                                 pub "global" "run" "devtools"

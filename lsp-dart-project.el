@@ -66,7 +66,7 @@ flutter cache dir."
             (locate-dominating-file "bin")
             file-truename))))
 
-(defun lsp-dart-project-get-pub-command ()
+(defun lsp-dart-project-pub-command ()
   "Return the pub executable path from dart SDK path."
   (-> (lsp-dart-project-get-sdk-dir)
       file-name-as-directory

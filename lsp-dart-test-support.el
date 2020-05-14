@@ -131,7 +131,7 @@ If TEST is non nil, it will run only this test."
                         (lambda (_) lsp-dart-test-support-tests-buffer-name)))))
 
 (defun lsp-dart-test-support-debug (test)
-  "Debug Dart/Flutter TEST in a compilation buffer."
+  "Debug Dart/Flutter TEST."
   (let* ((file-name (lsp-dart-test-file-name test))
          (names (lsp-dart-test-names test))
          (kind (lsp-dart-test-kind test))
@@ -218,9 +218,15 @@ PARAMS is the notification data from outline."
   (string-match "_test.dart" file-name))
 
 (defun lsp-dart-test-support-run-last-test ()
-  "Visit the last ran test going to the test definition."
+  "Run last ran test."
   (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
       (lsp-dart-test-support-run test)
+    (lsp-dart-project-log "No last test found.")))
+
+(defun lsp-dart-test-support-debug-last-test ()
+  "Debug last ran test."
+  (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
+      (lsp-dart-test-support-debug test)
     (lsp-dart-project-log "No last test found.")))
 
 (defun lsp-dart-test-support-visit-last-test ()
