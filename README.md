@@ -65,15 +65,14 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 ![flutter-outline](images/flutter-outline.gif)
 
-### Run tests
+### Run/Debug tests
 
 `lsp-dart-run-test-file` - Run all tests from current test buffer.
-
-`lsp-dart-run-test-at-point` - Run single test at point. [:warning:*](#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above)
-
+`lsp-dart-run-test-at-point` - Run single test at point.
+`lsp-dart-debug-test-at-point` - Debug single test at point.
 `lsp-dart-visit-last-test` - Go to last ran test.
-
 `lsp-dart-run-last-test` - Run last ran test.
+`lsp-dart-debug-last-test` - Debug last ran test.
 
 Running a test interactively: 
 
@@ -162,12 +161,15 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                    | `t`                                   |
 | `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                      | `t`                                   |
 | `lsp-dart-test-code-lens`                        | Enable the `Run` code lens on tests.                                                                    | `t`                                   |
-| `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                         | 3.9.1                                 |
+| `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                         | 3.10.1                                |
 | `lsp-dart-dap-debugger-path`                     | The debugger extension path                                                                             | Check source file                     |
 | `lsp-dart-dap-dart-debugger-program`             | The command to execute the debugger extension on dart projects.                                         | Check source file                     |
+| `lsp-dart-dap-dart-test-debugger-program`        | The command to execute the test debugger extension on dart projects.                                    | Check source file                     |
 | `lsp-dart-dap-flutter-debugger-program`          | The command to execute the debugger extension on flutter projects.                                      | Check source file                     |
+| `lsp-dart-dap-flutter-test-debugger-program`     | The command to execute the test debugger extension on flutter projects.                                 | Check source file                     |
 | `lsp-dart-dap-debug-external-libraries`          | Whether to enable the debug on external libraries                                                       | `nil`                                 |
 | `lsp-dart-dap-debug-sdk-libraries`               | Whether to enable the debug on Dart SDK libraries                                                       | `nil`                                 |
+| `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.                                               | `""`                                  |
 | `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.           | `t`                                   |
 | `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                            | `t`                                   |
 | `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                         | `nil`                                 |
