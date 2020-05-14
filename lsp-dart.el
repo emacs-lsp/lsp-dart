@@ -31,8 +31,8 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-project)
-(require 'lsp-dart-test-support)
 (require 'lsp-dart-dap)
+(require 'lsp-dart-test-support)
 (require 'lsp-dart-flutter-fringe)
 (require 'lsp-dart-flutter-widget-guide)
 
@@ -408,20 +408,21 @@ If the version number could not be determined, signal an error."
 
 ;;;###autoload
 (defun lsp-dart-run-test-at-point ()
-  "Run test checking for the previous overlay at point.
-Run test of the overlay which has the smallest range of
-all test overlays in the current buffer."
+  "Run test at point.
+Search for the last test overlay."
   (interactive)
-  (-some--> (overlays-in (point-min) (point-max))
-    (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
-                (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
-                  (and (>= (point) beg)
-                       (<= (point) end)))) it)
-    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
-                      ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
-                (and (< beg1 beg2)
-                     (> end1 end2))) it)
-    (lsp-dart-test-support-run (overlay-get it 'lsp-dart-test))))
+  (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
+      (lsp-dart-test-support-run (overlay-get overlay 'lsp-dart-test))
+    (lsp-dart-project-log "No test found at point.")))
+
+;;;###autoload
+(defun lsp-dart-debug-test-at-point ()
+  "Debug test at point.
+Search for the last test overlay."
+  (interactive)
+  (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
+      (lsp-dart-test-support-debug (overlay-get overlay 'lsp-dart-test))
+    (lsp-dart-project-log "No test found at point.")))
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()
@@ -439,9 +440,15 @@ all test overlays in the current buffer."
 
 ;;;###autoload
 (defun lsp-dart-run-last-test ()
-  "Visit the last ran test going to test definition."
+  "Run the last ran test."
   (interactive)
   (lsp-dart-test-support-run-last-test))
+
+;;;###autoload
+(defun lsp-dart-debug-last-test ()
+  "Debug the last ran test."
+  (interactive)
+  (lsp-dart-test-support-debug-last-test))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))

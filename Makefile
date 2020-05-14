@@ -18,7 +18,7 @@ LINT="(progn \
 build:
 	cask install
 
-test: build compile checkdoc lint
+test: clean build compile checkdoc lint
 
 compile:
 	@echo "Compiling..."
@@ -57,7 +57,7 @@ lint:
 		*.el
 
 clean:
-	rm -rf .cask
+	rm -rf .cask *.elc
 
 tag:
 	$(eval TAG := $(filter-out $@,$(MAKECMDGOALS)))
