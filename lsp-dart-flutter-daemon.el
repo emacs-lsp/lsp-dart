@@ -63,7 +63,7 @@ PARAMS is the optional method params."
             (lsp--json-serialize command)
             "]\n")))
 
-(defun lsp-dart-flutter-daemon-raw->response (response)
+(defun lsp-dart-flutter-daemon--raw->response (response)
   "Parse raw RESPONSE into a list of responses."
   (when (string-prefix-p "[" (string-trim response))
     (--> response
@@ -73,7 +73,7 @@ PARAMS is the optional method params."
          (split-string it "\n")
          (-map (lambda (el) (lsp-seq-first (lsp--read-json el))) it))))
 
-(defun lsp-dart-flutter-daemon-handle-events (raw-response)
+(defun lsp-dart-flutter-daemon--handle-events (raw-response)
   "Handle Flutter daemon events from RAW-RESPONSE."
   (-map (-lambda ((&hash "event" "params" (params &as &hash? "level" "message")))
           (when event
@@ -83,9 +83,9 @@ PARAMS is the optional method params."
               ("device.added" (setq lsp-dart-flutter-daemon-current-device params))
 
               ("daemon.logMessage" (lsp-dart-flutter-daemon-log level message)))))
-        (lsp-dart-flutter-daemon-raw->response raw-response)))
+        (lsp-dart-flutter-daemon--raw->response raw-response)))
 
-(defun lsp-dart-flutter-daemon-handle-response (raw-response)
+(defun lsp-dart-flutter-daemon--handle-response (raw-response)
   "Handle the RAW-RESPONSE from comint output."
   (when lsp-dart-flutter-daemon-current-command
     (--map
@@ -93,16 +93,16 @@ PARAMS is the optional method params."
               ((&hash "id" "callback" "event-name") lsp-dart-flutter-daemon-current-command))
         (if event-name
             (when (string= event event-name)
-              (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon-handle-response)
+              (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
               (funcall callback params))
           (when (= resp-id id)
-            (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon-handle-response)
+            (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
             (if result
                 (funcall callback result)
               (funcall callback)))))
-      (lsp-dart-flutter-daemon-raw->response raw-response))))
+      (lsp-dart-flutter-daemon--raw->response raw-response))))
 
-(defun lsp-dart-flutter-daemon-running-p ()
+(defun lsp-dart-flutter-daemon--running-p ()
   "Return non-nil if the Flutter daemon is already running."
   (comint-check-proc lsp-dart-flutter-daemon-buffer-name))
 
@@ -111,14 +111,14 @@ PARAMS is the optional method params."
 PARAMS is the optional method args and should be a hash-table.
 If EVENT-NAME is non-nil, it will this event to return its value.
 Starts the daemon if is not running yet."
-  (unless (lsp-dart-flutter-daemon-running-p)
+  (unless (lsp-dart-flutter-daemon--running-p)
     (lsp-dart-flutter-daemon--start))
   (let* ((id (lsp-dart-flutter-daemon--generate-command-id))
          (command (lsp-dart-flutter-daemon--build-command id method params)))
     (setq lsp-dart-flutter-daemon-current-command (ht ("id" id)
                                                       ("callback" callback)
                                                       ("event-name" event-name)))
-    (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon-handle-response)
+    (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
     (comint-send-string (get-buffer-process lsp-dart-flutter-daemon-buffer-name) command)))
 
 (defun lsp-dart-flutter-daemon-get-emulators (callback)
@@ -134,8 +134,8 @@ Starts the daemon if is not running yet."
       (lsp-dart-flutter-daemon--send
        "device.enable"
        (lambda ()
-         (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon-handle-events)
-         (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon-handle-events)
+         (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-events)
+         (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-events)
          (lsp-dart-flutter-daemon--send "emulator.launch" callback params "device.added"))))))
 
 ;;;###autoload
