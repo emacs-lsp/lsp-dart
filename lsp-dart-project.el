@@ -1,10 +1,5 @@
 ;;; lsp-dart-project.el --- Functions for lsp-dart -*- lexical-binding: t; -*-
 ;;
-;; Version: 1.3
-;; Keywords: languages, extensions
-;; Package-Requires: ((emacs "25.2") (dash "2.14.1"))
-;; URL: https://emacs-lsp.github.io/lsp-dart
-;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -46,7 +41,7 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
 
 ;; Internal
 
-(defun lsp-dart-project--flutter-project-p ()
+(defun lsp-dart--flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
   (when-let (pubspec-path (-some->> (lsp-dart-project-get-root)
                             (expand-file-name "pubspec.yaml")))
@@ -64,7 +59,7 @@ Check for PATH environment variable.
 When editing a Flutter project, the version of Dart included in the Flutter SDK
 is used in preference."
   (or lsp-dart-project-sdk-dir
-      (when (lsp-dart-project--flutter-project-p)
+      (when (lsp-dart--flutter-project-p)
         (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-project-get-flutter-sdk-dir)))
       (-some-> (executable-find "dart")
         file-truename

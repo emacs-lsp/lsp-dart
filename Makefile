@@ -13,6 +13,7 @@ LINT="(progn \
 		(unless (package-installed-p 'package-lint) \
 		  (package-install 'package-lint)) \
 		(require 'package-lint) \
+		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
 build:
