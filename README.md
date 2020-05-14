@@ -142,7 +142,7 @@ matching names.
 
 #### DevTools
 
-You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-dap-devtools-open`.
+You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-open-devtools`.
 
 ###### :warning:* Features only available for Dart SDK version 2.8.0 or above.
 
@@ -178,8 +178,8 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.           | `t`               |
 | `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                            | `t`               |
 | `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                         | `nil`             |
-| `lsp-dart-dap-devtools-theme`                    | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                       | `"dark"`          |
-| `lsp-dart-dap-devtools-hide-options`             | What to hide when openning DevTools via `lsp-dart-dap-open-devtools`                                    | `debugger`        |
+| `lsp-dart-devtools-theme`                        | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                       | `"dark"`          |
+| `lsp-dart-devtools-hide-options`                 | What to hide when openning DevTools via `lsp-dart-dap-open-devtools`                                    | `debugger`        |
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
