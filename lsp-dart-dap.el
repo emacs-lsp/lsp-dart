@@ -99,7 +99,7 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap-log (msg &rest args)
   "Log MSG with ARGS adding lsp-dart-dap prefix."
-  (apply #'lsp-dart-project-custom-log "[DAP]" msg args))
+  (apply #'lsp-dart-custom-log "[DAP]" msg args))
 
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
@@ -119,14 +119,14 @@ Required to support 'Inspect Widget'."
   "Return the base args for debugging merged with CONF."
   (-> conf
       (dap--put-if-absent :request "launch")
-      (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
-      (dap--put-if-absent :cwd (lsp-dart-project-get-root))
-      (dap--put-if-absent :pubPath (lsp-dart-project-pub-command))
-      (dap--put-if-absent :pubSnapshotPath (lsp-dart-project-pub-snapshot-command))
+      (dap--put-if-absent :dartPath (lsp-dart-dart-command))
+      (dap--put-if-absent :cwd (lsp-dart-get-project-root))
+      (dap--put-if-absent :pubPath (lsp-dart-pub-command))
+      (dap--put-if-absent :pubSnapshotPath (lsp-dart-pub-snapshot-command))
       (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
       (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
       (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-      (dap--put-if-absent :flutterPath (lsp-dart-project-flutter-command))
+      (dap--put-if-absent :flutterPath (lsp-dart-flutter-command))
       (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
       (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)))
 
@@ -201,7 +201,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :type "flutter")
                       (dap--put-if-absent :flutterMode "debug")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
-                      (dap--put-if-absent :program (lsp-dart-project-get-entrypoint)))))
+                      (dap--put-if-absent :program (lsp-dart-get-project-entrypoint)))))
     (lambda (start-debugging-callback)
       (lsp-dart-dap--flutter-get-or-create-device
        (-lambda ((&hash "id" device-id "name" device-name))

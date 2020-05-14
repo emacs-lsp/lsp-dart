@@ -133,7 +133,7 @@ Defaults to side following treemacs default."
 
 (defun lsp-dart--get-dart-version ()
   "Retrieve the dart version from shell command."
-  (->> (concat (lsp-dart-project-dart-command) " --version")
+  (->> (concat (lsp-dart-dart-command) " --version")
        shell-command-to-string
        split-string
        (nth 3)))
@@ -159,7 +159,7 @@ The key is composed of the KEY-PREFIX with PARAMS uri path."
 
 (defun lsp-dart-library-folders ()
   "Return the library folders path to analyze."
-  (let ((sdk-lib (expand-file-name "lib" (lsp-dart-project-get-sdk-dir))))
+  (let ((sdk-lib (expand-file-name "lib" (lsp-dart-get-sdk-dir))))
     (if (string-prefix-p sdk-lib (buffer-file-name))
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
@@ -326,8 +326,8 @@ It updates the Flutter outline view if it already exists."
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
-      `(,(lsp-dart-project-dart-command)
-        ,(expand-file-name (f-join (lsp-dart-project-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
+      `(,(lsp-dart-dart-command)
+        ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
         "--lsp")))
 
 (defun lsp-dart--handle-closing-labels (_workspace params)
@@ -384,7 +384,7 @@ If the version number could not be determined, signal an error."
   (interactive)
   (if (require 'pkg-info nil t)
       (let ((version (pkg-info-version-info 'lsp-dart)))
-        (lsp-dart-project-log
+        (lsp-dart-log
          "%s at %s @ Emacs %s"
          version
          (format-time-string "%Y.%m.%d" (current-time))
@@ -412,7 +412,7 @@ Search for the last test overlay."
   (interactive)
   (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
       (lsp-dart-test-support-run (overlay-get overlay 'lsp-dart-test))
-    (lsp-dart-project-log "No test found at point.")))
+    (lsp-dart-log "No test found at point.")))
 
 ;;;###autoload
 (defun lsp-dart-debug-test-at-point ()
@@ -421,7 +421,7 @@ Search for the last test overlay."
   (interactive)
   (if-let (overlay (lsp-dart-test-support-test-overlay-at-point))
       (lsp-dart-test-support-debug (overlay-get overlay 'lsp-dart-test))
-    (lsp-dart-project-log "No test found at point.")))
+    (lsp-dart-log "No test found at point.")))
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()

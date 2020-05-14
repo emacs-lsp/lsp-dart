@@ -34,7 +34,7 @@
 
 (defun lsp-dart-flutter-daemon-log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
-  (apply #'lsp-dart-project-custom-log (concat "[FLUTTER " (upcase level) "] ")
+  (apply #'lsp-dart-custom-log (concat "[FLUTTER " (upcase level) "] ")
          msg
          args))
 
@@ -45,7 +45,7 @@
 (defun lsp-dart-flutter-daemon--start ()
   "Start the Flutter daemon."
   (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name)))
-    (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-project-flutter-command) nil "daemon")
+    (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-flutter-command) nil "daemon")
     (with-current-buffer buffer
       (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
         (lsp-dart-flutter-daemon-mode)))
@@ -143,7 +143,7 @@ Starts the daemon if is not running yet."
   "Major mode for `lsp-dart-flutter-daemon--start`."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
-  (setenv "PATH" (concat (lsp-dart-project-flutter-command) ":" (getenv "PATH"))))
+  (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH"))))
 
 (provide 'lsp-dart-flutter-daemon)
 ;;; lsp-dart-flutter-daemon.el ends here

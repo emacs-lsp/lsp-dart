@@ -150,8 +150,8 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 | Variable                                         | Description                                                                                             | Default           |
 |:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:------------------|
-| `lsp-dart-project-sdk-dir`                       | The optional Dart SDK path.                                                                             | `nil`             |
-| `lsp-dart-project-flutter-sdk-dir`               | The optional Flutter SDK path.                                                                          | `nil`             |
+| `lsp-dart-sdk-dir`                               | The optional Dart SDK path.                                                                             | `nil`             |
+| `lsp-dart-flutter-sdk-dir`                       | The optional Flutter SDK path.                                                                          | `nil`             |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`             |
 | `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder | `t`               |
@@ -201,7 +201,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 :grey_question: `LSP :: No LSP server for dart-mode(check *lsp-log*).`
 
-:small_blue_diamond: Try to set the `lsp-dart-project-sdk-dir` to the Dart SDK dir instalation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
+:small_blue_diamond: Try to set the `lsp-dart-sdk-dir` to the Dart SDK dir instalation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
 
 ## Community
 All feedback and suggestions are very welcome!

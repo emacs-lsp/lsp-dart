@@ -67,7 +67,7 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
 
 (defmacro lsp-dart-test-support--from-project-root (&rest body)
   "Execute BODY with cwd set to the project root."
-  `(let ((project-root (lsp-dart-project-get-root)))
+  `(let ((project-root (lsp-dart-get-project-root)))
      (if project-root
          (let ((default-directory project-root))
            ,@body)
@@ -78,8 +78,8 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
 If the given BUFFER is a flutter test file, return the flutter command
 otherwise the dart command."
   (if (lsp-dart-test-support--flutter-test-file-p buffer)
-      (lsp-dart-project-flutter-command)
-    (concat (lsp-dart-project-pub-command) " run")))
+      (lsp-dart-flutter-command)
+    (concat (lsp-dart-pub-command) " run")))
 
 (defun lsp-dart-test-support--build-test-name (names)
   "Build the test name from a group of test NAMES."
@@ -109,7 +109,7 @@ If TEST is non nil, it will run only this test."
           (names (lsp-dart-test-names test))
           (kind (lsp-dart-test-kind test))
           (test-file (file-relative-name file-name
-                                         (lsp-dart-project-get-root)))
+                                         (lsp-dart-get-project-root)))
           (test-name (lsp-dart-test-support--build-test-name names))
           (group-kind? (string= kind "UNIT_TEST_GROUP"))
           (test-arg (when test-name
@@ -230,13 +230,13 @@ the current buffer."
   "Run last ran test."
   (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
       (lsp-dart-test-support-run test)
-    (lsp-dart-project-log "No last test found.")))
+    (lsp-dart-log "No last test found.")))
 
 (defun lsp-dart-test-support-debug-last-test ()
   "Debug last ran test."
   (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
       (lsp-dart-test-support-debug test)
-    (lsp-dart-project-log "No last test found.")))
+    (lsp-dart-log "No last test found.")))
 
 (defun lsp-dart-test-support-visit-last-test ()
   "Visit the last ran test going to the test definition."
@@ -252,7 +252,7 @@ the current buffer."
         (with-current-buffer buffer
           (switch-to-buffer buffer nil t)
           (goto-char position)))
-    (lsp-dart-project-log "No last test found.")))
+    (lsp-dart-log "No last test found.")))
 
 
 (provide 'lsp-dart-test-support)
