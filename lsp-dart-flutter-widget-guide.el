@@ -24,6 +24,11 @@
 
 (require 'lsp-mode)
 
+(defcustom lsp-dart-flutter-widget-guides t
+  "Enable showing ui guides for flutter widgets hierarchy."
+  :type 'boolean
+  :group 'lsp-dart)
+
 (defconst lsp-dart-flutter-widget-guide-space " ")
 (defconst lsp-dart-flutter-widget-guide-vertical-line "│")
 (defconst lsp-dart-flutter-widget-guide-horizontal-line "─")

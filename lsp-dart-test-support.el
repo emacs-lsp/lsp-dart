@@ -25,6 +25,11 @@
 (require 'lsp-dart-utils)
 (require 'lsp-dart-dap)
 
+(defcustom lsp-dart-test-code-lens t
+  "Enable the test code lens overlays."
+  :type 'boolean
+  :group 'lsp-dart)
+
 (defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 
 

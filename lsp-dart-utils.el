@@ -129,5 +129,21 @@ FLUTTER_ROOT environment variable."
         (custom-prefix (propertize prefix 'face 'font-lock-function-name-face)))
     (apply #'message (concat base-prefix " " custom-prefix " " msg) args)))
 
+
+;; Version
+
+(defun lsp-dart--get-dart-version ()
+  "Retrieve the dart version from shell command."
+  (->> (concat (lsp-dart-dart-command) " --version")
+       shell-command-to-string
+       split-string
+       (nth 3)))
+
+(defun lsp-dart-assert-sdk-min-version (version)
+  "Assert dart sdk min version is VERSION."
+  (cl-assert (string< version (lsp-dart--get-dart-version))
+             t
+             "Feature not supported before dart SDK %s"))
+
 (provide 'lsp-dart-utils)
 ;;; lsp-dart-utils.el ends here
