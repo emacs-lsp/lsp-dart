@@ -1,6 +1,7 @@
 lsp-dart
 =========
 
+<img align="right" width="52" alt="flutter_logo" src="images/flutter-logo.svg">
 <img align="right" width="64" alt="dart_logo" src="images/logo.svg">
 
 [![MELPA](https://melpa.org/packages/lsp-dart-badge.svg)](https://melpa.org/#/lsp-dart)
@@ -10,7 +11,7 @@ lsp-dart
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
-<img width="22" alt="flutter_logo" align="top" src="images/flutter-logo.svg"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development, for more info see [Additional packages](#additional-packages).
+<img width="16" alt="flutter_logo" align="top" src="images/flutter-logo.svg"> LSP works great with [Flutter](https://flutter.dev/), but there are also other packages that may help to improve your development, for more info see [Additional packages](#additional-packages).
 
 ## Quickstart
 
