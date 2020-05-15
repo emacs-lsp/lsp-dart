@@ -154,7 +154,7 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :type "dart")
       (dap--put-if-absent :name "Dart")
       (dap--put-if-absent :dap-server-path lsp-dart-dap-dart-debugger-program)
-      (dap--put-if-absent :program (buffer-file-name))))
+      (dap--put-if-absent :program (lsp-dart-get-project-entrypoint))))
 
 (dap-register-debug-provider "dart" 'lsp-dart-dap--populate-dart-start-file-args)
 (dap-register-debug-template "Dart :: Debug"
