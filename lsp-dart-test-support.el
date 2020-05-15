@@ -167,6 +167,7 @@ TEST-RANGE is the test method range."
     (overlay-put overlay 'before-string
                  (concat spaces
                          (propertize "Run"
+                                     'pointer 'hand
                                      'help-echo "mouse-1: Run this test"
                                      'mouse-face 'lsp-lens-mouse-face
                                      'local-map (-doto (make-sparse-keymap)
@@ -178,6 +179,7 @@ TEST-RANGE is the test method range."
                          (propertize "|" 'font-lock-face 'lsp-lens-face)
                          separator
                          (propertize "Debug"
+                                     'pointer 'hand
                                      'help-echo "mouse-1: Debug this test"
                                      'mouse-face 'lsp-lens-mouse-face
                                      'local-map (-doto (make-sparse-keymap)

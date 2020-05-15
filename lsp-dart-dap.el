@@ -115,6 +115,12 @@ Required to support 'Inspect Widget'."
    "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
    "--no-package-lock" "--silent" "--no-save"))
 
+(defun lsp-dart-dap--capabilities-debugger-args (conf)
+  "Add capabilities args on CONF checking dart SDK version."
+  (-> conf
+      (dap--put-if-absent :useWriteServiceInfo (lsp-dart-version-at-least-p "2.7.1"))
+      (dap--put-if-absent :debuggerHandlesPathsEverywhereForBreakpoints (lsp-dart-version-at-least-p "2.2.1-edge"))))
+
 (defun lsp-dart-dap--base-debugger-args (conf)
   "Return the base args for debugging merged with CONF."
   (-> conf
@@ -128,7 +134,8 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
       (dap--put-if-absent :flutterPath (lsp-dart-flutter-command))
       (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
-      (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)))
+      (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
+      lsp-dart-dap--capabilities-debugger-args))
 
 ;; Dart
 

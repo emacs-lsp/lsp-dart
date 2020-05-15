@@ -139,9 +139,20 @@ FLUTTER_ROOT environment variable."
        split-string
        (nth 3)))
 
+(defun lsp-dart-version->number (version)
+  "Transform VERSION into a comparable version number."
+  (--> version
+       (replace-regexp-in-string "[[:alpha:]|-]+" "" it nil 'literal)))
+
+(defun lsp-dart-version-at-least-p (version)
+  "Return non-nil if Dart SDK version is at least VERSION."
+  (let ((sdk-version (lsp-dart--get-dart-version)))
+    (version<= (lsp-dart-version->number version)
+               (lsp-dart-version->number sdk-version))))
+
 (defun lsp-dart-assert-sdk-min-version (version)
   "Assert dart sdk min version is VERSION."
-  (cl-assert (string< version (lsp-dart--get-dart-version))
+  (cl-assert (lsp-dart-version-at-least-p version)
              t
              "Feature not supported before dart SDK %s"))
 
