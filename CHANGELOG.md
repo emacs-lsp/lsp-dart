@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.5
+* Add `lsp-dart-run-all-tests` command. 
+
 ## 1.10.0
 * Support for debugging Dart/Flutter tests. 
 * Add "Debug" code lens on tests.

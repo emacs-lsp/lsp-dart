@@ -51,14 +51,6 @@
   (or (string= kind "UNIT_TEST_TEST")
       (string= kind "UNIT_TEST_GROUP")))
 
-(defun lsp-dart-test--flutter-test-file-p (buffer)
-  "Return non-nil if the BUFFER appears to be a flutter test file."
-  (with-current-buffer buffer
-    (save-excursion
-      (goto-char (point-min))
-      (re-search-forward "^import 'package:flutter_test/flutter_test.dart';"
-                         nil t))))
-
 (defun lsp-dart-test--last-index-of (regex str &optional ignore-case)
   "Find the last index of a REGEX in a string STR.
 IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
@@ -78,11 +70,9 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
            ,@body)
        (error "Dart or Flutter project not found (pubspec.yaml not found)"))))
 
-(defun lsp-dart-test--build-command (buffer)
-  "Build the dart or flutter build command.
-If the given BUFFER is a flutter test file, return the flutter command
-otherwise the dart command."
-  (if (lsp-dart-test--flutter-test-file-p buffer)
+(defun lsp-dart-test--build-command ()
+  "Build the dart or flutter build command checking project type."
+  (if (lsp-dart--flutter-project-p)
       (lsp-dart-flutter-command)
     (concat (lsp-dart-pub-command) " run")))
 
@@ -105,28 +95,33 @@ otherwise the dart command."
                                                   escaped-str nil t)))
     escaped-str))
 
-(defun lsp-dart-test--run (test)
+(defun lsp-dart-test--run (&optional test)
   "Run Dart/Flutter test command in a compilation buffer.
-If TEST is non nil, it will run only this test."
+If TEST is nil, it will run all tests from project.
+If TEST is non nil, it will check if contains any test specific name
+to run otherwise run all tests from file-name in TEST."
   (lsp-dart-test--from-project-root
-   (let* ((file-name (lsp-dart-test-file-name test))
-          (buffer (get-file-buffer file-name))
-          (names (lsp-dart-test-names test))
-          (kind (lsp-dart-test-kind test))
-          (test-file (file-relative-name file-name
-                                         (lsp-dart-get-project-root)))
-          (test-name (lsp-dart-test--build-test-name names))
-          (group-kind? (string= kind "UNIT_TEST_GROUP"))
-          (test-arg (when test-name
-                      (concat "--name '^"
-                              (lsp-dart-test--escape-test-name test-name)
-                              (if group-kind? "'" "$'")))))
-     (when names
-       (lsp-workspace-set-metadata "last-ran-test" test))
-     (compilation-start (format "%s test %s %s"
-                                (lsp-dart-test--build-command buffer)
-                                (or test-arg "")
-                                test-file)
+   (if test
+       (let* ((file-name (lsp-dart-test-file-name test))
+              (names (lsp-dart-test-names test))
+              (kind (lsp-dart-test-kind test))
+              (test-file (file-relative-name file-name
+                                             (lsp-dart-get-project-root)))
+              (test-name (lsp-dart-test--build-test-name names))
+              (group-kind? (string= kind "UNIT_TEST_GROUP"))
+              (test-arg (when test-name
+                          (concat "--name '^"
+                                  (lsp-dart-test--escape-test-name test-name)
+                                  (if group-kind? "'" "$'")))))
+         (when names
+           (lsp-workspace-set-metadata "last-ran-test" test))
+         (compilation-start (format "%s test %s %s"
+                                    (lsp-dart-test--build-command)
+                                    (or test-arg "")
+                                    test-file)
+                            t
+                            (lambda (_) lsp-dart-tests-buffer-name)))
+     (compilation-start (format "%s test" (lsp-dart-test--build-command))
                         t
                         (lambda (_) lsp-dart-tests-buffer-name)))))
 
@@ -142,7 +137,7 @@ If TEST is non nil, it will run only this test."
                         (unless group-kind? "$")))
          (test-arg `("--name" ,regex)))
     (lsp-workspace-set-metadata "last-ran-test" test)
-    (if (lsp-dart-test--flutter-test-file-p (get-file-buffer file-name))
+    (if (lsp-dart--flutter-project-p)
         (lsp-dart-dap-debug-flutter-test file-name test-arg)
       (lsp-dart-dap-debug-dart-test file-name test-arg))))
 
@@ -253,11 +248,17 @@ Search for the last test overlay."
 
 ;;;###autoload
 (defun lsp-dart-run-test-file ()
-  "Run dart/Flutter test command only for current buffer."
+  "Run Dart/Flutter test command only for current buffer."
   (interactive)
   (if (lsp-dart-test-file-p (buffer-file-name))
       (lsp-dart-test--run (->> (current-buffer) buffer-name file-truename (make-lsp-dart-test :file-name)))
     (user-error "Current buffer is not a Dart/Flutter test file")))
+
+;;;###autoload
+(defun lsp-dart-run-all-tests ()
+  "Run each test from project."
+  (interactive)
+  (lsp-dart-test--run))
 
 ;;;###autoload
 (defun lsp-dart-visit-last-test ()
