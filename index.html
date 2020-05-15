@@ -726,12 +726,12 @@ matching names.</p>
 <tbody>
 <tr>
 <td align="left"><code>lsp-dart-sdk-dir</code></td>
-<td align="left">The optional Dart SDK path.</td>
+<td align="left">The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in <code>$PATH</code>.</td>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-sdk-dir</code></td>
-<td align="left">The optional Flutter SDK path.</td>
+<td align="left">The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the <code>flutter</code> executable in <code>$PATH</code> and if not found, it will try in <code>$FLUTTER_ROOT</code>.</td>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
