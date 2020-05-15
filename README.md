@@ -150,8 +150,8 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 | Variable                                         | Description                                                                                             | Default           |
 |:-------------------------------------------------|:--------------------------------------------------------------------------------------------------------|:------------------|
-| `lsp-dart-sdk-dir`                               | The optional Dart SDK path.                                                                             | `nil`             |
-| `lsp-dart-flutter-sdk-dir`                       | The optional Flutter SDK path.                                                                          | `nil`             |
+| `lsp-dart-sdk-dir`                               | The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in `$PATH`.        | `nil`             |
+| `lsp-dart-flutter-sdk-dir`                       | The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the `flutter` executable in `$PATH` and if not found, it will try in `$FLUTTER_ROOT`.                                                                        | `nil`             |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                     | Check source file |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                             | `'()`             |
 | `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder | `t`               |
