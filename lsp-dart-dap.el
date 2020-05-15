@@ -1,10 +1,5 @@
 ;;; lsp-dart-dap.el --- DAP support for lsp-dart -*- lexical-binding: t; -*-
 ;;
-;; Version: 1.5
-;; Keywords: languages, extensions
-;; Package-Requires: ((emacs "25.2") (lsp-mode "6.0") (dash "2.14.1"))
-;; URL: https://emacs-lsp.github.io/lsp-dart
-;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -28,9 +23,9 @@
 (require 'dap-mode)
 (require 'dap-utils)
 
-(require 'lsp-dart-project)
+(require 'lsp-dart-utils)
 (require 'lsp-dart-flutter-daemon)
-(require 'lsp-dart-dap-devtools)
+(require 'lsp-dart-devtools)
 
 (defcustom lsp-dart-dap-extension-version "3.10.1"
   "The extension version."
@@ -104,7 +99,7 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap-log (msg &rest args)
   "Log MSG with ARGS adding lsp-dart-dap prefix."
-  (apply #'lsp-dart-project-custom-log "[DAP]" msg args))
+  (apply #'lsp-dart-custom-log "[DAP]" msg args))
 
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
@@ -124,14 +119,14 @@ Required to support 'Inspect Widget'."
   "Return the base args for debugging merged with CONF."
   (-> conf
       (dap--put-if-absent :request "launch")
-      (dap--put-if-absent :dartPath (lsp-dart-project-dart-command))
-      (dap--put-if-absent :cwd (lsp-dart-project-get-root))
-      (dap--put-if-absent :pubPath (lsp-dart-project-pub-command))
-      (dap--put-if-absent :pubSnapshotPath (lsp-dart-project-pub-snapshot-command))
+      (dap--put-if-absent :dartPath (lsp-dart-dart-command))
+      (dap--put-if-absent :cwd (lsp-dart-get-project-root))
+      (dap--put-if-absent :pubPath (lsp-dart-pub-command))
+      (dap--put-if-absent :pubSnapshotPath (lsp-dart-pub-snapshot-command))
       (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
       (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
       (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-      (dap--put-if-absent :flutterPath (lsp-dart-project-flutter-command))
+      (dap--put-if-absent :flutterPath (lsp-dart-flutter-command))
       (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
       (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)))
 
@@ -206,7 +201,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :type "flutter")
                       (dap--put-if-absent :flutterMode "debug")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
-                      (dap--put-if-absent :program (lsp-dart-project-get-entrypoint)))))
+                      (dap--put-if-absent :program (lsp-dart-get-project-entrypoint)))))
     (lambda (start-debugging-callback)
       (lsp-dart-dap--flutter-get-or-create-device
        (-lambda ((&hash "id" device-id "name" device-name))

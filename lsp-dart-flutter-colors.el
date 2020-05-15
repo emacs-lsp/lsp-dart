@@ -1,10 +1,5 @@
 ;;; lsp-dart-flutter-colors.el --- Flutter color names -*- lexical-binding: t; -*-
 ;;
-;; Version: 1.4
-;; Keywords: languages, extensions
-;; Package-Requires: ((emacs "25.2"))
-;; URL: https://emacs-lsp.github.io/lsp-dart
-;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
