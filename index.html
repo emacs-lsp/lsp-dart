@@ -712,7 +712,7 @@ the function <code>lsp-dart-dap--populate-flutter-start-file-args</code> in
 setting one of the <a href="#supported-settings">Supported settings</a> with
 matching names.</p>
 <h4 id="devtools">DevTools<a class="headerlink" href="#devtools" title="Permanent link">#</a></h4>
-<p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-dap-devtools-open</code>.</p>
+<p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-open-devtools</code>.</p>
 <h6 id="features-only-available-for-dart-sdk-version-280-or-above"><img alt="⚠" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/26a0.svg" title=":warning:" />* Features only available for Dart SDK version 2.8.0 or above.<a class="headerlink" href="#features-only-available-for-dart-sdk-version-280-or-above" title="Permanent link">#</a></h6>
 <h2 id="supported-settings">Supported settings<a class="headerlink" href="#supported-settings" title="Permanent link">#</a></h2>
 <table>
@@ -725,12 +725,12 @@ matching names.</p>
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>lsp-dart-project-sdk-dir</code></td>
+<td align="left"><code>lsp-dart-sdk-dir</code></td>
 <td align="left">The optional Dart SDK path.</td>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
-<td align="left"><code>lsp-dart-project-flutter-sdk-dir</code></td>
+<td align="left"><code>lsp-dart-flutter-sdk-dir</code></td>
 <td align="left">The optional Flutter SDK path.</td>
 <td align="left"><code>nil</code></td>
 </tr>
@@ -865,12 +865,12 @@ matching names.</p>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
-<td align="left"><code>lsp-dart-dap-devtools-theme</code></td>
+<td align="left"><code>lsp-dart-devtools-theme</code></td>
 <td align="left">The devtools theme when openning via <code>lsp-dart-dap-open-devtools</code></td>
 <td align="left"><code>"dark"</code></td>
 </tr>
 <tr>
-<td align="left"><code>lsp-dart-dap-devtools-hide-options</code></td>
+<td align="left"><code>lsp-dart-devtools-hide-options</code></td>
 <td align="left">What to hide when openning DevTools via <code>lsp-dart-dap-open-devtools</code></td>
 <td align="left"><code>debugger</code></td>
 </tr>
@@ -892,7 +892,7 @@ matching names.</p>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;projectile-project-root-files-bottom-up</span> <span class="s">&quot;BUILD&quot;</span><span class="p">))</span>
 </code></pre></div></p>
 <p><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> <code>LSP :: No LSP server for dart-mode(check *lsp-log*).</code></p>
-<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Try to set the <code>lsp-dart-project-sdk-dir</code> to the Dart SDK dir instalation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
+<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Try to set the <code>lsp-dart-sdk-dir</code> to the Dart SDK dir instalation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
 <h2 id="community">Community<a class="headerlink" href="#community" title="Permanent link">#</a></h2>
 <p>All feedback and suggestions are very welcome!</p>
 <p>You can <a href="https://github.com/emacs-lsp/lsp-dart/issues/new/choose">open a issue</a> or for a quick anwser, send a message on <a href="https://gitter.im/emacs-lsp/lsp-mode">Gitter</a>.</p>
@@ -904,7 +904,7 @@ matching names.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: May 14, 2020
+      Last update: May 15, 2020
     
   </small>
 </div>
