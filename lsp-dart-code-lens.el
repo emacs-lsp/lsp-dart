@@ -95,7 +95,7 @@ If TEST-FILE? debug tests otherwise debug application."
       (lsp-dart-dap-debug-dart path))))
 
 (defun lsp-dart-code-lens--build-main-overlay (buffer main-outline)
-  "Build main overlay code lens from MAIN-OUTLINE into BUFFER."
+  "Build main overlay code lens for BUFFER from MAIN-OUTLINE."
   (-let* (((&hash "range") main-outline)
           (beg-position (gethash "character" (gethash "start" range)))
           ((beg . end) (lsp--range-to-region range))
