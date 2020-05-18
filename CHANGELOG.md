@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.0
+* Add main code lens support, can be disable setting `lsp-dart-main-code-lens` to `nil`.
+
 ## 1.10.5
 * Add `lsp-dart-run-all-tests` command. 
 
