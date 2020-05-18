@@ -1,6 +1,6 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
-;; Version: 1.11.0
+;; Version: 1.11.1
 ;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.0") (dap-mode "0.3") (ht "2.0") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
