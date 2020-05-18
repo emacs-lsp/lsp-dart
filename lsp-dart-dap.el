@@ -160,18 +160,6 @@ Required to support 'Inspect Widget'."
 (dap-register-debug-template "Dart :: Debug"
                              (list :type "dart"))
 
-(defun lsp-dart-dap-debug-dart-test (path args)
-  "Start dart test debugging from PATH with ARGS."
-  (-> (list :type "dart"
-            :name "Dart Tests"
-            :dap-server-path lsp-dart-dap-dart-test-debugger-program
-            :program path
-            :noDebug nil
-            :shouldConnectDebugger t
-            :args args)
-      lsp-dart-dap--base-debugger-args
-      dap-start-debugging))
-
 ;; Flutter
 
 (declare-function all-the-icons-faicon "ext:all-the-icons")
@@ -193,13 +181,15 @@ Check for icons if supports it."
 Call CALLBACK when the device is chosen and started successfully."
   (lsp-dart-flutter-daemon-get-emulators
    (lambda (devices)
-     (-let* ((chosen-device (dap--completing-read "Select a device to use: "
-                                                  devices
-                                                  (-lambda ((&hash "id" "name" "platformType" platform))
-                                                    (lsp-dart-dap--device-label id name platform))
-                                                  nil
-                                                  t)))
-       (lsp-dart-flutter-daemon-launch chosen-device callback)))))
+     (if (seq-empty-p devices)
+         (lsp-dart-log "No devices found. Try to create a device first via `flutter emulators` command")
+       (-let* ((chosen-device (dap--completing-read "Select a device to use: "
+                                                    devices
+                                                    (-lambda ((&hash "id" "name" "platformType" platform))
+                                                      (lsp-dart-dap--device-label id name platform))
+                                                    nil
+                                                    t)))
+         (lsp-dart-flutter-daemon-launch chosen-device callback))))))
 
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
@@ -297,7 +287,54 @@ Call CALLBACK when the device is chosen and started successfully."
 (cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
   "Ignore this event.")
 
-(defun lsp-dart-dap-debug-flutter-test (path args)
+
+;; Public
+
+(defun lsp-dart-dap-run-dart (path)
+  "Start Dart application without debugging from PATH."
+  (-> (list :type "dart"
+            :name "Dart Run"
+            :program path
+            :noDebug t
+            :shouldConnectDebugger nil)
+      lsp-dart-dap--populate-dart-start-file-args
+      dap-start-debugging))
+
+(defun lsp-dart-dap-run-flutter (path)
+  "Start Flutter app without debugging from PATH."
+  (-> (list :type "flutter"
+            :name "Flutter Run"
+            :program path
+            :noDebug t
+            :shouldConnectDebugger nil)
+      lsp-dart-dap--populate-flutter-start-file-args
+      (funcall #'dap-start-debugging)))
+
+(defun lsp-dart-dap-debug-dart (path)
+  "Debug dart application from PATH."
+  (-> (list :program path)
+      lsp-dart-dap--populate-dart-start-file-args
+      dap-start-debugging))
+
+(defun lsp-dart-dap-debug-flutter (path)
+  "Debug Flutter application from PATH."
+  (-> (list :program path)
+      lsp-dart-dap--populate-flutter-start-file-args
+      (funcall #'dap-start-debugging)))
+
+(defun lsp-dart-dap-debug-dart-test (path &optional args)
+  "Start dart test debugging from PATH with ARGS."
+  (-> (list :type "dart"
+            :name "Dart Tests"
+            :dap-server-path lsp-dart-dap-dart-test-debugger-program
+            :program path
+            :noDebug nil
+            :shouldConnectDebugger t
+            :args args)
+      lsp-dart-dap--base-debugger-args
+      dap-start-debugging))
+
+(defun lsp-dart-dap-debug-flutter-test (path &optional args)
   "Start dart test debugging from PATH with ARGS."
   (-> (list :name "Flutter Tests"
             :type "flutter"
@@ -309,6 +346,9 @@ Call CALLBACK when the device is chosen and started successfully."
             :args args)
       lsp-dart-dap--base-debugger-args
       dap-start-debugging))
+
+
+;; Public Interface
 
 ;;;###autoload
 (defun lsp-dart-dap-flutter-hot-restart ()

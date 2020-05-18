@@ -32,7 +32,6 @@
 (require 'lsp-dart-utils)
 (require 'lsp-dart-closing-labels)
 (require 'lsp-dart-outline)
-(require 'lsp-dart-dap)
 (require 'lsp-dart-flutter-fringe)
 
 (defgroup lsp-dart nil

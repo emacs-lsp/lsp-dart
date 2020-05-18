@@ -22,7 +22,7 @@
 (require 'lsp-treemacs)
 
 (require 'lsp-dart-utils)
-(require 'lsp-dart-test-support)
+(require 'lsp-dart-code-lens)
 (require 'lsp-dart-flutter-widget-guide)
 
 (defcustom lsp-dart-outline t
@@ -216,11 +216,13 @@ Focus on it if IGNORE-FOCUS? is nil."
 PARAMS outline notification data sent.
 It updates the outline view if it already exists."
   (lsp-dart-outline--set-metadata workspace params "current-outline")
-  (when (and lsp-dart-test-code-lens
-             (lsp-dart-test-file-p (gethash "uri" params)))
-    (lsp-dart-test-check-code-lens params))
-  (when (get-buffer-window "*Dart Outline*")
-    (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path (gethash "uri" params))) t)))
+  (-let (((&hash "uri" "outline") params))
+    (when lsp-dart-main-code-lens
+      (lsp-dart-code-lens-check-main uri outline))
+    (when lsp-dart-test-code-lens
+      (lsp-dart-code-lens-check-test uri outline))
+    (when (get-buffer-window "*Dart Outline*")
+      (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t))))
 
 (defun lsp-dart-outline-handle-flutter-outline (workspace params)
   "Flutter outline notification handling from WORKSPACE.

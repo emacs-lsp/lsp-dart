@@ -25,11 +25,6 @@
 (require 'lsp-dart-utils)
 (require 'lsp-dart-dap)
 
-(defcustom lsp-dart-test-code-lens t
-  "Enable the test code lens overlays."
-  :type 'boolean
-  :group 'lsp-dart)
-
 (defconst lsp-dart-tests-buffer-name "*LSP Dart tests*")
 
 
@@ -40,11 +35,6 @@
   (names nil)
   (position nil)
   (kind nil))
-
-(defface lsp-dart-test-code-lens-separator
-  '((t :height 0.3))
-  "The face used for separate test code lens overlays."
-  :group 'lsp-dart-test-support)
 
 (defun lsp-dart-test--test-kind-p (kind)
   "Return non-nil if KIND is a test type."
@@ -141,75 +131,6 @@ to run otherwise run all tests from file-name in TEST."
         (lsp-dart-dap-debug-flutter-test file-name test-arg)
       (lsp-dart-dap-debug-dart-test file-name test-arg))))
 
-(defun lsp-dart-test--build-overlay (buffer names kind range test-range)
-  "Build an overlay in BUFFER for a test NAMES of KIND.
-RANGE is the overlay range to build.
-TEST-RANGE is the test method range."
-  (-let* ((beg-position (gethash "character" (gethash "start" range)))
-          ((beg . end) (lsp--range-to-region range))
-          (beg-line (progn (goto-char beg)
-                           (line-beginning-position)))
-          (spaces (make-string beg-position ?\s))
-          (overlay (make-overlay beg-line end buffer))
-          (test (make-lsp-dart-test :file-name (buffer-file-name buffer)
-                                    :names names
-                                    :position beg
-                                    :kind kind))
-          (separator (propertize " " 'font-lock-face 'lsp-dart-test-code-lens-separator)))
-    (overlay-put overlay 'lsp-dart-test-code-lens t)
-    (overlay-put overlay 'lsp-dart-test test)
-    (overlay-put overlay 'lsp-dart-test-overlay-test-range (lsp--range-to-region test-range))
-    (overlay-put overlay 'before-string
-                 (concat spaces
-                         (propertize "Run"
-                                     'pointer 'hand
-                                     'help-echo "mouse-1: Run this test"
-                                     'mouse-face 'lsp-lens-mouse-face
-                                     'local-map (-doto (make-sparse-keymap)
-                                                  (define-key [mouse-1] (lambda ()
-                                                                          (interactive)
-                                                                          (lsp-dart-test--run test))))
-                                     'font-lock-face 'lsp-lens-face)
-                         separator
-                         (propertize "|" 'font-lock-face 'lsp-lens-face)
-                         separator
-                         (propertize "Debug"
-                                     'pointer 'hand
-                                     'help-echo "mouse-1: Debug this test"
-                                     'mouse-face 'lsp-lens-mouse-face
-                                     'local-map (-doto (make-sparse-keymap)
-                                                  (define-key [mouse-1] (lambda ()
-                                                                          (interactive)
-                                                                          (lsp-dart-test--debug test))))
-                                     'font-lock-face 'lsp-lens-face)
-                         "\n"))))
-
-(defun lsp-dart-test--add-code-lens (buffer items &optional names)
-  "Add test code lens to BUFFER for ITEMS.
-NAMES arg is optional and are the group of tests representing a test name."
-  (seq-doseq (item items)
-    (-let* (((&hash "children" "codeRange" test-range "element"
-                    (&hash "kind" "name" "range")) item)
-            (test-kind? (lsp-dart-test--test-kind-p kind))
-            (concatened-names (if test-kind?
-                                  (append names (list name))
-                                names)))
-      (when test-kind?
-        (lsp-dart-test--build-overlay buffer (append names (list name)) kind range test-range))
-      (unless (seq-empty-p children)
-        (lsp-dart-test--add-code-lens buffer children concatened-names)))))
-
-(defun lsp-dart-test-check-code-lens (params)
-  "Check for test adding lens to it.
-PARAMS is the notification data from outline."
-  (-let* (((&hash "uri" "outline" (&hash "children")) params)
-          (buffer (lsp--buffer-for-file (lsp--uri-to-path uri))))
-    (when buffer
-      (with-current-buffer buffer
-        (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
-        (save-excursion
-          (lsp-dart-test--add-code-lens buffer children))))))
-
 (defun lsp-dart-test-file-p (file-name)
   "Return non-nil if FILE-NAME is a dart test files."
   (string-match "_test.dart" file-name))
@@ -220,11 +141,11 @@ Return the overlay which has the smallest range of all test overlays in
 the current buffer."
   (-some--> (overlays-in (point-min) (point-max))
     (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
-                (-let* (((beg . end) (overlay-get it 'lsp-dart-test-overlay-test-range)))
+                (-let* (((beg . end) (overlay-get it 'lsp-dart-code-lens-overlay-test-range)))
                   (and (>= (point) beg)
                        (<= (point) end)))) it)
-    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-test-overlay-test-range))
-                      ((beg2 . end2) (overlay-get other 'lsp-dart-test-overlay-test-range)))
+    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-code-lens-overlay-test-range))
+                      ((beg2 . end2) (overlay-get other 'lsp-dart-code-lens-overlay-test-range)))
                 (and (< beg1 beg2)
                      (> end1 end2))) it)))
 

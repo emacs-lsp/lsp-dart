@@ -167,7 +167,8 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-flutter-outline-position-params`       | The Flutter outline tree position params                                                                | Left side         |
 | `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                    | `t`               |
 | `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                      | `t`               |
-| `lsp-dart-test-code-lens`                        | Enable the `Run` code lens on tests.                                                                    | `t`               |
+| `lsp-dart-main-code-lens`                        | Enable the `Run|Debug` code lens on main methods.                                                                    | `t`               |
+| `lsp-dart-test-code-lens`                        | Enable the `Run|Debug` code lens on tests.                                                                    | `t`               |
 | `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                         | 3.10.1            |
 | `lsp-dart-dap-debugger-path`                     | The debugger extension path                                                                             | Check source file |
 | `lsp-dart-dap-dart-debugger-program`             | The command to execute the debugger extension on dart projects.                                         | Check source file |
