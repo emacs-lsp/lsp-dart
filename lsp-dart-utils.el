@@ -129,6 +129,16 @@ FLUTTER_ROOT environment variable."
         (custom-prefix (propertize prefix 'face 'font-lock-function-name-face)))
     (apply #'message (concat base-prefix " " custom-prefix " " msg) args)))
 
+(defun lsp-dart-workspace-status (message workspace)
+  "Set MESSAGE on lsp WORKSPACE status."
+  (if message
+      (lsp-workspace-status (concat (propertize "[LSP Dart]"
+                                                'face 'font-lock-keyword-face)
+                                    " "
+                                    message)
+                            workspace)
+    (lsp-workspace-status nil workspace)))
+
 
 ;; Version
 

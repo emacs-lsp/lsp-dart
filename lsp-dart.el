@@ -84,6 +84,13 @@ imported into the current file."
         ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
         "--lsp")))
 
+(defun lsp-dart--handle-analyzer-status (workspace params)
+  "Handle analyzer status notification for WORKSPACE.
+PARAMS is the data sent from server."
+  (if (gethash "isAnalyzing" params)
+      (lsp-dart-workspace-status "Analyzing project..." workspace)
+    (lsp-dart-workspace-status nil workspace)))
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection 'lsp-dart--server-command)
@@ -98,7 +105,8 @@ imported into the current file."
                   :library-folders-fn (lambda (_workspace) (lsp-dart-library-folders))
                   :notification-handlers (ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
                                              ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
-                                             ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline))
+                                             ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
+                                             ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
                   :server-id 'dart_analysis_server))
 
 
