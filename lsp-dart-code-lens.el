@@ -187,7 +187,8 @@ NAMES arg is optional and are the group of tests representing a test name."
       (with-current-buffer buffer
         (remove-overlays (point-min) (point-max) 'lsp-dart-main-code-lens t)
         (save-excursion
-          (lsp-dart-code-lens--build-main-overlay buffer main-outline))))))
+          (when main-outline
+            (lsp-dart-code-lens--build-main-overlay buffer main-outline)))))))
 
 (defun lsp-dart-code-lens-check-test (uri outline)
   "Check URI and OUTLINE for test adding lens to it."
