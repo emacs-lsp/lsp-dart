@@ -39,3 +39,6 @@ jobs:
 
     - name: Run tests
       run: 'make ci'
+
+    - name: Upload code coverage
+      - uses: codecov/codecov-action@v1
