@@ -102,18 +102,97 @@
 
 (ert-deftest lsp-dart-pub-command--test ()
   (lsp-dart-test-with-dart-sdk
-   (should (equal (lsp-dart-pub-command) (expand-file-name "bin/pub" dart-sdk)))))
+   (should (equal (lsp-dart-pub-command) (f-expand "bin/pub" dart-sdk)))))
 
 (ert-deftest lsp-dart-pub-snapshot-command--test ()
   (lsp-dart-test-with-dart-sdk
-   (should (equal (lsp-dart-pub-snapshot-command) (expand-file-name "bin/snapshots/pub.dart.snapshot" dart-sdk)))))
+   (should (equal (lsp-dart-pub-snapshot-command) (f-expand "bin/snapshots/pub.dart.snapshot" dart-sdk)))))
 
 (ert-deftest lsp-dart-dart-command--test ()
   (lsp-dart-test-with-dart-sdk
-   (should (equal (lsp-dart-dart-command) (expand-file-name "bin/dart" dart-sdk)))))
+   (should (equal (lsp-dart-dart-command) (f-expand "bin/dart" dart-sdk)))))
 
 (ert-deftest lsp-dart-flutter-command--test ()
   (lsp-dart-test-with-flutter-sdk
-   (should (equal (lsp-dart-flutter-command) (expand-file-name "bin/flutter" flutter-sdk)))))
+   (should (equal (lsp-dart-flutter-command) (f-expand "bin/flutter" flutter-sdk)))))
+
+(ert-deftest lsp-dart-get-project-root--test ()
+  (lsp-dart-test-from-dart-project
+   (should (equal (lsp-dart-get-project-root) default-directory))))
+
+(ert-deftest lsp-dart-get-project-entrypoint--lib-test ()
+  (lsp-dart-test-from-dart-project
+   (f-mkdir "lib")
+   (f-touch "lib/main.dart")
+   (should (equal (lsp-dart-get-project-entrypoint) (f-expand "lib/main.dart")))
+   (f-delete "lib" t)))
+
+(ert-deftest lsp-dart-get-project-entrypoint--lib-test ()
+  (lsp-dart-test-from-dart-project
+   (f-mkdir "bin")
+   (f-touch "bin/main.dart")
+   (should (equal (lsp-dart-get-project-entrypoint) (f-expand "bin/main.dart")))
+   (f-delete "bin" t)))
+
+(ert-deftest lsp-dart-log--without-args-test ()
+  (should (equal (lsp-dart-log "test") "[LSP Dart] test")))
+
+(ert-deftest lsp-dart-log--with-args-test ()
+  (should (equal (lsp-dart-log "test %d %s" 1 "arg") "[LSP Dart] test 1 arg")))
+
+(ert-deftest lsp-dart-custom-log--without-args-test ()
+  (should (equal (lsp-dart-custom-log "Some" "test") "[LSP Dart] Some test")))
+
+(ert-deftest lsp-dart-custom-log--with-args-test ()
+  (should (equal (lsp-dart-custom-log "Some" "test %d %s" 1 "arg") "[LSP Dart] Some test 1 arg")))
+
+(ert-deftest lsp-dart-workspace-status--non-nil-message-test ()
+  (with-mock
+    (mock (lsp-workspace-status "[LSP Dart] test" "workspace"))
+    (lsp-dart-workspace-status "test" "workspace")))
+
+(ert-deftest lsp-dart-workspace-status--nil-message-test ()
+  (with-mock
+    (mock (lsp-workspace-status nil "workspace"))
+    (lsp-dart-workspace-status nil "workspace")))
+
+(ert-deftest lsp-dart--get-dart-version--test ()
+  (with-mock
+    (mock (lsp-dart-dart-command) => "dart")
+    (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
+    (should (equal (lsp-dart--get-dart-version) "2.9.0-4.0.dev"))))
+
+(ert-deftest lsp-dart-version->number--test ()
+  (should (equal (lsp-dart-version->number "2.9.0-dev.10.0") "2.9.0.10.0")))
+
+(ert-deftest lsp-dart-version-at-least-p--a-test ()
+  (with-mock
+    (mock (lsp-dart--get-dart-version) => "2.9.0-dev.10.0")
+    (should (lsp-dart-version-at-least-p "2.9.0-dev.9.0"))))
+
+(ert-deftest lsp-dart-version-at-least-p--b-test ()
+  (with-mock
+    (mock (lsp-dart--get-dart-version) => "2.9.0-dev.10.0")
+    (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+
+(ert-deftest lsp-dart-version-at-least-p--c-test ()
+  (with-mock
+    (mock (lsp-dart--get-dart-version) => "2.10.0")
+    (should (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+
+(ert-deftest lsp-dart-version-at-least-p--d-test ()
+  (with-mock
+    (mock (lsp-dart--get-dart-version) => "2.8.0")
+    (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+
+(ert-deftest lsp-dart-version-at-least-p--e-test ()
+  (with-mock
+    (mock (lsp-dart--get-dart-version) => "2.10.0-dev.1.2")
+    (should (lsp-dart-version-at-least-p "2.10.0-dev.1.2"))))
+
+(ert-deftest lsp-dart-assert-sdk-min-version ()
+  (with-mock
+    (mock (lsp-dart-version-at-least-p "2.8.0") => t)
+    (lsp-dart-assert-sdk-min-version "2.8.0")))
 
 ;;; lsp-dart-utils-test.el ends here
