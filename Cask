@@ -4,5 +4,8 @@
 (package-file "lsp-dart.el")
 
 (development
+ (depends-on "f")
+ (depends-on "el-mock")
+ (depends-on "ert-runner")
  (depends-on "spinner")
  (depends-on "dart-mode"))
