@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'lsp-mode)
 
 (defcustom lsp-dart-sdk-dir nil
   "Path to the Dart SDK.
@@ -41,14 +42,23 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
 
 ;; Internal
 
+(defun lsp-dart--flutter-repo-p ()
+  "Return non-nil if buffer is the flutter repository."
+  (if-let (bin-path (locate-dominating-file default-directory "flutter"))
+      (and (file-regular-p (expand-file-name "flutter" bin-path))
+           (->> bin-path
+                (expand-file-name "cache/dart-sdk")
+                file-directory-p))))
+
 (defun lsp-dart--flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
-  (when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
-                            (expand-file-name "pubspec.yaml")))
-    (with-temp-buffer
-      (insert-file-contents pubspec-path)
-      (goto-char (point-min))
-      (re-search-forward "sdk\s*:\s*flutter" nil t))))
+  (or (lsp-dart--flutter-repo-p)
+      (when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
+                                (expand-file-name "pubspec.yaml")))
+        (with-temp-buffer
+          (insert-file-contents pubspec-path)
+          (goto-char (point-min))
+          (re-search-forward "sdk\s*:\s*flutter" nil t)))))
 
 
 ;; SDKs
