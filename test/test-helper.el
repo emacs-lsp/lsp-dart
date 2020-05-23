@@ -32,6 +32,40 @@
     (re-search-forward ";; Version: \\([0-9]+.[0-9]+.[0-9]+\\)" nil t)
     (match-string 1)))
 
+(defmacro lsp-dart-test-from-dart-project (&rest body)
+  "Execute BODY from a fixture dart project."
+  `(let ((default-directory (file-truename "test/fixtures/dart-project/")))
+     (with-mock
+       ,@body)))
+
+(defmacro lsp-dart-test-from-flutter-project (&rest body)
+  "Execute BODY from a fixture flutter project."
+  `(let ((default-directory (file-truename "test/fixtures/flutter-project/")))
+     (with-mock
+       ,@body)))
+
+(defmacro lsp-dart-test-with-dart-sdk (&rest body)
+  "Execute BODY with mocked dart-sdk."
+  `(let ((dart-sdk (file-truename "test/fixtures/dart-sdk/")))
+     (with-mock
+       (stub lsp-dart-get-sdk-dir => dart-sdk)
+       ,@body)))
+
+(defmacro lsp-dart-test-with-flutter-sdk (&rest body)
+  "Execute BODY with mocked dart-sdk."
+  `(let ((flutter-sdk (file-truename "test/fixtures/flutter-sdk/")))
+     (with-mock
+       (stub lsp-dart-get-flutter-sdk-dir => flutter-sdk)
+       ,@body)))
+
+(defun lsp-dart-test-command-fixture ()
+  "Return the dart command fixture."
+  (file-truename (expand-file-name "test/fixtures/dart-sdk/bin/dart")))
+
+(defun lsp-dart-test-flutter-command-fixture ()
+  "Return the dart command fixture."
+  (file-truename (expand-file-name "test/fixtures/flutter-sdk/bin/flutter")))
+
 (require 'el-mock)
 (require 'ht)
 
