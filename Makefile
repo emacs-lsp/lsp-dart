@@ -19,7 +19,7 @@ LINT="(progn \
 build:
 	cask install
 
-test: clean build compile checkdoc lint
+ci: clean build compile checkdoc lint test
 
 compile:
 	@echo "Compiling..."
@@ -57,6 +57,9 @@ lint:
 		--eval $(LINT) \
 		*.el
 
+test:
+	@$(CASK) exec ert-runner
+
 clean:
 	rm -rf .cask *.elc
 
@@ -73,4 +76,4 @@ tag:
 %:
 	@:
 
-.PHONY : test compile checkdoc lint clean tag
+.PHONY : ci compile checkdoc lint test clean tag

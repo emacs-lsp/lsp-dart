@@ -70,7 +70,7 @@ imported into the current file."
 
 (declare-function pkg-info-version-info "ext:pkg-info")
 
-(defun lsp-dart-library-folders ()
+(defun lsp-dart--library-folders ()
   "Return the library folders path to analyze."
   (let ((sdk-lib (expand-file-name "lib" (lsp-dart-get-sdk-dir))))
     (if (string-prefix-p sdk-lib (buffer-file-name))
@@ -102,7 +102,7 @@ PARAMS is the data sent from server."
                     (closingLabels . ,lsp-dart-closing-labels)
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
-                  :library-folders-fn (lambda (_workspace) (lsp-dart-library-folders))
+                  :library-folders-fn (lambda (_workspace) (lsp-dart--library-folders))
                   :notification-handlers (ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
                                              ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
                                              ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)

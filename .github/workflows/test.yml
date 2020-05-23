@@ -38,4 +38,4 @@ jobs:
         version: 0.8.4
 
     - name: Run tests
-      run: 'make test'
+      run: 'make ci'
