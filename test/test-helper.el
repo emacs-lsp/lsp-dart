@@ -21,6 +21,9 @@
 
 (require 'f)
 
+(when (require 'undercover nil t)
+  (undercover "*.el"))
+
 (add-to-list 'load-path
              (file-name-as-directory (f-parent (f-parent (f-this-file)))))
 
