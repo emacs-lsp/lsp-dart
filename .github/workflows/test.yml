@@ -45,5 +45,7 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v1
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
