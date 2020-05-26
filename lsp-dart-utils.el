@@ -161,7 +161,10 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-version->number (version)
   "Transform VERSION into a comparable version number."
-  (replace-regexp-in-string "[[:alpha:]|-]+" "" version nil 'literal))
+  (--> version
+       (replace-regexp-in-string "flutter-[[:word:]]+" "0" it nil 'literal)
+       (replace-regexp-in-string "-" "." it nil 'literal)
+       (replace-regexp-in-string "[[:alpha:]]+" "0" it nil 'literal)))
 
 (defun lsp-dart-version-at-least-p (version)
   "Return non-nil if Dart SDK version is at least VERSION."
