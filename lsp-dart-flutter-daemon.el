@@ -29,10 +29,13 @@
 (defconst lsp-dart-flutter-daemon-buffer-name "*LSP Dart - Flutter daemon*")
 (defconst lsp-dart-flutter-daemon-name "LSP Dart - Flutter daemon")
 
-(defvar lsp-dart-flutter-daemon-current-command nil)
+(defvar lsp-dart-flutter-daemon-devices '())
+(defvar lsp-dart-flutter-daemon-commands '())
+(defvar lsp-dart-flutter-daemon-device-added-listeners '())
+
 (defvar lsp-dart-flutter-daemon-current-device nil)
 
-(defun lsp-dart-flutter-daemon-log (level msg &rest args)
+(defun lsp-dart-flutter-daemon--log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
   (apply #'lsp-dart-custom-log (concat "[FLUTTER " (upcase level) "] ")
          msg
@@ -42,15 +45,23 @@
   "Generate a random command id."
   (random 10000))
 
-(defun lsp-dart-flutter-daemon--start ()
+(defun lsp-dart-flutter-daemon--running-p ()
+  "Return non-nil if the Flutter daemon is already running."
+  (comint-check-proc lsp-dart-flutter-daemon-buffer-name))
+
+(defun lsp-dart-flutter-daemon-start ()
   "Start the Flutter daemon."
-  (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name)))
-    (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-flutter-command) nil "daemon")
-    (with-current-buffer buffer
-      (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
-        (lsp-dart-flutter-daemon-mode)))
-    ;; We need to wait the daemon start
-    (sit-for 1)))
+  (unless (lsp-dart-flutter-daemon--running-p)
+    (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name)))
+      (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-flutter-command) nil "daemon")
+      (with-current-buffer buffer
+        (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
+          (lsp-dart-flutter-daemon-mode)))
+      (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses)
+      (remove-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device)
+      (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses)
+      (add-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device)
+      (lsp-dart-flutter-daemon--send "device.enable"))))
 
 (defun lsp-dart-flutter-daemon--build-command (id method &optional params)
   "Build a command from an ID and METHOD.
@@ -63,6 +74,22 @@ PARAMS is the optional method params."
             (lsp--json-serialize command)
             "]\n")))
 
+(defun lsp-dart-flutter-daemon--device-added (device)
+  "Add DEVICE to the devices list."
+  (-let (((&hash "id") device))
+    (ht-set! device "is-device" t)
+    (setf (alist-get id lsp-dart-flutter-daemon-devices nil t #'string=) nil)
+    (add-to-list 'lsp-dart-flutter-daemon-devices `(,(gethash "id" device) . ,device))
+    (when-let (listener (alist-get id lsp-dart-flutter-daemon-device-added-listeners))
+      (setf (alist-get id lsp-dart-flutter-daemon-device-added-listeners nil t #'string=) nil)
+      (funcall (gethash "callback" listener) device))))
+
+(defun lsp-dart-flutter-daemon--device-removed (device)
+  "Remove DEVICE from the devices list."
+  (-> (gethash "id" device)
+      (alist-get lsp-dart-flutter-daemon-devices nil t 'string=)
+      (setf nil)))
+
 (defun lsp-dart-flutter-daemon--raw->response (response)
   "Parse raw RESPONSE into a list of responses."
   (when (string-prefix-p "[" (string-trim response))
@@ -73,74 +100,68 @@ PARAMS is the optional method params."
          (split-string it "\n")
          (-map (lambda (el) (lsp-seq-first (lsp--read-json el))) it))))
 
-(defun lsp-dart-flutter-daemon--handle-events (raw-response)
-  "Handle Flutter daemon events from RAW-RESPONSE."
-  (-map (-lambda ((&hash "event" "params" (params &as &hash? "level" "message")))
-          (when event
-            (pcase event
-              ("device.removed" (setq lsp-dart-flutter-daemon-current-device nil))
+(defun lsp-dart-flutter-daemon--handle-responses (raw-response)
+  "Handle Flutter daemon response from RAW-RESPONSE."
+  (-map (-lambda ((&hash "id" "event" "result" "params" (params &as &hash? "level" "message")))
+          (if event
+              (pcase event
+                ("device.removed" (lsp-dart-flutter-daemon--device-removed params))
 
-              ("device.added" (setq lsp-dart-flutter-daemon-current-device params))
+                ("device.added" (lsp-dart-flutter-daemon--device-added params))
 
-              ("daemon.logMessage" (lsp-dart-flutter-daemon-log level message)))))
+                ("daemon.logMessage" (lsp-dart-flutter-daemon--log level message)))
+            (let* ((command (alist-get id lsp-dart-flutter-daemon-commands))
+                   (callback (gethash "callback" command)))
+              (when command
+                (setf (alist-get id lsp-dart-flutter-daemon-commands nil t) nil))
+              (when callback
+                (when result
+                  (funcall callback result))))))
         (lsp-dart-flutter-daemon--raw->response raw-response)))
 
-(defun lsp-dart-flutter-daemon--handle-response (raw-response)
-  "Handle the RAW-RESPONSE from comint output."
-  (when lsp-dart-flutter-daemon-current-command
-    (--map
-      (-let* (((&hash "id" resp-id "result" "event" "params") it)
-              ((&hash "id" "callback" "event-name") lsp-dart-flutter-daemon-current-command))
-        (if event-name
-            (when (string= event event-name)
-              (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
-              (funcall callback params))
-          (when (= resp-id id)
-            (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
-            (if result
-                (funcall callback result)
-              (funcall callback)))))
-      (lsp-dart-flutter-daemon--raw->response raw-response))))
-
-(defun lsp-dart-flutter-daemon--running-p ()
-  "Return non-nil if the Flutter daemon is already running."
-  (comint-check-proc lsp-dart-flutter-daemon-buffer-name))
-
-(defun lsp-dart-flutter-daemon--send (method callback &optional params event-name)
-  "Send a command with METHOD to the daemon and call CALLBACK with the response.
-PARAMS is the optional method args and should be a hash-table.
-If EVENT-NAME is non-nil, it will this event to return its value.
-Starts the daemon if is not running yet."
+(defun lsp-dart-flutter-daemon--send (method &optional params callback)
+  "Build and send command with METHOD with optional PARAMS.
+Call CALLBACK if provided when the receive a response with the built id
+of this command."
   (unless (lsp-dart-flutter-daemon--running-p)
-    (lsp-dart-flutter-daemon--start))
+    (lsp-dart-flutter-daemon-start))
   (let* ((id (lsp-dart-flutter-daemon--generate-command-id))
          (command (lsp-dart-flutter-daemon--build-command id method params)))
-    (setq lsp-dart-flutter-daemon-current-command (ht ("id" id)
-                                                      ("callback" callback)
-                                                      ("event-name" event-name)))
-    (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-response)
+    (add-to-list 'lsp-dart-flutter-daemon-commands `(,id . ,(ht ("callback" callback))))
     (comint-send-string (get-buffer-process lsp-dart-flutter-daemon-buffer-name) command)))
 
-(defun lsp-dart-flutter-daemon-get-emulators (callback)
-  "Call CALLBACK with the available emulators from Flutter daemon."
-  (lsp-dart-flutter-daemon--send "emulator.getEmulators" callback))
+(defun lsp-dart-flutter-daemon-get-devices (callback)
+  "Call CALLBACK with the available emulators and devices from Flutter daemon."
+  (lsp-dart-flutter-daemon--send
+   "emulator.getEmulators"
+   nil
+   (-lambda (emulators)
+     (->> lsp-dart-flutter-daemon-devices
+          (-map #'cdr)
+          (append emulators)
+          (funcall callback)))))
 
-(defun lsp-dart-flutter-daemon-launch (device callback)
-  "Launch emulator for DEVICE and wait for connected state and call CALLBACK."
+(defun lsp-dart-flutter-daemon-launch (emulator callback)
+  "Launch EMULATOR and wait for connected state and call CALLBACK."
   (if lsp-dart-flutter-daemon-current-device
       (funcall callback lsp-dart-flutter-daemon-current-device)
-    (-let* (((&hash "id") device)
-            (params (ht ("emulatorId" id))))
-      (lsp-dart-flutter-daemon--send
-       "device.enable"
-       (lambda ()
-         (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-events)
-         (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-events)
-         (lsp-dart-flutter-daemon--send "emulator.launch" callback params "device.added"))))))
+    (progn
+      (setq lsp-dart-flutter-daemon-current-device emulator)
+      (if (gethash "is-device" emulator)
+          (funcall callback emulator)
+        (-let* (((&hash "id") emulator)
+                (params (ht ("emulatorId" id))))
+          (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
+                       `(,id . ,(ht ("callback" callback))))
+          (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))))
+
+(defun lsp-dart-flutter-daemon--reset-current-device (_session)
+  "Reset the current device."
+  (setq lsp-dart-flutter-daemon-current-device nil))
 
 ;;;###autoload
 (define-derived-mode lsp-dart-flutter-daemon-mode comint-mode lsp-dart-flutter-daemon-name
-  "Major mode for `lsp-dart-flutter-daemon--start`."
+  "Major mode for `lsp-dart-flutter-daemon-start`."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
   (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH"))))

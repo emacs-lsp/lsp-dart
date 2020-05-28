@@ -164,29 +164,30 @@ Required to support 'Inspect Widget'."
 
 (declare-function all-the-icons-faicon "ext:all-the-icons")
 
-(defun lsp-dart-dap--device-label (id name platform)
-  "Return a friendly label for device with ID, NAME and PLATFORM.
+(defun lsp-dart-dap--device-label (id name is-device platform)
+  "Return a friendly label for device with ID, NAME IS-DEVICE and PLATFORM.
 Check for icons if supports it."
   (let* ((device-name (if name name id))
-         (default (concat platform " - " device-name)))
+         (type-text (if is-device "device" "emulator"))
+         (default (concat platform " - " type-text " - " device-name)))
     (if (featurep 'all-the-icons)
         (pcase platform
-          ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green) " " device-name))
-          ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver) " " device-name))
+          ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green) " " type-text " - " device-name))
+          ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver) " " type-text " - " device-name))
           (_ default))
       default)))
 
-(defun lsp-dart-dap--flutter-get-or-create-device (callback)
+(defun lsp-dart-dap--flutter-get-or-start-device (callback)
   "Return the device to debug or prompt to start it.
 Call CALLBACK when the device is chosen and started successfully."
-  (lsp-dart-flutter-daemon-get-emulators
+  (lsp-dart-flutter-daemon-get-devices
    (lambda (devices)
      (if (seq-empty-p devices)
          (lsp-dart-log "No devices found. Try to create a device first via `flutter emulators` command")
        (-let* ((chosen-device (dap--completing-read "Select a device to use: "
                                                     devices
-                                                    (-lambda ((&hash "id" "name" "platformType" platform))
-                                                      (lsp-dart-dap--device-label id name platform))
+                                                    (-lambda ((&hash "id" "name" "is-device" "platformType" platform))
+                                                      (lsp-dart-dap--device-label id name is-device platform))
                                                     nil
                                                     t)))
          (lsp-dart-flutter-daemon-launch chosen-device callback))))))
@@ -200,7 +201,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
                       (dap--put-if-absent :program (lsp-dart-get-project-entrypoint)))))
     (lambda (start-debugging-callback)
-      (lsp-dart-dap--flutter-get-or-create-device
+      (lsp-dart-dap--flutter-get-or-start-device
        (-lambda ((&hash "id" device-id "name" device-name))
          (funcall start-debugging-callback
                   (-> pre-conf

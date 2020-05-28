@@ -30,6 +30,7 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-utils)
+(require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-closing-labels)
 (require 'lsp-dart-outline)
 (require 'lsp-dart-flutter-fringe)
@@ -87,6 +88,9 @@ imported into the current file."
 (defun lsp-dart--handle-analyzer-status (workspace params)
   "Handle analyzer status notification for WORKSPACE.
 PARAMS is the data sent from server."
+  (when (and (not (lsp-dart-flutter-daemon--running-p))
+             (lsp-dart--flutter-project-p))
+    (lsp-dart-flutter-daemon-start))
   (if (gethash "isAnalyzing" params)
       (lsp-dart-workspace-status "Analyzing project..." workspace)
     (lsp-dart-workspace-status nil workspace)))
