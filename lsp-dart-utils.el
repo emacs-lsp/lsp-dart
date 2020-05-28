@@ -53,12 +53,16 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
 (defun lsp-dart--flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
   (or (lsp-dart--flutter-repo-p)
-      (when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
-                                (expand-file-name "pubspec.yaml")))
+      (-when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
+                                 (expand-file-name "pubspec.yaml")))
         (with-temp-buffer
           (insert-file-contents pubspec-path)
           (goto-char (point-min))
           (re-search-forward "sdk\s*:\s*flutter" nil t)))))
+
+(defun lsp-dart-remove-from-alist (key alist)
+  "Remove item with KEY from ALIST."
+  (delq (assoc key alist) alist))
 
 
 ;; SDKs

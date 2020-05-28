@@ -74,22 +74,6 @@ PARAMS is the optional method params."
             (lsp--json-serialize command)
             "]\n")))
 
-(defun lsp-dart-flutter-daemon--device-added (device)
-  "Add DEVICE to the devices list."
-  (-let (((&hash "id") device))
-    (ht-set! device "is-device" t)
-    (setf (alist-get id lsp-dart-flutter-daemon-devices nil t #'string=) nil)
-    (add-to-list 'lsp-dart-flutter-daemon-devices (cons (gethash "id" device) device))
-    (when-let (listener (alist-get id lsp-dart-flutter-daemon-device-added-listeners))
-      (setf (alist-get id lsp-dart-flutter-daemon-device-added-listeners nil t #'string=) nil)
-      (funcall (gethash "callback" listener) device))))
-
-(defun lsp-dart-flutter-daemon--device-removed (device)
-  "Remove DEVICE from the devices list."
-  (-> (gethash "id" device)
-      (alist-get lsp-dart-flutter-daemon-devices nil t 'string=)
-      (setf nil)))
-
 (defun lsp-dart-flutter-daemon--raw->response (response)
   "Parse raw RESPONSE into a list of responses."
   (when (string-prefix-p "[" (string-trim response))
@@ -113,7 +97,8 @@ PARAMS is the optional method params."
             (let* ((command (alist-get id lsp-dart-flutter-daemon-commands))
                    (callback (gethash "callback" command)))
               (when command
-                (setf (alist-get id lsp-dart-flutter-daemon-commands nil t) nil))
+                (setq lsp-dart-flutter-daemon-commands
+                      (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-commands)))
               (when callback
                 (when result
                   (funcall callback result))))))
@@ -127,8 +112,27 @@ of this command."
     (lsp-dart-flutter-daemon-start))
   (let* ((id (lsp-dart-flutter-daemon--generate-command-id))
          (command (lsp-dart-flutter-daemon--build-command id method params)))
-    (add-to-list 'lsp-dart-flutter-daemon-commands `(,id . ,(ht ("callback" callback))))
+    (add-to-list 'lsp-dart-flutter-daemon-commands (cons id (ht ("callback" callback))))
     (comint-send-string (get-buffer-process lsp-dart-flutter-daemon-buffer-name) command)))
+
+(defun lsp-dart-flutter-daemon--device-removed (device)
+  "Remove DEVICE from the devices list."
+  (--> (gethash "id" device)
+       (lsp-dart-remove-from-alist it lsp-dart-flutter-daemon-devices)
+       (setq lsp-dart-flutter-daemon-devices it)))
+
+(defun lsp-dart-flutter-daemon--device-added (device)
+  "Add DEVICE to the devices list."
+  (-let* ((id (gethash "id" device))
+          (device-to-add (cons id device)))
+    (ht-set! device "is-device" t)
+    (setq lsp-dart-flutter-daemon-devices
+          (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-devices))
+    (add-to-list 'lsp-dart-flutter-daemon-devices device-to-add)
+    (-when-let (listener (alist-get id lsp-dart-flutter-daemon-device-added-listeners))
+      (setq lsp-dart-flutter-daemon-device-added-listeners
+            (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-device-added-listeners))
+      (funcall (gethash "callback" listener) device))))
 
 (defun lsp-dart-flutter-daemon-get-devices (callback)
   "Call CALLBACK with the available emulators and devices from Flutter daemon."
@@ -152,7 +156,7 @@ of this command."
         (-let* (((&hash "id") emulator)
                 (params (ht ("emulatorId" id))))
           (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
-                       `(,id . ,(ht ("callback" callback))))
+                       (cons id (ht ("callback" callback))))
           (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))))
 
 (defun lsp-dart-flutter-daemon--reset-current-device (_session)
