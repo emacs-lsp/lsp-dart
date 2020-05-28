@@ -79,7 +79,7 @@ PARAMS is the optional method params."
   (-let (((&hash "id") device))
     (ht-set! device "is-device" t)
     (setf (alist-get id lsp-dart-flutter-daemon-devices nil t #'string=) nil)
-    (add-to-list 'lsp-dart-flutter-daemon-devices `(,(gethash "id" device) . ,device))
+    (add-to-list 'lsp-dart-flutter-daemon-devices (cons (gethash "id" device) device))
     (when-let (listener (alist-get id lsp-dart-flutter-daemon-device-added-listeners))
       (setf (alist-get id lsp-dart-flutter-daemon-device-added-listeners nil t #'string=) nil)
       (funcall (gethash "callback" listener) device))))
