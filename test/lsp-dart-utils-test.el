@@ -156,6 +156,12 @@
     (mock (lsp-workspace-status nil "workspace"))
     (lsp-dart-workspace-status nil "workspace")))
 
+(ert-deftest lsp-dart--get-full-dart-version--test ()
+  (with-mock
+    (mock (lsp-dart-dart-command) => "dart")
+    (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
+    (should (equal (lsp-dart-get-full-dart-version) "Dart VM version: 2.9.0-4.0.dev"))))
+
 (ert-deftest lsp-dart--get-dart-version--test ()
   (with-mock
     (mock (lsp-dart-dart-command) => "dart")

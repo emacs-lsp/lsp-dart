@@ -126,12 +126,15 @@ The returned string includes the version from main file header,
 If the version number could not be determined, signal an error."
   (interactive)
   (if (require 'pkg-info nil t)
-      (let ((version (pkg-info-version-info 'lsp-dart)))
-        (lsp-dart-log
-         "%s at %s @ Emacs %s"
-         version
-         (format-time-string "%Y.%m.%d" (current-time))
-         emacs-version))
+      (let* ((version (pkg-info-version-info 'lsp-dart))
+             (lsp-dart-string (format "%s at %s @ Emacs %s"
+                                      version
+                                      (format-time-string "%Y.%m.%d" (current-time))
+                                      emacs-version))
+             (dart-sdk-string (concat (propertize "[Dart SDK] "
+                                                  'face 'font-lock-function-name-face)
+                                      (lsp-dart-get-full-dart-version))))
+        (lsp-dart-log "%s\n%s" lsp-dart-string dart-sdk-string))
     (error "Cannot determine version without package 'pkg-info'")))
 
 

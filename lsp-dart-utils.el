@@ -156,10 +156,14 @@ FLUTTER_ROOT environment variable."
 
 ;; Version
 
-(defun lsp-dart--get-dart-version ()
+(defun lsp-dart-get-full-dart-version ()
   "Retrieve the dart version from shell command."
   (->> (concat (lsp-dart-dart-command) " --version")
-       shell-command-to-string
+       shell-command-to-string))
+
+(defun lsp-dart--get-dart-version ()
+  "Retrieve the dart version from shell command."
+  (->> (lsp-dart-get-full-dart-version)
        split-string
        (nth 3)))
 

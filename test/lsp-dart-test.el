@@ -73,9 +73,11 @@
 
 (ert-deftest lsp-dart-version--test ()
   (let ((pkg-version (lsp-dart-test-package-version "lsp-dart.el")))
-    (should (equal (lsp-dart-version) (format "[LSP Dart] %s at %s @ Emacs %s"
-                                              pkg-version
-                                              (format-time-string "%Y.%m.%d" (current-time))
-                                              emacs-version)))))
+    (with-mock
+     (stub lsp-dart-get-full-dart-version => "2.8.2")
+     (should (equal (lsp-dart-version) (format "[LSP Dart] %s at %s @ Emacs %s\n[Dart SDK] 2.8.2"
+                                               pkg-version
+                                               (format-time-string "%Y.%m.%d" (current-time))
+                                               emacs-version))))))
 
 ;;; lsp-dart-test.el ends here
