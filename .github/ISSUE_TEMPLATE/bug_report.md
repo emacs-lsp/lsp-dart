@@ -20,5 +20,5 @@ Before logging the bug please make sure that the issue is reproducible with late
 If applicable, add screenshots to help explain your problem.
 
 **Version**
-Include here the result of: `M-x` `lsp-dart-version`
+Include here the result of: <kbd>M-x</kbd> `lsp-dart-version`
 {populate}
