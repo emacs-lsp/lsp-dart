@@ -21,6 +21,7 @@
 
 (require 'lsp-treemacs)
 
+(require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
 (require 'lsp-dart-code-lens)
 (require 'lsp-dart-flutter-widget-guide)
@@ -59,8 +60,6 @@ Defaults to side following treemacs default."
 
 
 ;;; Internal
-
-(lsp-interface (OutlineNotification (:uri :outline) nil))
 
 (defun lsp-dart-outline--set-metadata (workspace params key-prefix)
   "Save in WORKSPACE the PARAMS metadata with KEY-PREFIX.
