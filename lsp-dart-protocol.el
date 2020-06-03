@@ -22,6 +22,9 @@
 (require 'lsp-protocol)
 
 (lsp-interface
+ (AnalyzerStatusNotification (:isAnalyzing) nil))
+
+(lsp-interface
  (OutlineNotification (:uri :outline) nil)
  (Outline (:element :range :codeRange :children) nil)
  (Element (:name :range :kind) (:parameters :typeParameters :returnType)))
