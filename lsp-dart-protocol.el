@@ -1,6 +1,6 @@
-;;; lsp-dart-protocol.el --- lsp-dart custom protocol -*- lexical-binding: t; -*-
+;;; lsp-dart-protocol.el --- lsp-dart custom protocol definitions -*- lexical-binding: t; -*-
 ;;
-; This program is free software; you can redistribute it and/or modify
+;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -13,17 +13,23 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ;;
-;; This file is not part of GNU Emacs.
-;;
 ;;; Commentary:
 ;;
-;;  lsp-dart custom protocol
+;;  lsp-dart custom protocol definitions
 ;;
 ;;; Code:
 
 (require 'lsp-protocol)
 
-(lsp-interface (OutlineNotification (:uri :outline) nil))
+(lsp-interface
+ (OutlineNotification (:uri :outline) nil)
+ (Outline (:element :range :codeRange :children) nil)
+ (Element (:name :range :kind) (:parameters :typeParameters :returnType)))
+
+(lsp-interface
+ (FlutterOutlineNotification (:uri :outline) nil)
+ (FlutterOutline (:range :codeRange :children :kind) (:dartElement :label :className :variableName :attributes))
+ (FlutterOutlineAttribute (:name :label) nil))
 
 (provide 'lsp-dart-protocol)
 ;;; lsp-dart-protocol.el ends here
