@@ -25,6 +25,10 @@
  (AnalyzerStatusNotification (:isAnalyzing) nil))
 
 (lsp-interface
+ (ClosingLabelsNotification (:uri :labels) nil)
+ (ClosingLabel (:label :range) nil))
+
+(lsp-interface
  (OutlineNotification (:uri :outline) nil)
  (Outline (:element :range :codeRange :children) nil)
  (Element (:name :range :kind) (:parameters :typeParameters :returnType)))
