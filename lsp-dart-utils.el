@@ -180,11 +180,15 @@ FLUTTER_ROOT environment variable."
     (version<= (lsp-dart-version->number version)
                (lsp-dart-version->number sdk-version))))
 
+(defmacro lsp-dart-assert (test-form message)
+  "Assert TEST-FORM return non-nil otherwise prints MESSAGE."
+  `(when (not ,test-form)
+     (error "Assertion failed: %s" ,message)))
+
 (defun lsp-dart-assert-sdk-min-version (version)
   "Assert dart sdk min version is VERSION."
-  (cl-assert (lsp-dart-version-at-least-p version)
-             t
-             "Feature not supported before dart SDK %s"))
+  (lsp-dart-assert (lsp-dart-version-at-least-p version)
+                   "Feature not supported before dart SDK %s"))
 
 (provide 'lsp-dart-utils)
 ;;; lsp-dart-utils.el ends here
