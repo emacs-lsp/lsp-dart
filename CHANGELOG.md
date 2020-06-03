@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.9
+* Add Dart SDK version to `lsp-dart-version` command. 
+
 ## 1.11.0
 * Add main code lens support, can be disable setting `lsp-dart-main-code-lens` to `nil`.
 
