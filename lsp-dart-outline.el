@@ -60,6 +60,8 @@ Defaults to side following treemacs default."
 
 ;;; Internal
 
+(lsp-interface (OutlineNotification (:uri :outline) nil))
+
 (defun lsp-dart-outline--set-metadata (workspace params key-prefix)
   "Save in WORKSPACE the PARAMS metadata with KEY-PREFIX.
 The key is composed of the KEY-PREFIX with PARAMS uri path."
@@ -211,18 +213,30 @@ Focus on it if IGNORE-FOCUS? is nil."
       (select-window window)
       (set-window-dedicated-p window t))))
 
-(defun lsp-dart-outline-handle-outline (workspace params)
+(lsp-defun lsp-dart-outline-handle-outline (workspace (notification &as &OutlineNotification :uri :outline))
   "Outline notification handling from WORKSPACE.
 PARAMS outline notification data sent.
 It updates the outline view if it already exists."
-  (lsp-dart-outline--set-metadata workspace params "current-outline")
-  (-let (((&hash "uri" "outline") params))
-    (when lsp-dart-main-code-lens
-      (lsp-dart-code-lens-check-main uri outline))
-    (when lsp-dart-test-code-lens
-      (lsp-dart-code-lens-check-test uri outline))
-    (when (get-buffer-window "*Dart Outline*")
-      (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t))))
+  (lsp-dart-outline--set-metadata workspace notification "current-outline")
+  (when lsp-dart-main-code-lens
+    (lsp-dart-code-lens-check-main uri outline))
+  (when lsp-dart-test-code-lens
+    (lsp-dart-code-lens-check-test uri outline))
+  (when (get-buffer-window "*Dart Outline*")
+    (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t)))
+
+;; (defun lsp-dart-outline-handle-outline (workspace params)
+;;   "Outline notification handling from WORKSPACE.
+;; PARAMS outline notification data sent.
+;; It updates the outline view if it already exists."
+;;   (lsp-dart-outline--set-metadata workspace params "current-outline")
+;;   (-let (((&hash "uri" "outline") params))
+;;     (when lsp-dart-main-code-lens
+;;       (lsp-dart-code-lens-check-main uri outline))
+;;     (when lsp-dart-test-code-lens
+;;       (lsp-dart-code-lens-check-test uri outline))
+;;     (when (get-buffer-window "*Dart Outline*")
+;;       (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t))))
 
 (defun lsp-dart-outline-handle-flutter-outline (workspace params)
   "Flutter outline notification handling from WORKSPACE.
