@@ -24,6 +24,7 @@
 (require 'dash)
 (require 'ht)
 
+(require 'lsp-dart-protocol)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-test-support)
 
@@ -45,14 +46,14 @@
 
 ;; Internal
 
-(defun lsp-dart-code-lens--find-main-outline (children)
-  "Return the main outline if exists in CHILDREN."
-  (if-let (main (seq-find (-lambda ((&hash "element" (&hash "name")))
+(defun lsp-dart-code-lens--find-main-outline (outlines)
+  "Return the main outline if exists in OUTLINES."
+  (if-let (main (seq-find (-lambda ((&Outline :element (&Element :name)))
                             (string= name "main"))
-                          children))
+                          outlines))
       main
-    (->> children
-         (seq-map (-lambda ((&hash "children"))
+    (->> outlines
+         (seq-map (-lambda ((&Outline :children))
                     (when children
                       (lsp-dart-code-lens--find-main-outline children))))
          -first-item)))
@@ -94,11 +95,11 @@ If TEST-FILE? debug tests otherwise debug application."
         (lsp-dart-dap-debug-flutter path)
       (lsp-dart-dap-debug-dart path))))
 
-(defun lsp-dart-code-lens--build-main-overlay (buffer main-outline)
-  "Build main overlay code lens for BUFFER from MAIN-OUTLINE."
-  (-let* (((&hash "range") main-outline)
-          (beg-position (gethash "character" (gethash "start" range)))
-          ((beg . end) (lsp--range-to-region range))
+(lsp-defun lsp-dart-code-lens--build-main-overlay (buffer (&Outline :range
+                                                                    (range &as &Range :start
+                                                                           (&Position :character beg-position))))
+  "Build main overlay code lens for BUFFER from main outline."
+  (-let* (((beg . end) (lsp--range-to-region range))
           (beg-line (progn (goto-char beg)
                            (line-beginning-position)))
           (overlay (make-overlay beg-line end buffer))
@@ -127,12 +128,12 @@ If TEST-FILE? debug tests otherwise debug application."
                                                            test-file?)
                          "\n"))))
 
-(defun lsp-dart-code-lens--build-test-overlay (buffer names kind range test-range)
+(lsp-defun lsp-dart-code-lens--build-test-overlay (buffer names kind test-range (range &as &Range :start
+                                                                                       (&Position :character beg-position)))
   "Build an overlay in BUFFER for a test NAMES of KIND.
-RANGE is the overlay range to build.
-TEST-RANGE is the test method range."
-  (-let* ((beg-position (gethash "character" (gethash "start" range)))
-          ((beg . end) (lsp--range-to-region range))
+TEST-RANGE is the test method range.
+RANGE is the overlay range to build."
+  (-let* (((beg . end) (lsp--range-to-region range))
           (beg-line (progn (goto-char beg)
                            (line-beginning-position)))
           (spaces (make-string beg-position ?\s))
@@ -164,24 +165,23 @@ TEST-RANGE is the test method range."
   "Add test code lens to BUFFER for ITEMS.
 NAMES arg is optional and are the group of tests representing a test name."
   (seq-doseq (item items)
-    (-let* (((&hash "children" "codeRange" test-range "element"
-                    (&hash "kind" "name" "range")) item)
+    (-let* (((&Outline :children :code-range test-range :element
+                       (&Element :kind :name :range)) item)
             (test-kind? (lsp-dart-test--test-kind-p kind))
             (concatened-names (if test-kind?
                                   (append names (list name))
                                 names)))
       (when test-kind?
-        (lsp-dart-code-lens--build-test-overlay buffer (append names (list name)) kind range test-range))
+        (lsp-dart-code-lens--build-test-overlay buffer (append names (list name)) kind test-range range))
       (unless (seq-empty-p children)
         (lsp-dart-code-lens--add-test buffer children concatened-names)))))
 
 
 ;; Public
 
-(defun lsp-dart-code-lens-check-main (uri outline)
-  "Check URI and OUTLINE for main method adding lens to it."
-  (-let* (((&hash "children") outline)
-          (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+(lsp-defun lsp-dart-code-lens-check-main (uri (&Outline :children))
+  "Check URI and outline for main method adding lens to it."
+  (-let* ((buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
           (main-outline (lsp-dart-code-lens--find-main-outline children)))
     (when buffer
       (with-current-buffer buffer
@@ -190,16 +190,14 @@ NAMES arg is optional and are the group of tests representing a test name."
           (when main-outline
             (lsp-dart-code-lens--build-main-overlay buffer main-outline)))))))
 
-(defun lsp-dart-code-lens-check-test (uri outline)
-  "Check URI and OUTLINE for test adding lens to it."
+(lsp-defun lsp-dart-code-lens-check-test (uri (&Outline :children))
+  "Check URI and outline for test adding lens to it."
   (when (lsp-dart-test-file-p uri)
-    (-let* (((&hash "children") outline)
-            (buffer (lsp--buffer-for-file (lsp--uri-to-path uri))))
-      (when buffer
-        (with-current-buffer buffer
-          (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
-          (save-excursion
-            (lsp-dart-code-lens--add-test buffer children)))))))
+    (when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+      (with-current-buffer buffer
+        (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
+        (save-excursion
+          (lsp-dart-code-lens--add-test buffer children))))))
 
 (provide 'lsp-dart-code-lens)
 ;;; lsp-dart-code-lens.el ends here

@@ -29,6 +29,7 @@
 (require 'dash)
 (require 'lsp-mode)
 
+(require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-closing-labels)
@@ -85,13 +86,13 @@ imported into the current file."
         ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
         "--lsp")))
 
-(defun lsp-dart--handle-analyzer-status (workspace params)
+(lsp-defun lsp-dart--handle-analyzer-status (workspace (&AnalyzerStatusNotification :is-analyzing))
   "Handle analyzer status notification for WORKSPACE.
 PARAMS is the data sent from server."
   (when (and (not (lsp-dart-flutter-daemon--running-p))
              (lsp-dart--flutter-project-p))
     (lsp-dart-flutter-daemon-start))
-  (if (gethash "isAnalyzing" params)
+  (if is-analyzing
       (lsp-dart-workspace-status "Analyzing project..." workspace)
     (lsp-dart-workspace-status nil workspace)))
 
