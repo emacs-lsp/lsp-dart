@@ -24,6 +24,7 @@
 (require 'ht)
 (require 'lsp-mode)
 
+(require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
 
 (defconst lsp-dart-flutter-daemon-buffer-name "*LSP Dart - Flutter daemon*")
@@ -66,10 +67,10 @@
 (defun lsp-dart-flutter-daemon--build-command (id method &optional params)
   "Build a command from an ID and METHOD.
 PARAMS is the optional method params."
-  (let ((command (ht ("id" id)
-                     ("method" method))))
+  (let ((command (lsp-make-flutter-daemon-command :id id
+                                                  :method method)))
     (when params
-      (ht-set! command "params" params))
+      (lsp:set-flutter-daemon-command-params? command params))
     (concat "["
             (lsp--json-serialize command)
             "]\n")))
@@ -86,22 +87,23 @@ PARAMS is the optional method params."
 
 (defun lsp-dart-flutter-daemon--handle-responses (raw-response)
   "Handle Flutter daemon response from RAW-RESPONSE."
-  (-map (-lambda ((&hash "id" "event" "result" "params" (params &as &hash? "level" "message")))
-          (if event
-              (pcase event
+  (-map (-lambda ((&FlutterDaemonResponse :id :event? :result?
+                                          :params? (params &as &FlutterDaemonResponseParams? :level? :message?)))
+          (if event?
+              (pcase event?
                 ("device.removed" (lsp-dart-flutter-daemon--device-removed params))
 
                 ("device.added" (lsp-dart-flutter-daemon--device-added params))
 
-                ("daemon.logMessage" (lsp-dart-flutter-daemon--log level message)))
+                ("daemon.logMessage" (lsp-dart-flutter-daemon--log level? message?)))
             (let* ((command (alist-get id lsp-dart-flutter-daemon-commands))
-                   (callback (gethash "callback" command)))
+                   (callback (plist-get command :callback)))
               (when command
                 (setq lsp-dart-flutter-daemon-commands
                       (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-commands)))
               (when callback
-                (when result
-                  (funcall callback result))))))
+                (when result?
+                  (funcall callback result?))))))
         (lsp-dart-flutter-daemon--raw->response raw-response)))
 
 (defun lsp-dart-flutter-daemon--send (method &optional params callback)
@@ -112,7 +114,7 @@ of this command."
     (lsp-dart-flutter-daemon-start))
   (let* ((id (lsp-dart-flutter-daemon--generate-command-id))
          (command (lsp-dart-flutter-daemon--build-command id method params)))
-    (add-to-list 'lsp-dart-flutter-daemon-commands (cons id (ht ("callback" callback))))
+    (add-to-list 'lsp-dart-flutter-daemon-commands (cons id (list :callback callback)))
     (comint-send-string (get-buffer-process lsp-dart-flutter-daemon-buffer-name) command)))
 
 (defun lsp-dart-flutter-daemon--device-removed (device)

@@ -38,5 +38,10 @@
  (FlutterOutline (:range :codeRange :children :kind) (:dartElement :label :className :variableName :attributes))
  (FlutterOutlineAttribute (:name :label) nil))
 
+(lsp-interface
+ (FlutterDaemonCommand (:id :method) (:params))
+ (FlutterDaemonResponse (:id) (:result :event :params))
+ (FlutterDaemonResponseParams nil (:level :message)))
+
 (provide 'lsp-dart-protocol)
 ;;; lsp-dart-protocol.el ends here
