@@ -39,6 +39,9 @@
  (FlutterOutlineAttribute (:name :label) nil))
 
 (lsp-interface
+ (FlutterWidgetGuide ()))
+
+(lsp-interface
  (FlutterDaemonCommand (:id :method) (:params))
  (FlutterDaemonResponse (:id) (:result :event :params))
  (FlutterDaemonResponseParams nil (:level :message))
