@@ -186,8 +186,8 @@ Call CALLBACK when the device is chosen and started successfully."
          (lsp-dart-log "No devices found. Try to create a device first via `flutter emulators` command")
        (-let* ((chosen-device (dap--completing-read "Select a device to use: "
                                                     devices
-                                                    (-lambda ((&hash "id" "name" "is-device" "platformType" platform))
-                                                      (lsp-dart-dap--device-label id name is-device platform))
+                                                    (-lambda ((&FlutterDaemonDevice :id :name :is-device? :platform-type platform))
+                                                      (lsp-dart-dap--device-label id name is-device? platform))
                                                     nil
                                                     t)))
          (lsp-dart-flutter-daemon-launch chosen-device callback))))))

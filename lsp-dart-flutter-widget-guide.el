@@ -20,7 +20,6 @@
 ;;; Code:
 
 (require 'dash)
-(require 'ht)
 (require 'lsp-mode)
 
 (require 'lsp-dart-protocol)
@@ -54,8 +53,8 @@
     (goto-char (point-min))
     (forward-line line)
     (back-to-indentation)
-    (ht ("line" line)
-        ("character" (current-column)))))
+    (lsp-make-position :line line
+                       :character (current-column))))
 
 (defun lsp-dart-flutter-widget-guide--last-col-at (line)
   "Return the last col at LINE."
@@ -79,8 +78,8 @@ Return nil if the widget guilde does not apply."
       (when children-start
         (let ((start-pos (lsp-dart-flutter-widget-guide--first-non-whitespace-pos parent-line)))
           (->> children-start
-               (--map (ht ("start" start-pos)
-                          ("end" (lsp-dart-flutter-widget-guide--first-non-whitespace-pos it))))
+               (--map (lsp-make-range :start start-pos
+                                      :end (lsp-dart-flutter-widget-guide--first-non-whitespace-pos it)))
                (-flatten)))))))
 
 (lsp-defun lsp-dart-flutter-widget-guide--outline->guides ((outline &as &FlutterOutline :children))
@@ -97,14 +96,14 @@ Return nil if the widget guilde does not apply."
 
 (defun lsp-dart-flutter-widget-guide--guides->guides-by-line (guides)
   "Convert a widget guide GUIDES to a map by line."
-  (let ((guides-by-line (ht-create)))
+  (let ((guides-by-line '()))
     (seq-doseq (guide guides)
       (-let (((&Range :start (&Position :line start-line)
                       :end (&Position :line end-line)) guide))
         (while (<= start-line end-line)
-          (if-let ((cur-guides (ht-get guides-by-line start-line)))
-              (ht-set! guides-by-line start-line (append cur-guides (list guide)))
-            (ht-set! guides-by-line start-line (list guide)))
+          (if-let ((cur-guides (plist-get guides-by-line start-line)))
+              (add-to-list 'guides-by-line (cons start-line (append cur-guides (list guide))))
+            (add-to-list 'guides-by-line (cons start-line (list guide))))
           (setq start-line (1+ start-line)))))
     guides-by-line))
 
@@ -145,16 +144,16 @@ ANCHOR is the anchor point of the widget guide at LINE."
       (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
       (let* ((guides (lsp-dart-flutter-widget-guide--outline->guides outline))
              (guides-by-line (lsp-dart-flutter-widget-guide--guides->guides-by-line guides)))
-        (ht-each (lambda (line guide-lines)
-                   (let* ((first-guide-char (-min (--map (min (-> it lsp:range-start lsp:position-character)
-                                                              (-> it lsp:range-end lsp:position-character)) guide-lines)))
-                          (last-guide-char (-max (--map (max (-> it lsp:range-start lsp:position-character)
-                                                             (-> it lsp:range-end lsp:position-character)) guide-lines)))
-                          (last-line-char (lsp-dart-flutter-widget-guide--last-col-at line))
-                          (anchor (max 0 (if (< last-line-char first-guide-char) 0 first-guide-char)))
-                          (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
-                     (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))
-                 guides-by-line)))))
+        (seq-doseq (line (mapcar 'car guides-by-line))
+          (let* ((guide-lines (alist-get line guides-by-line))
+                 (first-guide-char (-min (--map (min (-> it lsp:range-start lsp:position-character)
+                                                     (-> it lsp:range-end lsp:position-character)) guide-lines)))
+                 (last-guide-char (-max (--map (max (-> it lsp:range-start lsp:position-character)
+                                                    (-> it lsp:range-end lsp:position-character)) guide-lines)))
+                 (last-line-char (lsp-dart-flutter-widget-guide--last-col-at line))
+                 (anchor (max 0 (if (< last-line-char first-guide-char) 0 first-guide-char)))
+                 (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
+            (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))))))
 
 (provide 'lsp-dart-flutter-widget-guide)
 ;;; lsp-dart-flutter-widget-guide.el ends here
