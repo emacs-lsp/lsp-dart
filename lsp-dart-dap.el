@@ -27,7 +27,7 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.10.1"
+(defcustom lsp-dart-dap-extension-version "3.11.0"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
@@ -104,16 +104,20 @@ Required to support 'Inspect Widget'."
 (defun lsp-dart-dap--setup-extension ()
   "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
   (lsp-dart-dap-log "Setting up debugger...")
-  (lsp-async-start-process
-   (lambda ()
-     (lsp-async-start-process
-      (lambda () (lsp-dart-dap-log "Setup done!"))
-      (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
-      (f-join lsp-dart-dap-debugger-path "extension/node_modules/typescript/bin/tsc")
-      "--project" (f-join lsp-dart-dap-debugger-path "extension")))
-   (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
-   "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
-   "--no-package-lock" "--silent" "--no-save"))
+  (if (executable-find "npm")
+      (lsp-async-start-process
+       (lambda ()
+         (lsp-async-start-process
+          (lambda () (lsp-dart-dap-log "Setup done!"))
+          (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
+          (f-join lsp-dart-dap-debugger-path "extension/node_modules/typescript/bin/tsc")
+          "--project" (f-join lsp-dart-dap-debugger-path "extension")))
+       (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
+       "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
+       "--silent" "--no-save")
+    (progn
+      (lsp-dart-dap-log "Required command for setup 'npm' not found on $PATH")
+      (delete-directory lsp-dart-dap-debugger-path t))))
 
 (defun lsp-dart-dap--capabilities-debugger-args (conf)
   "Add capabilities args on CONF checking dart SDK version."
