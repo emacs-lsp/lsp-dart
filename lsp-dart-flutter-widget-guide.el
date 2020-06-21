@@ -23,6 +23,7 @@
 (require 'lsp-mode)
 
 (require 'lsp-dart-protocol)
+(require 'lsp-dart-utils)
 
 (defcustom lsp-dart-flutter-widget-guides t
   "Enable showing ui guides for flutter widgets hierarchy."
@@ -79,8 +80,7 @@ Return nil if the widget guilde does not apply."
         (let ((start-pos (lsp-dart-flutter-widget-guide--first-non-whitespace-pos parent-line)))
           (->> children-start
                (--map (lsp-make-range :start start-pos
-                                      :end (lsp-dart-flutter-widget-guide--first-non-whitespace-pos it)))
-               (-flatten)))))))
+                                      :end (lsp-dart-flutter-widget-guide--first-non-whitespace-pos it)))))))))
 
 (lsp-defun lsp-dart-flutter-widget-guide--outline->guides ((outline &as &FlutterOutline :children))
   "Build the widget guides from OUTLINE recursively."
@@ -88,7 +88,7 @@ Return nil if the widget guilde does not apply."
     (let ((ext-children (->> children
                              (--map (lsp-dart-flutter-widget-guide--outline->guides it))
                              (-non-nil)
-                             (-flatten)))
+                             (-flatten-n 1)))
           (ext-outline (lsp-dart-flutter-widget-guide--outline->guide outline)))
       (if ext-outline
           (-concat ext-outline ext-children)
@@ -102,8 +102,8 @@ Return nil if the widget guilde does not apply."
                       :end (&Position :line end-line)) guide))
         (while (<= start-line end-line)
           (if-let ((cur-guides (plist-get guides-by-line start-line)))
-              (add-to-list 'guides-by-line (cons start-line (append cur-guides (list guide))))
-            (add-to-list 'guides-by-line (cons start-line (list guide))))
+              (setq guides-by-line (plist-put guides-by-line start-line (append cur-guides (list guide))))
+            (setq guides-by-line (plist-put guides-by-line start-line (list guide))))
           (setq start-line (1+ start-line)))))
     guides-by-line))
 
@@ -144,16 +144,17 @@ ANCHOR is the anchor point of the widget guide at LINE."
       (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
       (let* ((guides (lsp-dart-flutter-widget-guide--outline->guides outline))
              (guides-by-line (lsp-dart-flutter-widget-guide--guides->guides-by-line guides)))
-        (seq-doseq (line (mapcar 'car guides-by-line))
-          (let* ((guide-lines (alist-get line guides-by-line))
-                 (first-guide-char (-min (--map (min (-> it lsp:range-start lsp:position-character)
+        (lsp-dart-plist-each
+         (lambda (line guide-lines)
+           (let* ((first-guide-char (-min (--map (min (-> it lsp:range-start lsp:position-character)
+                                                      (-> it lsp:range-end lsp:position-character)) guide-lines)))
+                  (last-guide-char (-max (--map (max (-> it lsp:range-start lsp:position-character)
                                                      (-> it lsp:range-end lsp:position-character)) guide-lines)))
-                 (last-guide-char (-max (--map (max (-> it lsp:range-start lsp:position-character)
-                                                    (-> it lsp:range-end lsp:position-character)) guide-lines)))
-                 (last-line-char (lsp-dart-flutter-widget-guide--last-col-at line))
-                 (anchor (max 0 (if (< last-line-char first-guide-char) 0 first-guide-char)))
-                 (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
-            (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))))))
+                  (last-line-char (lsp-dart-flutter-widget-guide--last-col-at line))
+                  (anchor (max 0 (if (< last-line-char first-guide-char) 0 first-guide-char)))
+                  (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
+             (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))
+         guides-by-line)))))
 
 (provide 'lsp-dart-flutter-widget-guide)
 ;;; lsp-dart-flutter-widget-guide.el ends here
