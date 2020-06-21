@@ -191,22 +191,22 @@ OUTLINES are the outline items."
 (defun lsp-dart-outline--show-outline (buffer ignore-focus?)
   "Show an outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-let* (((&OutlineNotification :uri :outline (&Outline :children)) (lsp-dart-outline--get-metadata buffer "current-outline"))
-          (tree-buffer (lsp-dart-outline--render-outline-tree uri children))
-          (window (display-buffer-in-side-window tree-buffer lsp-dart-outline-position-params)))
-    (unless ignore-focus?
-      (select-window window)
-      (set-window-dedicated-p window t))))
+  (-when-let ((&OutlineNotification? :uri :outline (&Outline :children)) (lsp-dart-outline--get-metadata buffer "current-outline"))
+    (-let* ((tree-buffer (lsp-dart-outline--render-outline-tree uri children))
+            (window (display-buffer-in-side-window tree-buffer lsp-dart-outline-position-params)))
+      (unless ignore-focus?
+        (select-window window)
+        (set-window-dedicated-p window t)))))
 
 (defun lsp-dart-outline--show-flutter-outline (buffer ignore-focus?)
   "Show a Flutter outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-let* (((&FlutterOutlineNotification :uri :outline (&FlutterOutline :children)) (lsp-dart-outline--get-metadata buffer "current-flutter-outline"))
-          (tree-buffer (lsp-dart-outline--render-flutter-outline-tree uri children))
-          (window (display-buffer-in-side-window tree-buffer lsp-dart-flutter-outline-position-params)))
-    (unless ignore-focus?
-      (select-window window)
-      (set-window-dedicated-p window t))))
+  (-when-let ((&FlutterOutlineNotification? :uri :outline (&FlutterOutline :children)) (lsp-dart-outline--get-metadata buffer "current-flutter-outline"))
+    (-let* ((tree-buffer (lsp-dart-outline--render-flutter-outline-tree uri children))
+            (window (display-buffer-in-side-window tree-buffer lsp-dart-flutter-outline-position-params)))
+      (unless ignore-focus?
+        (select-window window)
+        (set-window-dedicated-p window t)))))
 
 (lsp-defun lsp-dart-outline-handle-outline (workspace (notification &as &OutlineNotification :uri :outline))
   "Outline notification handling from WORKSPACE.
