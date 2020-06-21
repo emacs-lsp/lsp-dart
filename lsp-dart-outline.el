@@ -133,7 +133,7 @@ OUTLINES are the outline items."
   "Build the action options for the Flutter outline tree view.
 URI is the source of the outline.
 RANGE is the range for currently build item."
-  (-when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+  (-when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
     (with-current-buffer buffer
       (goto-char (-> range lsp--range-to-region car))
       (->> (lsp-code-actions-at-point)
@@ -218,7 +218,7 @@ It updates the outline view if it already exists."
   (when lsp-dart-test-code-lens
     (lsp-dart-code-lens-check-test uri outline))
   (when (get-buffer-window "*Dart Outline*")
-    (lsp-dart-outline--show-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t)))
+    (lsp-dart-outline--show-outline (find-buffer-visiting (lsp--uri-to-path uri)) t)))
 
 (lsp-defun lsp-dart-outline-handle-flutter-outline (workspace (notification &as &FlutterOutlineNotification :uri))
   "Flutter outline notification handling from WORKSPACE.
@@ -228,7 +228,7 @@ It updates the Flutter outline view if it already exists."
   (when lsp-dart-flutter-widget-guides
     (lsp-dart-flutter-widget-guide-check notification))
   (when (get-buffer-window "*Flutter Outline*")
-    (lsp-dart-outline--show-flutter-outline (lsp--buffer-for-file (lsp--uri-to-path uri)) t)))
+    (lsp-dart-outline--show-flutter-outline (find-buffer-visiting (lsp--uri-to-path uri)) t)))
 
 
 ;;; Public interface

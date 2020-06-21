@@ -42,7 +42,7 @@ be sent with information to render editor closing labels."
 
 (lsp-defun lsp-dart-closing-labels-handle (_workspace (&ClosingLabelsNotification :uri :labels))
   "Closing labels notification handler."
-  (when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+  (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
     (with-current-buffer buffer
       (remove-overlays (point-min) (point-max) 'lsp-dart-closing-labels t)
       (seq-doseq (label labels)

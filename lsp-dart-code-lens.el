@@ -181,7 +181,7 @@ NAMES arg is optional and are the group of tests representing a test name."
 
 (lsp-defun lsp-dart-code-lens-check-main (uri (&Outline :children))
   "Check URI and outline for main method adding lens to it."
-  (-let* ((buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+  (-let* ((buffer (find-buffer-visiting (lsp--uri-to-path uri)))
           (main-outline (lsp-dart-code-lens--find-main-outline children)))
     (when buffer
       (with-current-buffer buffer
@@ -193,7 +193,7 @@ NAMES arg is optional and are the group of tests representing a test name."
 (lsp-defun lsp-dart-code-lens-check-test (uri (&Outline :children))
   "Check URI and outline for test adding lens to it."
   (when (lsp-dart-test-file-p uri)
-    (when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
       (with-current-buffer buffer
         (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
         (save-excursion

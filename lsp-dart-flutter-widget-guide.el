@@ -139,7 +139,7 @@ ANCHOR is the anchor point of the widget guide at LINE."
 
 (lsp-defun lsp-dart-flutter-widget-guide-check ((&FlutterOutlineNotification :uri :outline))
   "Check if there is any widget guide on buffer from uri of OUTLINE-PARAMS."
-  (-when-let (buffer (lsp--buffer-for-file (lsp--uri-to-path uri)))
+  (-when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
     (with-current-buffer buffer
       (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
       (let* ((guides (lsp-dart-flutter-widget-guide--outline->guides outline))
