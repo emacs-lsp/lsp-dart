@@ -138,7 +138,7 @@ RANGE is the range for currently build item."
       (goto-char (-> range lsp--range-to-region car))
       (->> (lsp-code-actions-at-point)
            (-filter (-lambda ((&CodeAction :kind?))
-                      (and kind? (equal "refactor" kind?))))
+                      (and kind? (string-match "^refactor" kind?))))
            (-map (-lambda ((action &as &CodeAction :title))
                    `[,title (lsp-execute-code-action ,action)]))))))
 
