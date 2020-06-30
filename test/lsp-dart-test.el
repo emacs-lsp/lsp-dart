@@ -56,10 +56,13 @@
   (with-mock
     (stub lsp-dart-dart-command => "/sdk/bin/dart")
     (stub lsp-dart-get-sdk-dir => "/sdk")
+    (mock (pkg-info-version-info 'lsp-dart) => "1.123.456")
     (should (equal (lsp-dart--server-command)
                    '("/sdk/bin/dart"
                      "/sdk/bin/snapshots/analysis_server.dart.snapshot"
-                     "--lsp")))))
+                     "--lsp"
+                     "--client-id emacs.lsp-dart"
+                     "--client-version 1.123.456")))))
 
 (ert-deftest lsp-dart--handle-analyzer-status--when-analyzing-test ()
   (with-mock
