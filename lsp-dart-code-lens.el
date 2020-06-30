@@ -22,7 +22,6 @@
 ;;; Code:
 
 (require 'dash)
-(require 'ht)
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-dap)

@@ -1,7 +1,7 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
 ;; Version: 1.12.5
-;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.4") (dap-mode "0.4") (ht "2.0") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
+;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.4") (dap-mode "0.4") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
 
@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'ht)
 (require 'f)
 (require 'dash)
 (require 'lsp-mode)
@@ -81,10 +80,15 @@ imported into the current file."
 
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
-  (or lsp-dart-server-command
-      `(,(lsp-dart-dart-command)
-        ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
-        "--lsp")))
+  (let ((client-version (when (require 'pkg-info nil t)
+                          (format "--client-version %s"
+                                  (pkg-info-version-info 'lsp-dart)))))
+    (or lsp-dart-server-command
+        `(,(lsp-dart-dart-command)
+          ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
+          "--lsp"
+          "--client-id emacs.lsp-dart"
+          ,client-version))))
 
 (lsp-defun lsp-dart--handle-analyzer-status (workspace (&AnalyzerStatusNotification :is-analyzing))
   "Handle analyzer status notification for WORKSPACE.
@@ -108,10 +112,10 @@ PARAMS is the data sent from server."
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
                   :library-folders-fn (lambda (_workspace) (lsp-dart--library-folders))
-                  :notification-handlers (ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
-                                             ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
-                                             ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
-                                             ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
+                  :notification-handlers (lsp-ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
+                                                 ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
+                                                 ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
+                                                 ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
                   :server-id 'dart_analysis_server))
 
 
