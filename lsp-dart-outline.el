@@ -24,7 +24,6 @@
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
 (require 'lsp-dart-code-lens)
-(require 'lsp-dart-flutter-widget-guide)
 
 (defcustom lsp-dart-outline t
   "Enable the analysis server outline custom method.
@@ -225,8 +224,7 @@ It updates the outline view if it already exists."
 NOTIFICATION is Flutter outline notification data received from server.
 It updates the Flutter outline view if it already exists."
   (lsp-dart-outline--set-metadata workspace notification "current-flutter-outline")
-  (when lsp-dart-flutter-widget-guides
-    (lsp-dart-flutter-widget-guide-check notification))
+  (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)
   (when (get-buffer-window "*Flutter Outline*")
     (lsp-dart-outline--show-flutter-outline (find-buffer-visiting (lsp--uri-to-path uri)) t)))
 

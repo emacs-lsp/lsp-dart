@@ -125,7 +125,9 @@ ANCHOR is the anchor point of the widget guide at LINE."
           (let ((char start-char))
             (while (<= char end-char)
               (if (= char start-char)
-                  (setf (nth char chars) lsp-dart-flutter-widget-guide-bottom-corner)
+                  (if (nth char chars)
+                      (setf (nth char chars) lsp-dart-flutter-widget-guide-bottom-corner)
+                    (setq chars (append chars (list lsp-dart-flutter-widget-guide-bottom-corner))))
                 (if (nth char chars)
                     (setf (nth char chars) lsp-dart-flutter-widget-guide-horizontal-line)
                   (setq chars (append chars (list lsp-dart-flutter-widget-guide-horizontal-line)))))
@@ -155,6 +157,21 @@ ANCHOR is the anchor point of the widget guide at LINE."
                   (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
              (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))
          guides-by-line)))))
+
+(define-minor-mode lsp-dart-flutter-widget-guides-mode
+  "Mode for displaying flutter widget guide lines."
+  nil nil nil
+  (cond
+   (lsp-dart-flutter-widget-guides-mode
+    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check nil t))
+   (t
+    (progn
+      (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
+      (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check t)))))
+
+(add-hook 'lsp-before-open-hook (lambda ()
+                                  (when lsp-dart-flutter-widget-guides
+                                    (lsp-dart-flutter-widget-guides-mode 1))))
 
 (provide 'lsp-dart-flutter-widget-guide)
 ;;; lsp-dart-flutter-widget-guide.el ends here
