@@ -101,9 +101,14 @@ PARAMS is the data sent from server."
       (lsp-dart-workspace-status "Analyzing project..." workspace)
     (lsp-dart-workspace-status nil workspace)))
 
+(defun lsp-dart--activate-features ()
+  "Activate lsp-dart features if enabled."
+  (when lsp-dart-flutter-widget-guides
+    (lsp-dart-flutter-widget-guides-mode 1)))
+
 (lsp-register-client
  (make-lsp-client :new-connection
-                  (lsp-stdio-connection 'lsp-dart--server-command)
+                  (lsp-stdio-connection #'lsp-dart--server-command)
                   :major-modes '(dart-mode)
                   :priority -1
                   :initialization-options
@@ -117,6 +122,7 @@ PARAMS is the data sent from server."
                                                  ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
                                                  ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
                                                  ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
+                  :after-open-fn #'lsp-dart--activate-features
                   :server-id 'dart_analysis_server))
 
 

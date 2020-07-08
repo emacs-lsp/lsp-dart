@@ -37,9 +37,10 @@
 
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
-  (apply #'lsp-dart-custom-log (concat "[FLUTTER " (upcase level) "] ")
-         msg
-         args))
+  (unless (string= "STATUS" (upcase level))
+    (apply #'lsp-dart-custom-log (concat "[FLUTTER " (upcase level) "] ")
+           msg
+           args)))
 
 (defun lsp-dart-flutter-daemon--generate-command-id ()
   "Generate a random command id."
