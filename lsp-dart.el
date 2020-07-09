@@ -33,7 +33,7 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-closing-labels)
 (require 'lsp-dart-outline)
-(require 'lsp-dart-flutter-fringe)
+(require 'lsp-dart-flutter-fringe-colors)
 (require 'lsp-dart-flutter-widget-guide)
 
 (defgroup lsp-dart nil
@@ -104,7 +104,9 @@ PARAMS is the data sent from server."
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
   (when lsp-dart-flutter-widget-guides
-    (lsp-dart-flutter-widget-guides-mode 1)))
+    (lsp-dart-flutter-widget-guides-mode 1))
+  (when lsp-dart-flutter-fringe-colors
+    (lsp-dart-flutter-fringe-colors-mode 1)))
 
 (lsp-register-client
  (make-lsp-client :new-connection

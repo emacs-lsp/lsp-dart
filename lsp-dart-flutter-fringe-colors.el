@@ -1,4 +1,4 @@
-;;; lsp-dart-flutter-fringe.el --- Dart fringe tools -*- lexical-binding: t; -*-
+;;; lsp-dart-flutter-fringe-colors.el --- Flutter fringe colors -*- lexical-binding: t; -*-
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 
-;; LSP dart support for fringe
+;; Flutter support for fringe colors
 
 ;;; Code:
 
@@ -102,11 +102,5 @@
       (remove-overlays (point-min) (point-max) 'lsp-dart-flutter-fringe-colors t)
       (remove-hook 'lsp-on-change-hook #'lsp-dart-flutter-fringe--update-colors t)))))
 
-(when lsp-dart-flutter-fringe-colors
-  (add-hook 'lsp-after-open-hook
-            (lambda ()
-              (when (lsp-find-workspace 'dart_analysis_server nil)
-                (lsp-dart-flutter-fringe-colors-mode)))))
-
-(provide 'lsp-dart-flutter-fringe)
-;;; lsp-dart-flutter-fringe.el ends here
+(provide 'lsp-dart-flutter-fringe-colors)
+;;; lsp-dart-flutter-fringe-colors.el ends here
