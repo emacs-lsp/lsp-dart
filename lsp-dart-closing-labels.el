@@ -40,7 +40,7 @@ be sent with information to render editor closing labels."
   :type 'float
   :group 'lsp-dart)
 
-(lsp-defun lsp-dart-closing-labels-handle (_workspace (&ClosingLabelsNotification :uri :labels))
+(lsp-defun lsp-dart--closing-labels-check ((&ClosingLabelsNotification :uri :labels))
   "Closing labels notification handler."
   (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
     (with-current-buffer buffer
@@ -57,6 +57,17 @@ be sent with information to render editor closing labels."
                                                            'display `((height ,lsp-dart-closing-labels-size))
                                                            'cursor t
                                                            'font-lock-face 'font-lock-comment-face))))))))
+
+(define-minor-mode lsp-dart-closing-labels-mode
+  "Mode for displaying flutter closing labels on the end of methods/contructors."
+  nil nil nil
+  (cond
+   (lsp-dart-closing-labels-mode
+    (add-hook 'lsp-dart-closing-labels-arrived-hook #'lsp-dart--closing-labels-check nil t))
+   (t
+    (progn
+      (remove-overlays (point-min) (point-max) 'lsp-dart-closing-labels t)
+      (remove-hook 'lsp-dart-closing-labels-arrived-hook #'lsp-dart--closing-labels-check t)))))
 
 (provide 'lsp-dart-closing-labels)
 ;;; lsp-dart-closing-labels.el ends here

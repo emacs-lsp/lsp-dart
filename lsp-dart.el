@@ -106,7 +106,9 @@ PARAMS is the data sent from server."
   (when lsp-dart-flutter-widget-guides
     (lsp-dart-flutter-widget-guides-mode 1))
   (when lsp-dart-flutter-fringe-colors
-    (lsp-dart-flutter-fringe-colors-mode 1)))
+    (lsp-dart-flutter-fringe-colors-mode 1))
+  (when lsp-dart-closing-labels
+    (lsp-dart-closing-labels-mode 1)))
 
 (lsp-register-client
  (make-lsp-client :new-connection
@@ -120,7 +122,8 @@ PARAMS is the data sent from server."
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
                   :library-folders-fn (lambda (_workspace) (lsp-dart--library-folders))
-                  :notification-handlers (lsp-ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
+                  :notification-handlers (lsp-ht ("dart/textDocument/publishClosingLabels" (lambda (_workspace notification)
+                                                                                             (run-hook-with-args 'lsp-dart-closing-labels-arrived-hook notification)))
                                                  ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
                                                  ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
                                                  ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
