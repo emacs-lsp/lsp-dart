@@ -1,7 +1,7 @@
 ;;; lsp-dart.el --- Dart support lsp-mode -*- lexical-binding: t; -*-
 
 ;; Version: 1.12.7
-;; Package-Requires: ((emacs "25.2") (lsp-treemacs "0.1") (lsp-mode "6.4") (dap-mode "0.4") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
+;; Package-Requires: ((emacs "26.1") (lsp-treemacs "0.2") (lsp-mode "7.0") (dap-mode "0.5") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
 
@@ -32,8 +32,9 @@
 (require 'lsp-dart-utils)
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-closing-labels)
+(require 'lsp-dart-code-lens)
 (require 'lsp-dart-outline)
-(require 'lsp-dart-flutter-fringe)
+(require 'lsp-dart-flutter-fringe-colors)
 (require 'lsp-dart-flutter-widget-guide)
 
 (defgroup lsp-dart nil
@@ -101,9 +102,26 @@ PARAMS is the data sent from server."
       (lsp-dart-workspace-status "Analyzing project..." workspace)
     (lsp-dart-workspace-status nil workspace)))
 
+(defun lsp-dart--activate-features ()
+  "Activate lsp-dart features if enabled."
+  (when lsp-dart-flutter-widget-guides
+    (lsp-dart-flutter-widget-guides-mode 1))
+  (when lsp-dart-flutter-fringe-colors
+    (lsp-dart-flutter-fringe-colors-mode 1))
+  (when lsp-dart-closing-labels
+    (lsp-dart-closing-labels-mode 1))
+  (when lsp-dart-outline
+    (lsp-dart-outline-mode 1))
+  (when lsp-dart-flutter-outline
+    (lsp-dart-flutter-outline-mode 1))
+  (when lsp-dart-main-code-lens
+    (lsp-dart-main-code-lens-mode 1))
+  (when lsp-dart-test-code-lens
+    (lsp-dart-test-code-lens-mode 1)))
+
 (lsp-register-client
  (make-lsp-client :new-connection
-                  (lsp-stdio-connection 'lsp-dart--server-command)
+                  (lsp-stdio-connection #'lsp-dart--server-command)
                   :major-modes '(dart-mode)
                   :priority -1
                   :initialization-options
@@ -113,10 +131,14 @@ PARAMS is the data sent from server."
                     (outline . ,lsp-dart-outline)
                     (flutterOutline . ,lsp-dart-flutter-outline))
                   :library-folders-fn (lambda (_workspace) (lsp-dart--library-folders))
-                  :notification-handlers (lsp-ht ("dart/textDocument/publishClosingLabels" #'lsp-dart-closing-labels-handle)
-                                                 ("dart/textDocument/publishOutline" #'lsp-dart-outline-handle-outline)
-                                                 ("dart/textDocument/publishFlutterOutline" #'lsp-dart-outline-handle-flutter-outline)
+                  :notification-handlers (lsp-ht ("dart/textDocument/publishClosingLabels" (lambda (_workspace notification)
+                                                                                             (run-hook-with-args 'lsp-dart-closing-labels-arrived-hook notification)))
+                                                 ("dart/textDocument/publishOutline" (lambda (_workspace notification)
+                                                                                       (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)))
+                                                 ("dart/textDocument/publishFlutterOutline" (lambda (_workspace notification)
+                                                                                              (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification)))
                                                  ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
+                  :after-open-fn #'lsp-dart--activate-features
                   :server-id 'dart_analysis_server))
 
 

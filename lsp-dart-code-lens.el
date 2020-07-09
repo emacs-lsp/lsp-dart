@@ -175,21 +175,18 @@ NAMES arg is optional and are the group of tests representing a test name."
       (unless (seq-empty-p children)
         (lsp-dart-code-lens--add-test buffer children concatened-names)))))
 
-
-;; Public
-
-(lsp-defun lsp-dart-code-lens-check-main (uri (&Outline :children))
+(lsp-defun lsp-dart--main-code-lens-check ((&OutlineNotification :uri :outline (&Outline :children)))
   "Check URI and outline for main method adding lens to it."
   (-let* ((buffer (find-buffer-visiting (lsp--uri-to-path uri)))
           (main-outline (lsp-dart-code-lens--find-main-outline children)))
     (when buffer
       (with-current-buffer buffer
         (remove-overlays (point-min) (point-max) 'lsp-dart-main-code-lens t)
-        (save-excursion
-          (when main-outline
+        (when main-outline
+          (save-excursion
             (lsp-dart-code-lens--build-main-overlay buffer main-outline)))))))
 
-(lsp-defun lsp-dart-code-lens-check-test (uri (&Outline :children))
+(lsp-defun lsp-dart--test-code-lens-check ((&OutlineNotification :uri :outline (&Outline :children)))
   "Check URI and outline for test adding lens to it."
   (when (lsp-dart-test-file-p uri)
     (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
@@ -197,6 +194,31 @@ NAMES arg is optional and are the group of tests representing a test name."
         (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
         (save-excursion
           (lsp-dart-code-lens--add-test buffer children))))))
+
+
+;; Public
+
+(define-minor-mode lsp-dart-main-code-lens-mode
+  "Mode for displaying code lens on main methods."
+  nil nil nil
+  (cond
+   (lsp-dart-main-code-lens-mode
+    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--main-code-lens-check nil t))
+   (t
+    (progn
+      (remove-overlays (point-min) (point-max) 'lsp-dart-main-code-lens t)
+      (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--main-code-lens-check t)))))
+
+(define-minor-mode lsp-dart-test-code-lens-mode
+  "Mode for displaying code lens on main methods."
+  nil nil nil
+  (cond
+   (lsp-dart-test-code-lens-mode
+    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--test-code-lens-check nil t))
+   (t
+    (progn
+      (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
+      (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--test-code-lens-check t)))))
 
 (provide 'lsp-dart-code-lens)
 ;;; lsp-dart-code-lens.el ends here
