@@ -23,7 +23,6 @@
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
-(require 'lsp-dart-code-lens)
 
 (defcustom lsp-dart-outline t
   "Enable the analysis server outline custom method.
@@ -215,14 +214,10 @@ Focus on it if IGNORE-FOCUS? is nil."
         (set-window-dedicated-p window t)))
     (lsp-dart-log "No Flutter outline data found")))
 
-(lsp-defun lsp-dart--outline-check ((notification &as &OutlineNotification :uri :outline))
+(lsp-defun lsp-dart--outline-check ((notification &as &OutlineNotification :uri))
   "Outline notification handling from WORKSPACE.
 NOTIFICATION is outline notification data received from server.
 It updates the outline view if it already exists."
-  (when lsp-dart-main-code-lens
-    (lsp-dart-code-lens-check-main uri outline))
-  (when lsp-dart-test-code-lens
-    (lsp-dart-code-lens-check-test uri outline))
    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
      (with-current-buffer buffer
       (setq lsp-dart-current-outline notification)
