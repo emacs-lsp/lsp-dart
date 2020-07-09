@@ -163,11 +163,11 @@ ANCHOR is the anchor point of the widget guide at LINE."
   nil nil nil
   (cond
    (lsp-dart-flutter-widget-guides-mode
-    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check nil t))
+    (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check nil t))
    (t
     (progn
       (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
-      (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check t)))))
+      (remove-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check t)))))
 
 (provide 'lsp-dart-flutter-widget-guide)
 ;;; lsp-dart-flutter-widget-guide.el ends here

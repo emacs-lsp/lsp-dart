@@ -60,6 +60,12 @@ Defaults to side following treemacs default."
 
 ;;; Internal
 
+(defvar-local lsp-dart-current-outline nil)
+(defvar-local lsp-dart-current-flutter-outline nil)
+
+(defconst lsp-dart--outline-buffer-name "*Dart Outline*")
+(defconst lsp-dart--flutter-outline-buffer-name "*Flutter Outline*")
+
 (defun lsp-dart-outline--set-metadata (workspace params key-prefix)
   "Save in WORKSPACE the PARAMS metadata with KEY-PREFIX.
 The key is composed of the KEY-PREFIX with PARAMS uri path."
@@ -176,7 +182,7 @@ OUTLINES are the outline items."
      (lsp-dart-outline--outlines->tree uri outlines)
      "Outline"
      t
-     "*Dart Outline*")))
+     lsp-dart--outline-buffer-name)))
 
 (defun lsp-dart-outline--render-flutter-outline-tree (uri outlines)
   "Render an Flutter outline view with the source URI and OUTLINES data."
@@ -185,65 +191,88 @@ OUTLINES are the outline items."
      (lsp-dart-outline--flutter-outline->tree uri outlines)
      "Flutter Outline"
      t
-     "*Flutter Outline*")))
+     lsp-dart--flutter-outline-buffer-name)))
 
-(defun lsp-dart-outline--show-outline (buffer ignore-focus?)
+(defun lsp-dart-outline--show-outline (ignore-focus?)
   "Show an outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-when-let ((&OutlineNotification? :uri :outline (&Outline :children)) (lsp-dart-outline--get-metadata buffer "current-outline"))
+  (-if-let ((&OutlineNotification? :uri :outline (&Outline :children)) lsp-dart-current-outline)
     (-let* ((tree-buffer (lsp-dart-outline--render-outline-tree uri children))
             (window (display-buffer-in-side-window tree-buffer lsp-dart-outline-position-params)))
       (unless ignore-focus?
         (select-window window)
-        (set-window-dedicated-p window t)))))
+        (set-window-dedicated-p window t)))
+    (lsp-dart-log "No Dart outline data found")))
 
-(defun lsp-dart-outline--show-flutter-outline (buffer ignore-focus?)
+(defun lsp-dart-outline--show-flutter-outline (ignore-focus?)
   "Show a Flutter outline tree for BUFFER.
 Focus on it if IGNORE-FOCUS? is nil."
-  (-when-let ((&FlutterOutlineNotification? :uri :outline (&FlutterOutline :children)) (lsp-dart-outline--get-metadata buffer "current-flutter-outline"))
+  (-if-let ((&FlutterOutlineNotification? :uri :outline (&FlutterOutline :children)) lsp-dart-current-flutter-outline)
     (-let* ((tree-buffer (lsp-dart-outline--render-flutter-outline-tree uri children))
             (window (display-buffer-in-side-window tree-buffer lsp-dart-flutter-outline-position-params)))
       (unless ignore-focus?
         (select-window window)
-        (set-window-dedicated-p window t)))))
+        (set-window-dedicated-p window t)))
+    (lsp-dart-log "No Flutter outline data found")))
 
-(lsp-defun lsp-dart-outline-handle-outline (workspace (notification &as &OutlineNotification :uri :outline))
+(lsp-defun lsp-dart--outline-check ((notification &as &OutlineNotification :uri :outline))
   "Outline notification handling from WORKSPACE.
 NOTIFICATION is outline notification data received from server.
 It updates the outline view if it already exists."
-  (lsp-dart-outline--set-metadata workspace notification "current-outline")
   (when lsp-dart-main-code-lens
     (lsp-dart-code-lens-check-main uri outline))
   (when lsp-dart-test-code-lens
     (lsp-dart-code-lens-check-test uri outline))
-  (when (get-buffer-window "*Dart Outline*")
-    (lsp-dart-outline--show-outline (find-buffer-visiting (lsp--uri-to-path uri)) t)))
+   (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+     (with-current-buffer buffer
+      (setq lsp-dart-current-outline notification)
+       (when (get-buffer-window lsp-dart--outline-buffer-name)
+         (lsp-dart-outline--show-outline t)))))
 
-(lsp-defun lsp-dart-outline-handle-flutter-outline (workspace (notification &as &FlutterOutlineNotification :uri))
+(lsp-defun lsp-dart--flutter-outline-check ((notification &as &FlutterOutlineNotification :uri))
   "Flutter outline notification handling from WORKSPACE.
 NOTIFICATION is Flutter outline notification data received from server.
 It updates the Flutter outline view if it already exists."
-  (lsp-dart-outline--set-metadata workspace notification "current-flutter-outline")
-  (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)
-  (when (get-buffer-window "*Flutter Outline*")
-    (lsp-dart-outline--show-flutter-outline (find-buffer-visiting (lsp--uri-to-path uri)) t)))
+  (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+    (with-current-buffer buffer
+      (setq lsp-dart-current-flutter-outline notification)
+      (when (get-buffer-window lsp-dart--flutter-outline-buffer-name)
+        (lsp-dart-outline--show-flutter-outline t)))))
 
 
 ;;; Public interface
+
+(define-minor-mode lsp-dart-outline-mode
+  "Mode for updating outline."
+  nil nil nil
+  (cond
+   (lsp-dart-outline-mode
+    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--outline-check nil t))
+   (t
+    (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--outline-check t))))
+
+(define-minor-mode lsp-dart-flutter-outline-mode
+  "Mode for updating flutter outline."
+  nil nil nil
+  (cond
+   (lsp-dart-flutter-outline-mode
+    (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart--flutter-outline-check nil t))
+   (t
+    (remove-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart--flutter-outline-check t))))
 
 ;;;###autoload
 (defun lsp-dart-show-outline (ignore-focus?)
   "Show an outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart-assert-sdk-min-version "2.8.0")
-  (lsp-dart-outline--show-outline (current-buffer) ignore-focus?))
+  (lsp-dart-outline--show-outline ignore-focus?))
 
 ;;;###autoload
 (defun lsp-dart-show-flutter-outline (ignore-focus?)
   "Show a Flutter outline tree and focus on it if IGNORE-FOCUS? is nil."
   (interactive "P")
   (lsp-dart-assert-sdk-min-version "2.8.0")
-  (lsp-dart-outline--show-flutter-outline (current-buffer) ignore-focus?))
+  (lsp-dart-outline--show-flutter-outline ignore-focus?))
 
 (provide 'lsp-dart-outline)
 ;;; lsp-dart-outline.el ends here
