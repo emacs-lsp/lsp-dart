@@ -120,6 +120,7 @@ You only need to run `dap-dart-setup` one time to setup the debugger to your Ema
 After the debug session has started, you can run:
 
 `lsp-dart-flutter-hot-restart` - Trigger Flutter hot restart on the debug sessions.
+
 `lsp-dart-flutter-hot-reload` - Trigger Flutter hot reload on the debug sessions.
 
 #### Custom templates
