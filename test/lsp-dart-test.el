@@ -66,12 +66,12 @@
 
 (ert-deftest lsp-dart--handle-analyzer-status--when-analyzing-test ()
   (with-mock
-    (mock (lsp-dart-workspace-status "Analyzing project..." "workspace"))
+    (mock (lsp--spinner-start))
     (lsp-dart--handle-analyzer-status "workspace" (lsp-make-analyzer-status-notification :is-analyzing t))))
 
 (ert-deftest lsp-dart--handle-analyzer-status--when-not-analyzing-test ()
   (with-mock
-    (mock (lsp-dart-workspace-status nil "workspace"))
+    (mock (lsp--spinner-stop))
     (lsp-dart--handle-analyzer-status "workspace" (lsp-make-analyzer-status-notification :is-analyzing nil))))
 
 (ert-deftest lsp-dart-version--test ()
