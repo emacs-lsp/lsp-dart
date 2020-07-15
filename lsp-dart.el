@@ -92,18 +92,17 @@ imported into the current file."
           "--client-id emacs.lsp-dart"
           ,client-version))))
 
-(lsp-defun lsp-dart--handle-analyzer-status (workspace (&AnalyzerStatusNotification :is-analyzing))
+(lsp-defun lsp-dart--handle-analyzer-status (_workspace (&AnalyzerStatusNotification :is-analyzing))
   "Handle analyzer status notification for WORKSPACE.
 PARAMS is the data sent from server."
-  (when (and (not (lsp-dart-flutter-daemon--running-p))
-             (lsp-dart--flutter-project-p))
-    (lsp-dart-flutter-daemon-start))
   (if is-analyzing
-      (lsp-dart-workspace-status "Analyzing project..." workspace)
-    (lsp-dart-workspace-status nil workspace)))
+      (lsp--spinner-start)
+    (lsp--spinner-stop)))
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
+  (when (lsp-dart--flutter-project-p)
+    (lsp-dart-flutter-daemon-start))
   (when lsp-dart-flutter-widget-guides
     (lsp-dart-flutter-widget-guides-mode 1))
   (when lsp-dart-flutter-fringe-colors
