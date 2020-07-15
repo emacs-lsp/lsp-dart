@@ -40,6 +40,12 @@ be sent with information to render editor closing labels."
   :type 'float
   :group 'lsp-dart)
 
+(defcustom lsp-dart-closing-labels-arrived-hook nil
+  "Hooks to run after a closing labels notification arrive.
+The hook will receive the notification data as argument."
+  :type 'hook
+  :group 'lsp-dart)
+
 (lsp-defun lsp-dart--closing-labels-check ((&ClosingLabelsNotification :uri :labels))
   "Closing labels notification handler."
   (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))

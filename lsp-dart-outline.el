@@ -56,6 +56,18 @@ Defaults to side following treemacs default."
   :type 'list
   :group 'lsp-dart)
 
+(defcustom lsp-dart-outline-arrived-hook nil
+  "Hooks to run after a outline notification arrive.
+The hook will receive the notification data as argument."
+  :type 'hook
+  :group 'lsp-dart)
+
+(defcustom lsp-dart-flutter-outline-arrived-hook nil
+  "Hooks to run after a flutter outline notification arrive.
+The hook will receive the notification data as argument."
+  :type 'hook
+  :group 'lsp-dart)
+
 
 ;;; Internal
 
