@@ -36,6 +36,10 @@
 (defconst lsp-dart-flutter-widget-guide-bottom-corner "└")
 (defconst lsp-dart-flutter-widget-guide-middle-corner "├")
 
+(defvar-local lsp-dart-flutter-widget-guide--outline nil)
+(defvar-local lsp-dart-flutter-widget-guide--page nil
+  "Pair of points which holds the last window location the flutter widget guides were loaded.")
+
 (defun lsp-dart-flutter-widget-guide--add-overlay-to (buffer line col string)
   "Add to BUFFER at LINE and COL a STRING overlay."
   (save-excursion
@@ -95,14 +99,13 @@ Return nil if the widget guilde does not apply."
 (defun lsp-dart-flutter-widget-guide--guides->guides-by-line (guides)
   "Convert a widget guide GUIDES to a map by line."
   (let ((guides-by-line '()))
-    (seq-doseq (guide guides)
-      (-let (((&Range :start (&Position :line start-line)
-                      :end (&Position :line end-line)) guide))
-        (while (<= start-line end-line)
-          (if-let ((cur-guides (plist-get guides-by-line start-line)))
-              (setq guides-by-line (plist-put guides-by-line start-line (append cur-guides (list guide))))
-            (setq guides-by-line (plist-put guides-by-line start-line (list guide))))
-          (setq start-line (1+ start-line)))))
+    (-map (-lambda ((guide &as &Range :start (&Position :line start-line)
+                           :end (&Position :line end-line)))
+            (while (<= start-line end-line)
+              (if-let ((cur-guides (alist-get start-line guides-by-line)))
+                  (setcdr (assq start-line guides-by-line) (append cur-guides (list guide)))
+                (add-to-list 'guides-by-line (cons start-line (list guide)) t))
+              (setq start-line (1+ start-line)))) guides)
     guides-by-line))
 
 (defun lsp-dart-flutter-widget-guide--build-chars (line guide-lines size last-line-char anchor)
@@ -110,8 +113,7 @@ Return nil if the widget guilde does not apply."
 SIZE is the length of the characters list.
 LAST-LINE-CHAR is the last column position of LINE.
 ANCHOR is the anchor point of the widget guide at LINE."
-  (let ((chars (make-list size lsp-dart-flutter-widget-guide-space))
-        (max-lisp-eval-depth 1800))
+  (let ((chars (make-list size lsp-dart-flutter-widget-guide-space)))
     (seq-doseq (guide guide-lines)
       (-let* (((&Range :start (&Position :character start-char)
                        :end (&Position :line end-line :character end-char)) guide)
@@ -138,17 +140,26 @@ ANCHOR is the anchor point of the widget guide at LINE."
            (--map-indexed (if (>= it-index anchor) it ""))
            (--filter (not (string= "" it)))))))
 
+(defun lsp-dart-flutter-widget-guide--inside-page-p (line page-start page-end)
+  ""
+  (and (<= page-start line)
+       (>= page-end line)))
+
 (lsp-defun lsp-dart-flutter-widget-guide-check ((&FlutterOutlineNotification :uri :outline))
   "Check if there is any widget guide on buffer from uri of OUTLINE-PARAMS."
   (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
     (with-current-buffer buffer
       (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
       (save-excursion
-        (->> outline
-             (lsp-dart-flutter-widget-guide--outline->guides)
-             (lsp-dart-flutter-widget-guide--guides->guides-by-line)
-             (lsp-dart-plist-each
-              (lambda (line guide-lines)
+        (let ((page-start (count-lines 1 (window-start)))
+              (page-end (count-lines 1 (window-end)))
+              (guides-by-lines (->> outline
+                                   (lsp-dart-flutter-widget-guide--outline->guides)
+                                   (lsp-dart-flutter-widget-guide--guides->guides-by-line))))
+          (seq-doseq (guides-by-line guides-by-lines)
+            (let* ((line (car guides-by-line))
+                   (guide-lines (alist-get line guides-by-lines)))
+              (when (lsp-dart-flutter-widget-guide--inside-page-p line page-start page-end)
                 (let* ((first-guide-char (-min (--map (min (-> it lsp:range-start lsp:position-character)
                                                            (-> it lsp:range-end lsp:position-character)) guide-lines)))
                        (last-guide-char (-max (--map (max (-> it lsp:range-start lsp:position-character)
@@ -156,18 +167,30 @@ ANCHOR is the anchor point of the widget guide at LINE."
                        (last-line-char (lsp-dart-flutter-widget-guide--last-col-at line))
                        (anchor (max 0 (if (< last-line-char first-guide-char) 0 first-guide-char)))
                        (chars (lsp-dart-flutter-widget-guide--build-chars line guide-lines last-guide-char last-line-char anchor)))
-                  (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it))))))))))
+                  (--each-indexed chars (lsp-dart-flutter-widget-guide--add-overlay-to buffer line (+ it-index anchor) it)))))))))))
+
+(defun lsp-dart--flutter-widget-guide-on-idle ()
+  "TODO"
+  (when (and lsp-dart-flutter-widget-guide--outline
+             (not (equal (cons (window-start) (window-end)) lsp-dart-flutter-widget-guide--page)))
+    (setq lsp-dart-flutter-widget-guide--page (cons (window-start) (window-end)))
+    (lsp-dart-flutter-widget-guide-check lsp-dart-flutter-widget-guide--outline)))
+
+(lsp-defun lsp-dart-flutter-widget-guide--on-outline-arrived ((outline &as &FlutterOutlineNotification))
+  "Save outline data for flutter widget guides."
+  (setq lsp-dart-flutter-widget-guide--outline outline))
 
 (define-minor-mode lsp-dart-flutter-widget-guides-mode
   "Mode for displaying flutter widget guide lines."
   nil nil nil
   (cond
    (lsp-dart-flutter-widget-guides-mode
-    (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check nil t))
+    (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide--on-outline-arrived nil t)
+    (add-hook 'lsp-on-idle-hook #'lsp-dart--flutter-widget-guide-on-idle nil t))
    (t
-    (progn
-      (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
-      (remove-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check t)))))
+    (remove-overlays (point-min) (point-max) 'category 'lsp-dart-flutter-widget-guide)
+    (remove-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide--on-outline-arrived t)
+    (remove-hook 'lsp-on-idle-hook #'lsp-dart--flutter-widget-guide-on-idle t))))
 
 (provide 'lsp-dart-flutter-widget-guide)
 ;;; lsp-dart-flutter-widget-guide.el ends here

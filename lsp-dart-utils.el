@@ -65,8 +65,7 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
   (delq (assoc key alist) alist))
 
 (defun lsp-dart-plist-each (fn plist)
-  "Iterate FN (a two-argument fn) over PLIST.
-Error checking is for weenies."
+  "Iterate FN (a two-argument fn) over PLIST."
   (when plist
     (funcall fn (car plist) (cadr plist))
     (lsp-dart-plist-each fn (cddr plist))))
