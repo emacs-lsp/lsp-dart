@@ -102,11 +102,17 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-dart-command ()
   "Return the dart executable from Dart SDK dir."
-  (expand-file-name "bin/dart" (lsp-dart-get-sdk-dir)))
+  (let ((command (expand-file-name "bin/dart" (lsp-dart-get-sdk-dir))))
+    (if (file-exists-p command)
+        command
+      (lsp-dart-log "Dart command not found in path '%s'" command))))
 
 (defun lsp-dart-flutter-command ()
   "Return the flutter executable from Flutter SDK dir."
-  (expand-file-name "bin/flutter" (lsp-dart-get-flutter-sdk-dir)))
+  (let ((command (expand-file-name "bin/flutter" (lsp-dart-get-flutter-sdk-dir))))
+    (if (file-exists-p command)
+        command
+      (lsp-dart-log "Flutter command not found in path '%s'" command))))
 
 
 ;; Project
