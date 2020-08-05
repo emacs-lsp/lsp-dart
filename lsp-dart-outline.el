@@ -19,6 +19,7 @@
 ;;
 ;;; Code:
 
+(require 'lsp-lens)
 (require 'lsp-treemacs)
 
 (require 'lsp-dart-protocol)
