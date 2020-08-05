@@ -23,6 +23,8 @@
 
 (require 'dash)
 
+(require 'lsp-lens)
+
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-test-support)
