@@ -54,14 +54,6 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
       (setq start (match-end 0)))
     idx))
 
-(defmacro lsp-dart-test--from-project-root (&rest body)
-  "Execute BODY with cwd set to the project root."
-  `(let ((project-root (lsp-dart-get-project-root)))
-     (if project-root
-         (let ((default-directory project-root))
-           ,@body)
-       (error "Dart or Flutter project not found (pubspec.yaml not found)"))))
-
 (defun lsp-dart-test--build-command ()
   "Build the dart or flutter build command checking project type."
   (if (lsp-dart--flutter-project-p)
@@ -92,7 +84,7 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
 If TEST is nil, it will run all tests from project.
 If TEST is non nil, it will check if contains any test specific name
 to run otherwise run all tests from file-name in TEST."
-  (lsp-dart-test--from-project-root
+  (lsp-dart-from-project-root
    (if test
        (let* ((file-name (lsp-dart-test-file-name test))
               (names (lsp-dart-test-names test))
@@ -175,7 +167,7 @@ Search for the last test overlay."
   (interactive)
   (if (lsp-dart-test-file-p (buffer-file-name))
       (lsp-dart-test--run (->> (current-buffer) buffer-name file-truename (make-lsp-dart-test :file-name)))
-    (user-error "Current buffer is not a Dart/Flutter test file")))
+    (lsp-dart-log "Current buffer is not a Dart/Flutter test file.")))
 
 ;;;###autoload
 (defun lsp-dart-run-all-tests ()

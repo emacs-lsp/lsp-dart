@@ -38,6 +38,7 @@
 (require 'lsp-dart-outline)
 (require 'lsp-dart-flutter-fringe-colors)
 (require 'lsp-dart-flutter-widget-guide)
+(require 'lsp-dart-commands)
 
 (defgroup lsp-dart nil
   "LSP support for Dart, using dart analysis server."

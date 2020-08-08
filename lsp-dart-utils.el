@@ -137,6 +137,14 @@ FLUTTER_ROOT environment variable."
      ((file-exists-p bin-entry)
       bin-entry))))
 
+(defmacro lsp-dart-from-project-root (&rest body)
+  "Execute BODY with cwd set to the project root."
+  `(let ((project-root (lsp-dart-get-project-root)))
+     (if project-root
+         (let ((default-directory project-root))
+           ,@body)
+       (error "Project not found (pubspec.yaml not found)"))))
+
 
 ;; Log
 
