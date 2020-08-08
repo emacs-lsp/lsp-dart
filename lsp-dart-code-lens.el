@@ -218,11 +218,24 @@ NAMES arg is optional and are the group of tests representing a test name."
   nil nil nil
   (cond
    (lsp-dart-test-code-lens-mode
+    (lsp-dart-define-key "t t" #'lsp-dart-run-test-at-point)
+    (lsp-dart-define-key "t T" #'lsp-dart-run-test-at-point)
+    (lsp-dart-define-key "t f" #'lsp-dart-run-test-file)
+    (lsp-dart-define-key "t l" #'lsp-dart-run-last-test)
+    (lsp-dart-define-key "t L" #'lsp-dart-debug-last-test)
+    (lsp-dart-define-key "t a" #'lsp-dart-run-all-tests)
+    (lsp-dart-define-key "t v" #'lsp-dart-visit-last-test)
     (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--test-code-lens-check nil t))
    (t
-    (progn
-      (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
-      (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--test-code-lens-check t)))))
+    (lsp-dart-define-key "t t" 'ignore)
+    (lsp-dart-define-key "t T" 'ignore)
+    (lsp-dart-define-key "t f" 'ignore)
+    (lsp-dart-define-key "t l" 'ignore)
+    (lsp-dart-define-key "t L" 'ignore)
+    (lsp-dart-define-key "t a" 'ignore)
+    (lsp-dart-define-key "t v" 'ignore)
+    (remove-overlays (point-min) (point-max) 'lsp-dart-test-code-lens t)
+    (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--test-code-lens-check t))))
 
 (provide 'lsp-dart-code-lens)
 ;;; lsp-dart-code-lens.el ends here
