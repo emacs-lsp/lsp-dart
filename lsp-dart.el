@@ -57,7 +57,7 @@
   :type '(repeat string)
   :group 'lsp-dart)
 
-(defcustom lsp-dart-only-analyze-projects-with-open-files nil
+(defcustom lsp-dart-only-analyze-projects-with-open-files t
   "Analyze only open files.
 When set to non-nil, analysis will only be performed for projects that have
 open files rather than the root workspace folder."
