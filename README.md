@@ -151,7 +151,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 ### Commands
 
-`lsp-dart`support running Flutter and Dart commands as following:
+`lsp-dart` support running Flutter and Dart commands as following:
 
 `lsp-dart-pub-get` - Run `pub get` or `flutter pub get` on project root.
 
