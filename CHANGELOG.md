@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.14.0
+* Add `lsp-dart-pub-get` command.
+* Add `lsp-dart-pub-upgrade` command.
+* Add `lsp-dart-pub-outdated` command.
+* Add keybindings to all lsp-dart test commands.
+
+## 1.13.4
+* Safe checks when dart sdk is not present for most commands usage.
+
+## 1.13.3
+* Improve flutter widget guide lines performance.
+
+## 1.13.1
+* Fix anaylerStatus notification performance.
+
+## 1.13.0
+* Drop emacs 25.X support.
+* Add mode to most features like `closing-labels`, `outline`, `widget-guide-lines` and `flutter-fringe-colors` .
+
+## 1.12.0
+* Migrate lsp-dart to use lsp-protocol following lsp-mode.
+
 ## 1.11.9
 * Add Dart SDK version to `lsp-dart-version` command. 
 
