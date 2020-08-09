@@ -154,7 +154,9 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 `lsp-dart`support running Flutter and Dart commands as following:
 
 `lsp-dart-pub-get` - Run `pub get` or `flutter pub get` on project root.
+
 `lsp-dart-pub-upgrade` - Run `pub upgrade` or `flutter pub upgrade` on project root.
+
 `lsp-dart-pub-outdated` - Run `pub outdated` or `flutter pub outdated` on project root.
 
 ###### :warning:* Features only available for Dart SDK version 2.8.0 or above.
