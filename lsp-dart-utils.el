@@ -146,11 +146,12 @@ FLUTTER_ROOT environment variable."
        (error "Project not found (pubspec.yaml not found)"))))
 
 
-;; keymap
+;; Keymap
 
 (defun lsp-dart-define-key (key action)
   "Define KEY with ACTION."
-  (define-key lsp-mode-map (kbd (concat lsp-keymap-prefix  " D " key)) action))
+  (when lsp-keymap-prefix
+    (define-key lsp-mode-map (kbd (concat lsp-keymap-prefix  " D " key)) action)))
 
 
 ;; Log
