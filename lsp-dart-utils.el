@@ -150,7 +150,7 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-define-key (key action)
   "Define KEY with ACTION."
-  (define-key lsp-mode-map (kbd (concat "D " key)) action))
+  (define-key lsp-mode-map (kbd (concat lsp-keymap-prefix  " D " key)) action))
 
 
 ;; Log
