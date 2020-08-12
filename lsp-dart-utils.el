@@ -96,6 +96,8 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-pub-command ()
   "Return the pub executable path from Dart SDK path."
+  (if (eq system-type 'windows-nt)
+      (expand-file-name "bin/pub.bat" (lsp-dart-get-sdk-dir)))
   (expand-file-name "bin/pub" (lsp-dart-get-sdk-dir)))
 
 (defun lsp-dart-pub-snapshot-command ()
@@ -104,14 +106,16 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-dart-command ()
   "Return the dart executable from Dart SDK dir."
-  (let ((command (expand-file-name "bin/dart" (lsp-dart-get-sdk-dir))))
+  (let* ((executable-path (if (eq system-type 'windows-nt) "bin/dart.exe" "bin/dart"))
+         (command (expand-file-name executable-path (lsp-dart-get-sdk-dir))))
     (if (file-exists-p command)
         command
       (lsp-dart-log "Dart command not found in path '%s'" command))))
 
 (defun lsp-dart-flutter-command ()
   "Return the flutter executable from Flutter SDK dir."
-  (let ((command (expand-file-name "bin/flutter" (lsp-dart-get-flutter-sdk-dir))))
+  (let* ((executable-path (if (eq system-type 'windows-nt) "bin/flutter.bat" "bin/flutter"))
+         (command (expand-file-name executable-path (lsp-dart-get-flutter-sdk-dir))))
     (if (file-exists-p command)
         command
       (lsp-dart-log "Flutter command not found in path '%s'" command))))
