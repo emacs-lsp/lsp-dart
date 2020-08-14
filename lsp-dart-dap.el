@@ -75,10 +75,30 @@
   :group 'lsp-dart
   :type 'boolean)
 
+(defcustom lsp-dart-dap-evaluate-getters-in-debug-views t
+  "If non-nil, evaluate getters in debug views."
+  :group 'lsp-dart
+  :type 'boolean)
+
+(defcustom lsp-dart-dap-evaluate-tostring-in-debug-views t
+  "If non-nil, evaluate toString's in debug views."
+  :group 'lsp-dart
+  :type 'boolean)
+
 (defcustom lsp-dart-dap-vm-additional-args ""
   "Additional args for dart debugging VM."
   :group 'lsp-dart
   :type 'string)
+
+(defcustom lsp-dart-dap-vm-service-port 0
+  "Service port for dart debugging VM."
+  :group 'lsp-dart
+  :type 'number)
+
+(defcustom lsp-dart-dap-max-log-line-length 2000
+  "The max log line length during the debug."
+  :group 'lsp-dart
+  :type 'number)
 
 (defcustom lsp-dart-dap-flutter-track-widget-creation t
   "Whether to pass –track-widget-creation to Flutter apps.
@@ -129,19 +149,26 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap--base-debugger-args (conf)
   "Return the base args for debugging merged with CONF."
-  (-> conf
-      (dap--put-if-absent :request "launch")
-      (dap--put-if-absent :dartPath (lsp-dart-dart-command))
-      (dap--put-if-absent :cwd (lsp-dart-get-project-root))
-      (dap--put-if-absent :pubPath (lsp-dart-pub-command))
-      (dap--put-if-absent :pubSnapshotPath (lsp-dart-pub-snapshot-command))
-      (dap--put-if-absent :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
-      (dap--put-if-absent :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
-      (dap--put-if-absent :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-      (dap--put-if-absent :flutterPath (lsp-dart-flutter-command))
-      (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
-      (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
-      lsp-dart-dap--capabilities-debugger-args))
+  (let ((conf conf))
+    (dap--put-if-absent conf :request "launch")
+    (dap--put-if-absent conf :dartPath (lsp-dart-dart-command))
+    (dap--put-if-absent conf :dartVersion (lsp-dart-get-dart-version))
+    (dap--put-if-absent conf :sendLogsToClient t)
+    (dap--put-if-absent conf :maxLogLineLength lsp-dart-dap-max-log-line-length)
+    (dap--put-if-absent conf :cwd (lsp-dart-get-project-root))
+    (dap--put-if-absent conf :pubPath (lsp-dart-pub-command))
+    (dap--put-if-absent conf :pubSnapshotPath (lsp-dart-pub-snapshot-command))
+    (dap--put-if-absent conf :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
+    (dap--put-if-absent conf :vmServicePort lsp-dart-dap-vm-service-port)
+    (dap--put-if-absent conf :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
+    (dap--put-if-absent conf :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
+    (dap--put-if-absent conf :evaluateGettersInDebugViews lsp-dart-dap-evaluate-getters-in-debug-views)
+    (dap--put-if-absent conf :evaluateToStringInDebugViews lsp-dart-dap-evaluate-tostring-in-debug-views)
+    (dap--put-if-absent conf :flutterPath (lsp-dart-flutter-command))
+    (dap--put-if-absent conf :flutterVersion (lsp-dart-get-flutter-version))
+    (dap--put-if-absent conf :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
+    (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
+    (lsp-dart-dap--capabilities-debugger-args conf)))
 
 ;; Dart
 
@@ -244,7 +271,7 @@ Call CALLBACK when the device is chosen and started successfully."
             (msg (replace-regexp-in-string (regexp-quote "\n") "" message nil 'literal)))
       (lsp-dart-dap-log msg))))
 
-(cl-defmethod dap-handle-event ((_event (eql dart.launching)) _session params)
+(cl-defmethod dap-handle-event ((_event (eql dart.progressStart)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
   (let ((prefix (concat (propertize "[LSP Dart] "
                                     'face 'font-lock-keyword-face)
@@ -255,14 +282,15 @@ Call CALLBACK when the device is chosen and started successfully."
     (setq lsp-dart-dap--flutter-progress-reporter-timer
           (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-tick-progress-update))))
 
-(cl-defmethod dap-handle-event ((_event (eql dart.launched)) _session _params)
+(cl-defmethod dap-handle-event ((_event (eql dart.progressEnd)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
   (when lsp-dart-dap--flutter-progress-reporter
     (progress-reporter-done lsp-dart-dap--flutter-progress-reporter))
   (lsp-dart-dap-log "Loading app..."))
 
-(cl-defmethod dap-handle-event ((_event (eql dart.progress)) _session params)
+(cl-defmethod dap-handle-event ((_event (eql dart.progressUpdate)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
+  (message "update - receive %s" params)
   (-let (((&hash "message") params)
          (prefix (concat (propertize "[LSP Dart] "
                                      'face 'font-lock-keyword-face)
@@ -276,12 +304,6 @@ Call CALLBACK when the device is chosen and started successfully."
   (lsp-dart-dap--cancel-flutter-progress (dap--cur-session))
   (lsp-dart-dap-log "App ready!"))
 
-(cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
-  "Ignore this event.")
-(cl-defmethod dap-handle-event ((_event (eql dart.serviceExtensionAdded)) _session _params)
-  "Ignore this event.")
-(cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
-  "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.hotReloadRequest)) _session _params)

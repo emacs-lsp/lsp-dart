@@ -189,11 +189,22 @@ FLUTTER_ROOT environment variable."
   (->> (concat (lsp-dart-dart-command) " --version")
        shell-command-to-string))
 
-(defun lsp-dart--get-dart-version ()
+(defun lsp-dart-get-full-flutter-version ()
+  "Retrieve the Flutter version from shell command."
+  (->> (concat (lsp-dart-flutter-command) " --version")
+       shell-command-to-string))
+
+(defun lsp-dart-get-dart-version ()
   "Retrieve the dart version from shell command."
   (->> (lsp-dart-get-full-dart-version)
        split-string
        (nth 3)))
+
+(defun lsp-dart-get-flutter-version ()
+  "Retrieve the Flutter version from shell command."
+  (->> (lsp-dart-get-full-flutter-version)
+       split-string
+       (nth 1)))
 
 (defun lsp-dart-version->number (version)
   "Transform VERSION into a comparable version number."
@@ -204,7 +215,7 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-version-at-least-p (version)
   "Return non-nil if Dart SDK version is at least VERSION."
-  (let ((sdk-version (lsp-dart--get-dart-version)))
+  (let ((sdk-version (lsp-dart-get-dart-version)))
     (version<= (lsp-dart-version->number version)
                (lsp-dart-version->number sdk-version))))
 
