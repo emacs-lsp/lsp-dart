@@ -312,8 +312,18 @@ Call CALLBACK when the device is chosen and started successfully."
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
   "Ignore this event.")
-
 (cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
+  "Ignore this event.")
+
+(cl-defmethod dap-handle-event ((_event (eql dart.serviceExtensionAdded)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.updateIsWidgetCreationTracked)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.updatePlatformOverride)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
   "Ignore this event.")
 
 
