@@ -742,7 +742,6 @@ matching names.</p>
 <th align="left">Variable</th>
 <th align="left">Description</th>
 <th align="left">Default</th>
-<th></th>
 </tr>
 </thead>
 <tbody>
@@ -750,199 +749,166 @@ matching names.</p>
 <td align="left"><code>lsp-dart-sdk-dir</code></td>
 <td align="left">The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in <code>$PATH</code>.</td>
 <td align="left"><code>nil</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-sdk-dir</code></td>
 <td align="left">The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the <code>flutter</code> executable in <code>$PATH</code> and if not found, it will try in <code>$FLUTTER_ROOT</code>.</td>
 <td align="left"><code>nil</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-server-command</code></td>
 <td align="left"><code>analysis_server</code> executable to use</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-enable-sdk-formatter</code></td>
 <td align="left">Whether to enable server formatting.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-line-length</code></td>
 <td align="left">Line length used by server formatter.</td>
 <td align="left">80</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-extra-library-directories</code></td>
 <td align="left">Extra libs to analyze besides Dart SDK libs</td>
 <td align="left"><code>'()</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-only-analyze-projects-with-open-files</code></td>
 <td align="left">Analysis will only be performed for projects that have open files rather than the root workspace folder</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-suggest-from-unimported-libraries</code></td>
 <td align="left">Completion will not include symbols that are not already imported into the current file.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-closing-labels</code></td>
 <td align="left">Enable the closing labels feature on server lsp</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-closing-labels-prefix</code></td>
 <td align="left">The prefix string to be concatenated with the closing label</td>
 <td align="left"><code>""</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-closing-labels-size</code></td>
 <td align="left">The font size factor to be multiplied by the closing labels font size</td>
 <td align="left">0.9</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-outline</code></td>
 <td align="left">Enable the outline tree view feature on server lsp</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-outline-position-params</code></td>
 <td align="left">The outline tree position params.</td>
 <td align="left">Left side</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-outline</code></td>
-<td align="left">Wheter to enable the Flutter outline tree view feature on server lsp</td>
+<td align="left">Whether to enable the Flutter outline tree view feature on server lsp</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-outline-position-params</code></td>
 <td align="left">The Flutter outline tree position params</td>
 <td align="left">Left side</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-fringe-colors</code></td>
 <td align="left">Enable the Flutter colors on fringe.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-flutter-widget-guides</code></td>
 <td align="left">Enable the Flutter widget guide lines from parent to child widgets</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-main-code-lens</code></td>
-<td align="left">Enable the <code>Run                                                                                                                                                                      | Debug</code> code lens on main methods.</td>
+<td align="left">Enable the <code>Run\|Debug</code> code lens on main methods.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-test-code-lens</code></td>
-<td align="left">Enable the <code>Run                                                                                                                                                                      | Debug</code> code lens on tests.</td>
+<td align="left">Enable the <code>Run\|Debug</code> code lens on tests.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-extension-version</code></td>
 <td align="left">The debugger extension version.</td>
 <td align="left">3.10.1</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-debugger-path</code></td>
 <td align="left">The debugger extension path</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-dart-debugger-program</code></td>
 <td align="left">The command to execute the debugger extension on dart projects.</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-dart-test-debugger-program</code></td>
 <td align="left">The command to execute the test debugger extension on dart projects.</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-flutter-debugger-program</code></td>
 <td align="left">The command to execute the debugger extension on flutter projects.</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-flutter-test-debugger-program</code></td>
 <td align="left">The command to execute the test debugger extension on flutter projects.</td>
 <td align="left">Check source file</td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-debug-external-libraries</code></td>
 <td align="left">Whether to enable the debug on external libraries</td>
 <td align="left"><code>nil</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-debug-sdk-libraries</code></td>
 <td align="left">Whether to enable the debug on Dart SDK libraries</td>
 <td align="left"><code>nil</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-vm-additional-args</code></td>
 <td align="left">Additional args for dart debugging VM when the debugging.</td>
 <td align="left"><code>""</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-flutter-track-widget-creation</code></td>
 <td align="left">Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-flutter-structured-errors</code></td>
 <td align="left">Whether to use Flutter’s structured error support for improve error display.</td>
 <td align="left"><code>t</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-dap-flutter-verbose-log</code></td>
 <td align="left">Whether to enable verbose logs from Flutter DAP</td>
 <td align="left"><code>nil</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-devtools-theme</code></td>
 <td align="left">The devtools theme when openning via <code>lsp-dart-dap-open-devtools</code></td>
 <td align="left"><code>"dark"</code></td>
-<td></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-devtools-hide-options</code></td>
 <td align="left">What to hide when openning DevTools via <code>lsp-dart-dap-open-devtools</code></td>
 <td align="left"><code>debugger</code></td>
-<td></td>
 </tr>
 </tbody>
 </table>
