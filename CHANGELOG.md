@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.15.0
+* Add `lsp-dart-enable-sdk-formatter` setting.
+* Add `lsp-dart-line-length` setting.
+
 ## 1.14.0
 * Add `lsp-dart-pub-get` command.
 * Add `lsp-dart-pub-upgrade` command.

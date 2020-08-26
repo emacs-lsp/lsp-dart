@@ -71,6 +71,16 @@ imported into the current file."
   :type 'boolean
   :group 'lsp-dart)
 
+(defcustom lsp-dart-enable-sdk-formatter t
+  "When to enable server formmating."
+  :type 'boolean
+  :group 'lsp-dart)
+
+(defcustom lsp-dart-line-length 80
+  "The number of characters the formatter should wrap code at."
+  :type 'number
+  :group 'lsp-dart)
+
 
 ;;; Internal
 
@@ -82,6 +92,18 @@ imported into the current file."
     (if (string-prefix-p sdk-lib (buffer-file-name))
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
+
+(lsp-defun lsp-dart--configuration (_workspace (&ConfigurationParams :items))
+  "Return the client workspace configuration."
+  (->> items
+       (seq-map (-lambda ((&ConfigurationItem :scope-uri?))
+                  (-when-let* ((file (lsp--uri-to-path scope-uri?))
+                               (buffer (find-buffer-visiting file))
+                               (workspace-folder (lsp-find-session-folder (lsp-session) file)))
+                    (with-current-buffer buffer
+                      (lsp-make-dart-configuration :dart-enable-sdk-formatter? lsp-dart-enable-sdk-formatter
+                                                   :dart-line-length? lsp-dart-line-length)))))
+       (apply #'vector)))
 
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
@@ -140,6 +162,7 @@ PARAMS is the data sent from server."
                                                  ("dart/textDocument/publishFlutterOutline" (lambda (_workspace notification)
                                                                                               (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification)))
                                                  ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
+                  :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
                   :after-open-fn #'lsp-dart--activate-features
                   :server-id 'dart_analysis_server))
 

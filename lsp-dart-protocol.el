@@ -24,6 +24,9 @@
 (require 'lsp-protocol)
 
 (lsp-interface
+ (DartConfiguration nil (:dart.enableSdkFormatter :dart.lineLength)))
+
+(lsp-interface
  (AnalyzerStatusNotification (:isAnalyzing) nil))
 
 (lsp-interface
