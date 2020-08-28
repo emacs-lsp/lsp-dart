@@ -116,6 +116,16 @@ Required to support 'Inspect Widget'."
   :group 'lsp-dart
   :type 'boolean)
 
+(defcustom lsp-dart-dap-flutter-hot-reload-on-save nil
+  "Send hot reload to flutter during the debug."
+  :group 'lsp-dart
+  :type 'boolean)
+
+(defcustom lsp-dart-dap-flutter-hot-restart-on-save nil
+  "Send hot restart to flutter during the debug."
+  :group 'lsp-dart
+  :type 'boolean)
+
 
 ;;; Internal
 
@@ -250,6 +260,12 @@ Call CALLBACK when the device is chosen and started successfully."
 (defvar lsp-dart-dap--flutter-progress-reporter nil)
 (defvar lsp-dart-dap--flutter-progress-reporter-timer nil)
 
+(defconst lsp-dart-dap--debug-prefix
+  (concat (propertize "[LSP Dart] "
+                      'face 'font-lock-keyword-face)
+          (propertize "[DAP] "
+                      'face 'font-lock-function-name-face)))
+
 (defun lsp-dart-dap--cancel-flutter-progress (_debug-session)
   "Cancel the Flutter progress timer for DEBUG-SESSION."
   (setq lsp-dart-dap--flutter-progress-reporter nil)
@@ -273,35 +289,23 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressStart)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (let ((prefix (concat (propertize "[LSP Dart] "
-                                    'face 'font-lock-keyword-face)
-                        (propertize "[DAP] "
-                                    'face 'font-lock-function-name-face))))
-    (setq lsp-dart-dap--flutter-progress-reporter
-          (make-progress-reporter (concat prefix (gethash "message" params))))
-    (setq lsp-dart-dap--flutter-progress-reporter-timer
-          (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-tick-progress-update))))
+  (setq lsp-dart-dap--flutter-progress-reporter
+        (make-progress-reporter (concat lsp-dart-dap--debug-prefix (gethash "message" params))))
+  (setq lsp-dart-dap--flutter-progress-reporter-timer
+        (run-with-timer 0.2 0.2 #'lsp-dart-dap--flutter-tick-progress-update)))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressEnd)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (when lsp-dart-dap--flutter-progress-reporter
-    (progress-reporter-done lsp-dart-dap--flutter-progress-reporter))
-  (lsp-dart-dap-log "Loading app..."))
+  (lsp-dart-dap--cancel-flutter-progress (dap--cur-session)))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressUpdate)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (message "update - receive %s" params)
-  (-let (((&hash "message") params)
-         (prefix (concat (propertize "[LSP Dart] "
-                                     'face 'font-lock-keyword-face)
-                         (propertize "[DAP] "
-                                     'face 'font-lock-function-name-face))))
+  (-let (((&hash "message") params))
     (when (and message lsp-dart-dap--flutter-progress-reporter)
-      (progress-reporter-force-update lsp-dart-dap--flutter-progress-reporter nil (concat prefix message)))))
+      (progress-reporter-force-update lsp-dart-dap--flutter-progress-reporter nil (concat lsp-dart-dap--debug-prefix message)))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.firstFrame)) _session _params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (lsp-dart-dap--cancel-flutter-progress (dap--cur-session))
   (lsp-dart-dap-log "App ready!"))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
@@ -312,19 +316,34 @@ Call CALLBACK when the device is chosen and started successfully."
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.navigate)) _session _params)
   "Ignore this event.")
-(cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
-  "Ignore this event.")
-
 (cl-defmethod dap-handle-event ((_event (eql dart.serviceExtensionAdded)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.serviceRegistered)) _session _params)
   "Ignore this event.")
-(cl-defmethod dap-handle-event ((_event (eql dart.flutter.updateIsWidgetCreationTracked)) _session _params)
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.updatePlatformOverride)) _session _params)
   "Ignore this event.")
-(cl-defmethod dap-handle-event ((_event (eql dart.flutter.serviceExtensionStateChanged)) _session _params)
+(cl-defmethod dap-handle-event ((_event (eql dart.flutter.updateIsWidgetCreationTracked)) _session _params)
   "Ignore this event.")
+
+(cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
+  "Ignore this event.")
+
+(defun lsp-dart-dap--flutter-hot-reload ()
+  "Hot reload current Flutter debug session."
+  (dap-request (dap--cur-session) "hotReload"))
+
+(defun lsp-dart-dap--flutter-hot-restart ()
+  "Hot restart current Flutter debug session."
+  (dap-request (dap--cur-session) "hotRestart"))
+
+(defun lsp-dart-dap--on-save ()
+  "Run when `after-save-hook' is triggered."
+  (if lsp-dart-dap-flutter-hot-restart-on-save
+      (lsp-dart-dap--flutter-hot-restart)
+    (when lsp-dart-dap-flutter-hot-reload-on-save
+      (lsp-dart-dap--flutter-hot-reload))))
 
 
 ;; Public
@@ -389,19 +408,26 @@ Call CALLBACK when the device is chosen and started successfully."
 
 ;; Public Interface
 
-;;;###autoload
 (defun lsp-dart-dap-flutter-hot-restart ()
   "Hot restart current Flutter debug session."
   (interactive)
-  (seq-doseq (debug-session (dap--get-sessions))
-    (dap-request debug-session "hotRestart")))
+  (lsp-dart-dap--flutter-hot-restart))
 
-;;;###autoload
 (defun lsp-dart-dap-flutter-hot-reload ()
   "Hot reload current Flutter debug session."
   (interactive)
-  (seq-doseq (debug-session (dap--get-sessions))
-    (dap-request debug-session "hotReload")))
+  (lsp-dart-dap--flutter-hot-reload))
+
+(define-minor-mode lsp-dart-dap-mode
+  "Mode for when debugging Dart/Flutter code."
+  nil nil nil
+  (cond
+   (lsp-dart-dap-mode
+    (add-hook 'after-save-hook #'lsp-dart-dap--on-save))
+   (t
+    (remove-hook 'after-save-hook #'lsp-dart-dap--on-save))))
+
+(add-hook 'dap-session-created-hook #'lsp-dart-dap-mode)
 
 (provide 'lsp-dart-dap)
 ;;; lsp-dart-dap.el ends here

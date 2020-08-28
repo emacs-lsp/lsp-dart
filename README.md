@@ -123,6 +123,8 @@ After the debug session has started, you can run:
 
 `lsp-dart-flutter-hot-reload` - Trigger Flutter hot reload on the debug sessions.
 
+For hot-reload/restart on buffer save you can enable `lsp-dart-dap-flutter-hot-reload-on-save` or `lsp-dart-dap-flutter-hot-restart-on-save`.
+
 #### Custom templates
 
 You can register a custom template for debugging with `dap-register-debug-template`, check the following example:
@@ -151,7 +153,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 ### Commands
 
-`lsp-dart` support running Flutter and Dart commands as following:
+lsp-dart supports running Flutter and Dart commands as following:
 
 `lsp-dart-pub-get` - Run `pub get` or `flutter pub get` on project root.
 
@@ -163,13 +165,13 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 ## Supported settings
 
-| Variable                        | Description                                                                                                                                                                          | Default           |
-|:--------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
-| `lsp-dart-sdk-dir`              | The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in `$PATH`. | `nil`             |
-| `lsp-dart-flutter-sdk-dir`      | The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the `flutter` executable in `$PATH` and if not found, it will try in `$FLUTTER_ROOT`.                | `nil`             |
-| `lsp-dart-server-command`       | `analysis_server` executable to use                                                                                                                                                  | Check source file |
-| `lsp-dart-enable-sdk-formatter` | Whether to enable server formatting.                                                                                                                                                 | `t`               |
-| `lsp-dart-line-length`          | Line length used by server formatter.                                                                                                                                                | 80                |
+| Variable                                         | Description                                                                                                                                                                          | Default           |
+|:-------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
+| `lsp-dart-sdk-dir`                               | The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in `$PATH`. | `nil`             |
+| `lsp-dart-flutter-sdk-dir`                       | The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the `flutter` executable in `$PATH` and if not found, it will try in `$FLUTTER_ROOT`.                | `nil`             |
+| `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                                                                                                  | Check source file |
+| `lsp-dart-enable-sdk-formatter`                  | Whether to enable server formatting.                                                                                                                                                 | `t`               |
+| `lsp-dart-line-length`                           | Line length used by server formatter.                                                                                                                                                | 80                |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                                                                                                          | `'()`             |
 | `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder                                                                              | `t`               |
 | `lsp-dart-suggest-from-unimported-libraries`     | Completion will not include symbols that are not already imported into the current file.                                                                                             | `t`               |
@@ -178,7 +180,7 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-closing-labels-size`                   | The font size factor to be multiplied by the closing labels font size                                                                                                                | 0.9               |
 | `lsp-dart-outline`                               | Enable the outline tree view feature on server lsp                                                                                                                                   | `t`               |
 | `lsp-dart-outline-position-params`               | The outline tree position params.                                                                                                                                                    | Left side         |
-| `lsp-dart-flutter-outline`                       | Whether to enable the Flutter outline tree view feature on server lsp                                                                                                                 | `t`               |
+| `lsp-dart-flutter-outline`                       | Whether to enable the Flutter outline tree view feature on server lsp                                                                                                                | `t`               |
 | `lsp-dart-flutter-outline-position-params`       | The Flutter outline tree position params                                                                                                                                             | Left side         |
 | `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                                                                                                 | `t`               |
 | `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                                                                                                   | `t`               |
@@ -196,14 +198,15 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 | `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.                                                                                        | `t`               |
 | `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                                                                                                         | `t`               |
 | `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                                                                                                      | `nil`             |
+| `lsp-dart-dap-flutter-hot-reload-on-save`        | When enabled, every buffer save triggers a `lsp-dart-dap-flutter-hot-reload`                                                                                                         | `nil`             |
+| `lsp-dart-dap-flutter-hot-restart-on-save`       | When enabled, every buffer save triggers a `lsp-dart-dap-flutter-hot-restart`                                                                                                        | `nil`             |
 | `lsp-dart-devtools-theme`                        | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                                                                                                    | `"dark"`          |
 | `lsp-dart-devtools-hide-options`                 | What to hide when openning DevTools via `lsp-dart-dap-open-devtools`                                                                                                                 | `debugger`        |
 
 ## Additional packages
 * [lsp-ui](https://github.com/emacs-lsp/lsp-ui) : Flycheck, documentation and code actions support.
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
-* [company-capf](https://github.com/company-mode/company-mode) : Completion backend support.
-* [flutter.el](https://github.com/amake/flutter.el) : Tool to run emulator from emacs.
+* [company-capf](https://github.com/company-mode/company-mode) : Completion back-end support.
 * [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
 
 ## FAQ
@@ -219,9 +222,10 @@ You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on t
 
 :grey_question: `LSP :: No LSP server for dart-mode(check *lsp-log*).`
 
-:small_blue_diamond: Try to set the `lsp-dart-sdk-dir` to the Dart SDK dir instalation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
+:small_blue_diamond: Try to set the `lsp-dart-sdk-dir` to the Dart SDK dir installation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
 
 ## Community
+
 All feedback and suggestions are very welcome!
 
-You can [open a issue](https://github.com/emacs-lsp/lsp-dart/issues/new/choose) or for a quick anwser, send a message on [Gitter](https://gitter.im/emacs-lsp/lsp-mode).
+You can [open a issue](https://github.com/emacs-lsp/lsp-dart/issues/new/choose) or for a quick answer, send a message on [Gitter](https://gitter.im/emacs-lsp/lsp-mode).
