@@ -13,7 +13,7 @@
       
       
       <link rel="shortcut icon" href="images/logo.svg">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.9">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.01afc2df.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.36ee6aaa.min.css">
       
       
     
@@ -710,6 +710,7 @@ You only need to run <code>dap-dart-setup</code> one time to setup the debugger 
 <p>After the debug session has started, you can run:</p>
 <p><code>lsp-dart-flutter-hot-restart</code> - Trigger Flutter hot restart on the debug sessions.</p>
 <p><code>lsp-dart-flutter-hot-reload</code> - Trigger Flutter hot reload on the debug sessions.</p>
+<p>For hot-reload/restart on buffer save you can enable <code>lsp-dart-dap-flutter-hot-reload-on-save</code> or <code>lsp-dart-dap-flutter-hot-restart-on-save</code>.</p>
 <h4 id="custom-templates">Custom templates<a class="headerlink" href="#custom-templates" title="Permanent link">#</a></h4>
 <p>You can register a custom template for debugging with <code>dap-register-debug-template</code>, check the following example:</p>
 <p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span>
@@ -730,7 +731,7 @@ matching names.</p>
 <h4 id="devtools">DevTools<a class="headerlink" href="#devtools" title="Permanent link">#</a></h4>
 <p>You can also open the <a href="https://dart.dev/tools/dart-devtools">Dart DevTools</a> on the current debug session with <code>lsp-dart-open-devtools</code>.</p>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
-<p><code>lsp-dart</code> support running Flutter and Dart commands as following:</p>
+<p>lsp-dart supports running Flutter and Dart commands as following:</p>
 <p><code>lsp-dart-pub-get</code> - Run <code>pub get</code> or <code>flutter pub get</code> on project root.</p>
 <p><code>lsp-dart-pub-upgrade</code> - Run <code>pub upgrade</code> or <code>flutter pub upgrade</code> on project root.</p>
 <p><code>lsp-dart-pub-outdated</code> - Run <code>pub outdated</code> or <code>flutter pub outdated</code> on project root.</p>
@@ -901,6 +902,16 @@ matching names.</p>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
+<td align="left"><code>lsp-dart-dap-flutter-hot-reload-on-save</code></td>
+<td align="left">When enabled, every buffer save triggers a <code>lsp-dart-dap-flutter-hot-reload</code></td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>lsp-dart-dap-flutter-hot-restart-on-save</code></td>
+<td align="left">When enabled, every buffer save triggers a <code>lsp-dart-dap-flutter-hot-restart</code></td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
 <td align="left"><code>lsp-dart-devtools-theme</code></td>
 <td align="left">The devtools theme when openning via <code>lsp-dart-dap-open-devtools</code></td>
 <td align="left"><code>"dark"</code></td>
@@ -916,8 +927,7 @@ matching names.</p>
 <ul>
 <li><a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> : Flycheck, documentation and code actions support.</li>
 <li><a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a> : <code>lsp-mode</code> GUI controls implemented using treemacs.</li>
-<li><a href="https://github.com/company-mode/company-mode">company-capf</a> : Completion backend support.</li>
-<li><a href="https://github.com/amake/flutter.el">flutter.el</a> : Tool to run emulator from emacs.</li>
+<li><a href="https://github.com/company-mode/company-mode">company-capf</a> : Completion back-end support.</li>
 <li><a href="https://github.com/ericdallo/hover.el">hover.el</a> : Tool to run flutter mobile apps from desktop without the need of an emulator.</li>
 </ul>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
@@ -928,10 +938,10 @@ matching names.</p>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;projectile-project-root-files-bottom-up</span> <span class="s">&quot;BUILD&quot;</span><span class="p">))</span>
 </code></pre></div></p>
 <p><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> <code>LSP :: No LSP server for dart-mode(check *lsp-log*).</code></p>
-<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Try to set the <code>lsp-dart-sdk-dir</code> to the Dart SDK dir instalation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
+<p><img alt="🔹" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f539.svg" title=":small_blue_diamond:" /> Try to set the <code>lsp-dart-sdk-dir</code> to the Dart SDK dir installation or if you are using Flutter, <code>&lt;your-flutter-dir&gt;/bin/cache/dart-sdk/</code>.</p>
 <h2 id="community">Community<a class="headerlink" href="#community" title="Permanent link">#</a></h2>
 <p>All feedback and suggestions are very welcome!</p>
-<p>You can <a href="https://github.com/emacs-lsp/lsp-dart/issues/new/choose">open a issue</a> or for a quick anwser, send a message on <a href="https://gitter.im/emacs-lsp/lsp-mode">Gitter</a>.</p>
+<p>You can <a href="https://github.com/emacs-lsp/lsp-dart/issues/new/choose">open a issue</a> or for a quick answer, send a message on <a href="https://gitter.im/emacs-lsp/lsp-mode">Gitter</a>.</p>
                 
                   
                     
@@ -940,7 +950,7 @@ matching names.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 26, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 28, 2020</span>
     
   </small>
 </div>
@@ -1036,7 +1046,7 @@ matching names.</p>
           base: ".",
           features: ["tabs"],
           search: Object.assign({
-            worker: "assets/javascripts/worker/search.fae956e7.min.js"
+            worker: "assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
