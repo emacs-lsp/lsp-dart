@@ -66,6 +66,12 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
   "Remove item with KEY from ALIST."
   (delq (assoc key alist) alist))
 
+(defun lsp-dart-assoc-if (list predicate value)
+  "Assoc VALUE to LIST if PREDICATE is t."
+  (if predicate
+      (append list (list value))
+    list))
+
 
 ;; SDKs
 

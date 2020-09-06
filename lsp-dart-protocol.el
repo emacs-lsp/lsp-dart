@@ -53,5 +53,21 @@
  (FlutterDaemonDevice (:id :name :platform :category :platformType :ephemeral :emulator) (:isDevice))
  (FlutterDaemonEmulatorLaunch (:emulatorId)))
 
+(lsp-interface
+ (Notification (:type :time) nil)
+ (StartNotification (:type :time :protocolVersion) (:runnerVersion))
+ (AllSuitesNotification (:type :time :count) nil)
+ (SuiteNotification (:type :time :suite) nil)
+ (Suite (:id :platform :path) nil)
+ (Test (:id :suiteID :groupIDs) (:name :line :column :url :root_line :root_column :root_url))
+ (TestNotification (:type :time :test) nil)
+ (Group (:testCount) (:parentID))
+ (GroupNotification (:type :time :group) nil)
+ (TestStartNotification (:type :time :test) nil)
+ (TestDoneNotification (:type :time :testID :result :skipped :hidden) nil)
+ (DoneNotification (:type :time :success) nil)
+ (PrintNotification (:type :time :testID :messageType :message) nil)
+ (ErrorNotification (:type :time :testID :error :stackTrace :isFailure) nil))
+
 (provide 'lsp-dart-protocol)
 ;;; lsp-dart-protocol.el ends here

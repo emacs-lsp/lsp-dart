@@ -59,11 +59,10 @@
       (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-flutter-command) nil "daemon")
       (with-current-buffer buffer
         (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
-          (lsp-dart-flutter-daemon-mode)))
-      (remove-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses)
-      (remove-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device)
-      (add-hook 'comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses)
-      (add-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device)
+          (lsp-dart-flutter-daemon-mode))
+        (remove-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device t)
+        (add-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device nil t)
+        (setq-local comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses))
       (lsp-dart-flutter-daemon--send "device.enable"))))
 
 (defun lsp-dart-flutter-daemon--build-command (id method &optional params)
