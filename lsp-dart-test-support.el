@@ -54,6 +54,8 @@ not become focused. Otherwise the buffer is displayed and focused."
 
 (defvar lsp-dart-test--suites nil)
 (defvar lsp-dart-test--tests nil)
+(defvar lsp-dart-test--tests-count 0)
+(defvar lsp-dart-test--tests-passed 0)
 
 (cl-defstruct lsp-dart-test-suite
   (status nil)
@@ -62,7 +64,8 @@ not become focused. Otherwise the buffer is displayed and focused."
 (cl-defstruct lsp-dart-test
   (id nil)
   (name nil)
-  (start-time nil))
+  (start-time nil)
+  (group-ids nil))
 
 (cl-defstruct lsp-dart-test-len
   (file-name nil)
@@ -205,14 +208,19 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql start)) _notification)
   "Handle start NOTIFICATION."
-  (setq lsp-dart-test--tests nil))
+  (setq lsp-dart-test--tests nil)
+  (setq lsp-dart-test--tests-count 0)
+  (setq lsp-dart-test--tests-passed 0))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :time :test (&Test :id :name?)) notification))
+  (-let (((&TestStartNotification :time :test (&Test :id :group-i-ds :name?)) notification))
     (lsp-dart-test--set-test id (make-lsp-dart-test :id id
                                                     :name name?
-                                                    :start-time time))))
+                                                    :start-time time
+                                                    :group-ids group-i-ds))
+    (unless (seq-empty-p group-i-ds)
+      (setq lsp-dart-test--tests-count (1+ lsp-dart-test--tests-count)))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
   "Handle allSuites NOTIFICATION.")
@@ -232,8 +240,10 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
-  (-let (((&TestDoneNotification :test-id :time :hidden) notification))
+  (-let (((&TestDoneNotification :test-id :result :time :hidden) notification))
     (unless hidden
+      (when (string= result "success")
+        (setq lsp-dart-test--tests-passed (1+ lsp-dart-test--tests-passed)))
       (-when-let* ((test (lsp-dart-test--get-test test-id))
                    (time (propertize (format "(%s ms)"
                                              (- time (lsp-dart-test-start-time test)))
@@ -250,7 +260,8 @@ NOTIFICATION is the event notification.")
     (if success
         (lsp-dart-test--send-output (propertize (format "\n%s All ran tests passed %s" lsp-dart-test--passed-icon lsp-dart-test--passed-icon)
                                                 'font-lock-face 'success))
-      (lsp-dart-test--send-output "\nFinished running tests"))))
+      (lsp-dart-test--send-output (propertize (format "\n● %s/%s tests passed" lsp-dart-test--tests-passed lsp-dart-test--tests-count)
+                                              'font-lock-face font-lock-warning-face)))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql print)) notification)
   "Handle print NOTIFICATION."
