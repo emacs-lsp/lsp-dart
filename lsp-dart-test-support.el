@@ -61,7 +61,8 @@ not become focused. Otherwise the buffer is displayed and focused."
 
 (cl-defstruct lsp-dart-test
   (id nil)
-  (name nil))
+  (name nil)
+  (start-time nil))
 
 (cl-defstruct lsp-dart-test-len
   (file-name nil)
@@ -70,50 +71,25 @@ not become focused. Otherwise the buffer is displayed and focused."
   (kind nil))
 
 (defconst lsp-dart-test--exception-re
-  (rx (or
-       (and (zero-or-more any)
-            (or "exception" "EXCEPTION")
-            (zero-or-more any))
-       "<asynchronous suspension>"
-       (and "#"
-            (one-or-more
-             any)))))
+  (rx (or (and (zero-or-more any)
+               (or "exception" "EXCEPTION")
+               (zero-or-more any))
+          "<asynchronous suspension>"
+          (and "#"
+               (one-or-more
+                any)))))
 
 (defconst lsp-dart-test--expected-actual-re
-  (rx (or
-       (and (zero-or-more blank)
-            "Expected:"
-            (zero-or-more any))
-       (and (zero-or-more blank)
-            "Actual:"
-            (zero-or-more any)))))
+  (rx (or (and (zero-or-more blank)
+               "Expected:"
+               (zero-or-more any))
+          (and (zero-or-more blank)
+               "Actual:"
+               (zero-or-more any)))))
 
-(defconst lsp-dart-test--success-test-re
-  (rx bol
-      (or
-       (literal lsp-dart-test--success-icon)
-       (and
-        (literal lsp-dart-test--passed-icon)
-        " All ran tests passed "
-        (literal lsp-dart-test--passed-icon)))
-      (zero-or-more any)))
-
-(defconst lsp-dart-test--skipped-test-re
-  (rx bol
-      (literal lsp-dart-test--skipped-icon)
-      (zero-or-more any)))
-
-(defconst lsp-dart-test--error-test-re
-  (rx bol
-      (literal lsp-dart-test--error-icon)
-      (zero-or-more any)))
-
-(defvar lsp-dart-test--font-lock
+(defconst lsp-dart-test--font-lock
   `((,lsp-dart-test--exception-re . 'error)
-    (,lsp-dart-test--expected-actual-re . 'warning)
-    (,lsp-dart-test--success-test-re . 'success)
-    (,lsp-dart-test--skipped-test-re . 'homoglyph)
-    (,lsp-dart-test--error-test-re . 'error)))
+    (,lsp-dart-test--expected-actual-re . 'warning)))
 
 (defvar lsp-dart-test--output-font-lock
   '((lsp-dart-test--font-lock)))
@@ -142,6 +118,14 @@ not become focused. Otherwise the buffer is displayed and focused."
           lsp-dart-test--skipped-icon
         lsp-dart-test--success-icon)
     lsp-dart-test--error-icon))
+
+(lsp-defun lsp-dart-test--get-face ((&TestDoneNotification :result :skipped))
+  "Return the icon for test done notification."
+  (if (string= result "success")
+      (if skipped
+          'homoglyph
+        'success)
+    'error))
 
 (defun lsp-dart-test--test-kind-p (kind)
   "Return non-nil if KIND is a test type."
@@ -225,9 +209,10 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :test (&Test :id :name?)) notification))
+  (-let (((&TestStartNotification :time :test (&Test :id :name?)) notification))
     (lsp-dart-test--set-test id (make-lsp-dart-test :id id
-                                                    :name name?))))
+                                                    :name name?
+                                                    :start-time time))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
   "Handle allSuites NOTIFICATION.")
@@ -247,16 +232,24 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
-  (-let (((&TestDoneNotification :test-id :hidden) notification))
+  (-let (((&TestDoneNotification :test-id :time :hidden) notification))
     (unless hidden
-      (when-let (test (lsp-dart-test--get-test test-id))
-        (lsp-dart-test--send-output "%s %s" (lsp-dart-test--get-icon notification) (lsp-dart-test-name test))))))
+      (-when-let* ((test (lsp-dart-test--get-test test-id))
+                   (time (propertize (format "(%s ms)"
+                                             (- time (lsp-dart-test-start-time test)))
+                                     'font-lock-face 'font-lock-comment-face))
+                   (text (propertize (concat (lsp-dart-test--get-icon notification)
+                                             " "
+                                             (lsp-dart-test-name test))
+                                     'font-lock-face (lsp-dart-test--get-face notification))))
+        (lsp-dart-test--send-output "%s %s" text time)))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql done)) notification)
   "Handle done NOTIFICATION."
   (-let (((&DoneNotification :success) notification))
     (if success
-        (lsp-dart-test--send-output "\n%s All ran tests passed %s" lsp-dart-test--passed-icon lsp-dart-test--passed-icon)
+        (lsp-dart-test--send-output (propertize (format "\n%s All ran tests passed %s" lsp-dart-test--passed-icon lsp-dart-test--passed-icon)
+                                                'font-lock-face 'success))
       (lsp-dart-test--send-output "\nFinished running tests"))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql print)) notification)
