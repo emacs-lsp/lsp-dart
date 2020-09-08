@@ -120,28 +120,18 @@ imported into the current file."
 (lsp-defun lsp-dart--handle-analyzer-status (_workspace (&AnalyzerStatusNotification :is-analyzing))
   "Handle analyzer status notification for WORKSPACE.
 PARAMS is the data sent from server."
-  (if is-analyzing
-      (lsp--spinner-start)
-    (lsp--spinner-stop)))
+  (if is-analyzing (lsp--spinner-start) (lsp--spinner-stop)))
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
-  (when (lsp-dart--flutter-project-p)
-    (lsp-dart-flutter-daemon-start))
-  (when lsp-dart-flutter-widget-guides
-    (lsp-dart-flutter-widget-guides-mode 1))
-  (when lsp-dart-flutter-fringe-colors
-    (lsp-dart-flutter-fringe-colors-mode 1))
-  (when lsp-dart-closing-labels
-    (lsp-dart-closing-labels-mode 1))
-  (when lsp-dart-outline
-    (lsp-dart-outline-mode 1))
-  (when lsp-dart-flutter-outline
-    (lsp-dart-flutter-outline-mode 1))
-  (when lsp-dart-main-code-lens
-    (lsp-dart-main-code-lens-mode 1))
-  (when lsp-dart-test-code-lens
-    (lsp-dart-test-code-lens-mode 1)))
+  (when (lsp-dart--flutter-project-p) (lsp-dart-flutter-daemon-start))
+  (when lsp-dart-flutter-widget-guides (lsp-dart-flutter-widget-guides-mode 1))
+  (when lsp-dart-flutter-fringe-colors (lsp-dart-flutter-fringe-colors-mode 1))
+  (when lsp-dart-closing-labels (lsp-dart-closing-labels-mode 1))
+  (when lsp-dart-outline (lsp-dart-outline-mode 1))
+  (when lsp-dart-flutter-outline (lsp-dart-flutter-outline-mode 1))
+  (when lsp-dart-main-code-lens (lsp-dart-main-code-lens-mode 1))
+  (when lsp-dart-test-code-lens (lsp-dart-test-code-lens-mode 1)))
 
 (lsp-register-client
  (make-lsp-client :new-connection
