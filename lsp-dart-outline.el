@@ -142,8 +142,8 @@ OUTLINES are the outline items."
                (list :key label
                      :label label
                      :icon (lsp-dart-outline--outline-kind->icon kind)
-                     :children (lambda (&rest _)
-                                 (unless (seq-empty-p children)
+                     :children (unless (seq-empty-p children)
+                                 (lambda (&rest _)
                                    (lsp-dart-outline--outlines->tree uri children)))
                      :ret-action (lambda (&rest _) (lsp-dart-outline--outline-tree-ret-action uri range)))))
            outlines))
@@ -180,8 +180,8 @@ OUTLINES are the outline items."
        (list :key label
              :label label
              :icon icon
-             :children (lambda (&rest _)
-                         (unless (seq-empty-p children)
+             :children (unless (seq-empty-p children)
+                         (lambda (&rest _)
                            (lsp-dart-outline--flutter-outline->tree uri children)))
              :ret-action (lambda (&rest _) (lsp-dart-outline--outline-tree-ret-action uri code-range))
              :actions (when widget?

@@ -25,10 +25,25 @@
 (require 'rx)
 (require 'dart-mode)
 (require 'lsp-mode)
+(require 'lsp-treemacs)
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
 (require 'lsp-dart-dap)
+
+(defcustom lsp-dart-test-tree-on-run t
+  "Enable the test tree when running tests."
+  :type 'boolean
+  :group 'lsp-dart)
+
+(defcustom lsp-dart-test-tree-position-params
+  `((side . ,treemacs-position)
+    (slot . 2)
+    (window-width . ,treemacs-width))
+  "The test tree position params.
+Defaults to side following treemacs default."
+  :type 'list
+  :group 'lsp-dart)
 
 (defcustom lsp-dart-test-pop-to-buffer-on-run 'display-only
   "Controls whether to pop to the tests buffer on run.
@@ -36,16 +51,17 @@
 When set to nil the buffer will only be created, and not displayed.
 When set to `display-only' the buffer will be displayed, but it will
 not become focused. Otherwise the buffer is displayed and focused."
-  :group 'lsp-dart
   :type '(choice (const :tag "Create the buffer, but don't display it" nil)
                  (const :tag "Create and display the buffer, but don't focus it" display-only)
-                 (const :tag "Create, display, and focus the buffer" t)))
+                 (const :tag "Create, display, and focus the buffer" t))
+  :group 'lsp-dart)
 
 
 ;;; Internal
 
 (defconst lsp-dart-test--process-buffer-name "*LSP Dart - tests process*")
 (defconst lsp-dart-test--buffer-name "*LSP Dart tests*")
+(defconst lsp-dart-test--tree-buffer-name "*LSP Dart tests tree*")
 
 (defconst lsp-dart-test--passed-icon "★")
 (defconst lsp-dart-test--success-icon "✔")
@@ -53,25 +69,79 @@ not become focused. Otherwise the buffer is displayed and focused."
 (defconst lsp-dart-test--error-icon "✖")
 
 (defvar lsp-dart-test--suites nil)
-(defvar lsp-dart-test--tests nil)
 (defvar lsp-dart-test--tests-count 0)
 (defvar lsp-dart-test--tests-passed 0)
-
-(cl-defstruct lsp-dart-test-suite
-  (status nil)
-  (path nil))
-
-(cl-defstruct lsp-dart-test
-  (id nil)
-  (name nil)
-  (start-time nil)
-  (group-ids nil))
 
 (cl-defstruct lsp-dart-test-len
   (file-name nil)
   (names nil)
   (position nil)
   (kind nil))
+
+;; Tree
+
+(cl-defstruct lsp-dart-test-suite
+  (id nil)
+  (status 'waiting)
+  (path nil)
+  (groups nil))
+
+(cl-defstruct lsp-dart-test-group
+  (id nil)
+  (name nil)
+  (groups nil)
+  (tests nil))
+
+(cl-defstruct lsp-dart-test
+  (id nil)
+  (name nil)
+  (start-time nil))
+
+(lsp-defun lsp-dart-test--add-suite ((&Suite :id :path))
+  "Add a test SUITE."
+  (add-to-list 'lsp-dart-test--suites (make-lsp-dart-test-suite :id id
+                                                                :path path)
+               t))
+
+(lsp-defun lsp-dart-test--set-group ((&Group :id) (&Group :id :suite-id :name? :parent-id?))
+  (when-let (suite (alist-get suite-id lsp-dart-test--suites))
+    (setf (alist-get id (lsp-dart-test-suite-groups suite))
+          (make-lsp-dart-test-group :id id
+                                    :name name?))))
+
+(lsp-defun lsp-dart-test--set-test ((&Test :suite-id :id :name? :group-i-ds) start-time)
+  "Add a new test to a test suite."
+  (-each lsp-dart-test--suites
+    (lambda (suite)
+      (when (= suite-id (lsp-dart-test-suite-id suite))
+        (make-lsp-dart-test :id id
+                            :name name?
+                            :start-time start-time
+                            :group-ids group-i-ds)))))
+
+(defun lsp-dart-test--tests->tree ()
+  "Build the test tree for treemacs."
+  (seq-map (lambda (suite)
+             (list :key (lsp-dart-test-suite-path suite)
+                   :label (f-filename (lsp-dart-test-suite-path suite))
+                   :status (lsp-dart-test-suite-status suite)
+                   :children (lambda (&rest _)
+                               (list (list :key "blo"
+                                           :label "Blo"
+                                           :children nil)))))
+           (map-values lsp-dart-test--suites)))
+
+(defun lsp-dart-test--show-tree ()
+  "Show the test tree buffer."
+  (let ((tree-buffer (save-excursion
+                       (lsp-treemacs-render
+                        (lsp-dart-test--tests->tree)
+                        "Tests"
+                        t
+                        lsp-dart-test--tree-buffer-name))))
+    (display-buffer-in-side-window tree-buffer lsp-dart-test-tree-position-params)))
+
+;; Output
 
 (defconst lsp-dart-test--exception-re
   (rx (or (and (zero-or-more any)
@@ -181,22 +251,6 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
   "Return non-nil if some test is already running."
   (comint-check-proc lsp-dart-test--process-buffer-name))
 
-(defun lsp-dart-test--set-test (id test)
-  "Add TEST with key ID."
-  (setf (alist-get id lsp-dart-test--tests) test))
-
-(defun lsp-dart-test--get-test (id)
-  "Return the test from ID if exists."
-  (alist-get id lsp-dart-test--tests))
-
-(defun lsp-dart-test--set-suite (path suite)
-  "Add SUITE with key PATH."
-  (setf (alist-get path lsp-dart-test--suites nil nil #'string=) suite))
-
-(defun lsp-dart-test--get-suite (path)
-  "Return the suite from PATH if exists."
-  (alist-get path lsp-dart-test--suites nil nil #'string=))
-
 (cl-defgeneric lsp-dart-test--handle-notification (type notification)
   "Extension point for handling custom events.
 TYPE is the event to handle.
@@ -208,17 +262,19 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql start)) _notification)
   "Handle start NOTIFICATION."
-  (setq lsp-dart-test--tests nil)
+  (setq lsp-dart-test--suites nil)
   (setq lsp-dart-test--tests-count 0)
   (setq lsp-dart-test--tests-passed 0))
 
+(cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) notification)
+  "Handle group NOTIFICATION."
+  (-let (((&GroupNotification :group) notification))
+    (lsp-dart-test--add-group group)))
+
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :time :test (&Test :id :group-i-ds :name?)) notification))
-    (lsp-dart-test--set-test id (make-lsp-dart-test :id id
-                                                    :name name?
-                                                    :start-time time
-                                                    :group-ids group-i-ds))
+  (-let (((&TestStartNotification :time :test (test &as &Test :group-i-ds)) notification))
+    (lsp-dart-test--add-test test time)
     (unless (seq-empty-p group-i-ds)
       (setq lsp-dart-test--tests-count (1+ lsp-dart-test--tests-count)))))
 
@@ -227,16 +283,9 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) notification)
   "Handle suites NOTIFICATION."
-  (-let (((&SuiteNotification :suite (&Suite :path)) notification))
-    (if-let (suite (lsp-dart-test--get-suite path))
-        (progn
-          (setf (lsp-dart-test-suite-status suite) 'waiting)
-          (lsp-dart-test--set-suite path suite))
-      (lsp-dart-test--set-suite path (make-lsp-dart-test-suite :status 'waiting
-                                                               :path path)))))
-
-(cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) _notification)
-  "Handle group NOTIFICATION.")
+  (-let (((&SuiteNotification :suite) notification))
+    (lsp-dart-test--add-suite suite)
+    (lsp-treemacs-generic-refresh)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
@@ -346,7 +395,9 @@ to run otherwise run all tests from file-name in TEST."
                                         (append (list test-file)))))
     (lsp-dart-test--run-process (lsp-dart-test--build-command) (lsp-dart-test--build-command-extra-args)))
   (lsp-dart-test--show-buffer)
-  (lsp-dart-test--send-output (concat "Running tests...\n")))
+  (lsp-dart-test--send-output (concat "Running tests...\n"))
+  (when lsp-dart-test-tree-on-run
+    (lsp-dart-test--show-tree)))
 
 (defun lsp-dart-test--debug (test)
   "Debug Dart/Flutter TEST."
@@ -450,6 +501,11 @@ Search for the last test overlay."
   (if-let ((test (lsp-workspace-get-metadata "last-ran-test")))
       (lsp-dart-test--debug test)
     (lsp-dart-log "No last test found.")))
+
+(defun lsp-dart-test-show-tree ()
+  "Show test tree of the current/last ran test."
+  (interactive)
+  (lsp-dart-test--show-tree))
 
 ;;;###autoload
 (define-derived-mode lsp-dart-test-mode special-mode lsp-dart-test--buffer-name
