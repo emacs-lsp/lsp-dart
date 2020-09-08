@@ -141,10 +141,10 @@ RANGE is the overlay range to build."
                            (line-beginning-position)))
           (spaces (make-string beg-position ?\s))
           (overlay (make-overlay beg-line end buffer))
-          (test (make-lsp-dart-test :file-name (buffer-file-name buffer)
-                                    :names names
-                                    :position beg
-                                    :kind kind))
+          (test (make-lsp-dart-test-len :file-name (buffer-file-name buffer)
+                                        :names names
+                                        :position beg
+                                        :kind kind))
           (separator (propertize " " 'font-lock-face 'lsp-dart-code-lens-separator)))
     (overlay-put overlay 'lsp-dart-test-code-lens t)
     (overlay-put overlay 'lsp-dart-test test)
