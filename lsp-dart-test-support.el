@@ -35,7 +35,7 @@
 
 When set to nil the buffer will only be created, and not displayed.
 When set to `display-only' the buffer will be displayed, but it will
-not become focused. Otherwise the buffer is displayed and focused."
+not become focused, otherwise the buffer is displayed and focused."
   :group 'lsp-dart
   :type '(choice (const :tag "Create the buffer, but don't display it" nil)
                  (const :tag "Create and display the buffer, but don't focus it" display-only)
@@ -56,10 +56,6 @@ not become focused. Otherwise the buffer is displayed and focused."
 (defvar lsp-dart-test--tests nil)
 (defvar lsp-dart-test--tests-count 0)
 (defvar lsp-dart-test--tests-passed 0)
-
-(cl-defstruct lsp-dart-test-suite
-  (status nil)
-  (path nil))
 
 (cl-defstruct lsp-dart-test
   (id nil)
@@ -225,15 +221,8 @@ NOTIFICATION is the event notification.")
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
   "Handle allSuites NOTIFICATION.")
 
-(cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) notification)
-  "Handle suites NOTIFICATION."
-  (-let (((&SuiteNotification :suite (&Suite :path)) notification))
-    (if-let (suite (lsp-dart-test--get-suite path))
-        (progn
-          (setf (lsp-dart-test-suite-status suite) 'waiting)
-          (lsp-dart-test--set-suite path suite))
-      (lsp-dart-test--set-suite path (make-lsp-dart-test-suite :status 'waiting
-                                                               :path path)))))
+(cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) _notification)
+  "Handle suites NOTIFICATION.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) _notification)
   "Handle group NOTIFICATION.")
