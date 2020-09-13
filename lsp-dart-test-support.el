@@ -28,6 +28,7 @@
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
+(require 'lsp-dart-test-tree)
 (require 'lsp-dart-dap)
 
 (defcustom lsp-dart-test-pop-to-buffer-on-run 'display-only
@@ -52,7 +53,6 @@ not become focused, otherwise the buffer is displayed and focused."
 (defconst lsp-dart-test--skipped-icon "•")
 (defconst lsp-dart-test--error-icon "✖")
 
-(defvar lsp-dart-test--suites nil)
 (defvar lsp-dart-test--tests nil)
 (defvar lsp-dart-test--tests-count 0)
 (defvar lsp-dart-test--tests-passed 0)
@@ -185,14 +185,6 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
   "Return the test from ID if exists."
   (alist-get id lsp-dart-test--tests))
 
-(defun lsp-dart-test--set-suite (path suite)
-  "Add SUITE with key PATH."
-  (setf (alist-get path lsp-dart-test--suites nil nil #'string=) suite))
-
-(defun lsp-dart-test--get-suite (path)
-  "Return the suite from PATH if exists."
-  (alist-get path lsp-dart-test--suites nil nil #'string=))
-
 (cl-defgeneric lsp-dart-test--handle-notification (type notification)
   "Extension point for handling custom events.
 TYPE is the event to handle.
@@ -206,42 +198,49 @@ NOTIFICATION is the event notification.")
   "Handle start NOTIFICATION."
   (setq lsp-dart-test--tests nil)
   (setq lsp-dart-test--tests-count 0)
-  (setq lsp-dart-test--tests-passed 0))
+  (setq lsp-dart-test--tests-passed 0)
+  (lsp-dart-test-tree-clean))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :time :test (&Test :id :group-i-ds :name?)) notification))
+  (-let (((&TestStartNotification :time :test (test &as &Test :id :group-i-ds :name?)) notification))
     (lsp-dart-test--set-test id (make-lsp-dart-test :id id
                                                     :name name?
                                                     :start-time time
                                                     :group-ids group-i-ds))
     (unless (seq-empty-p group-i-ds)
-      (setq lsp-dart-test--tests-count (1+ lsp-dart-test--tests-count)))))
+      (setq lsp-dart-test--tests-count (1+ lsp-dart-test--tests-count)))
+    (lsp-dart-test-tree-set-test test 'running)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
   "Handle allSuites NOTIFICATION.")
 
-(cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) _notification)
-  "Handle suites NOTIFICATION.")
+(cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) notification)
+  "Handle suites NOTIFICATION."
+  (-let (((&SuiteNotification :suite) notification))
+    (lsp-dart-test-tree-add-suite suite)))
 
-(cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) _notification)
-  "Handle group NOTIFICATION.")
+(cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) notification)
+  "Handle group NOTIFICATION."
+  (-let (((&GroupNotification :group) notification))
+    (lsp-dart-test-tree-set-group group)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
-  (-let (((&TestDoneNotification :test-id :result :time :hidden) notification))
+  (-let (((&TestDoneNotification :test-id :result :time :hidden :skipped) notification))
     (unless hidden
       (when (string= result "success")
         (setq lsp-dart-test--tests-passed (1+ lsp-dart-test--tests-passed)))
       (-when-let* ((test (lsp-dart-test--get-test test-id))
-                   (time (propertize (format "(%s ms)"
-                                             (- time (lsp-dart-test-start-time test)))
-                                     'font-lock-face 'font-lock-comment-face))
+                   (formatted-time (propertize (format "(%s ms)"
+                                                       (- time (lsp-dart-test-start-time test)))
+                                               'font-lock-face 'font-lock-comment-face))
                    (text (propertize (concat (lsp-dart-test--get-icon notification)
                                              " "
                                              (lsp-dart-test-name test))
                                      'font-lock-face (lsp-dart-test--get-face notification))))
-        (lsp-dart-test--send-output "%s %s" text time)))))
+        (lsp-dart-test--send-output "%s %s" text formatted-time)
+        (lsp-dart-test-tree-mark-as-done test-id (- time (lsp-dart-test-start-time test)) result skipped)))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql done)) notification)
   "Handle done NOTIFICATION."
@@ -335,7 +334,9 @@ to run otherwise run all tests from file-name in TEST."
                                         (append (list test-file)))))
     (lsp-dart-test--run-process (lsp-dart-test--build-command) (lsp-dart-test--build-command-extra-args)))
   (lsp-dart-test--show-buffer)
-  (lsp-dart-test--send-output (concat "Running tests...\n")))
+  (lsp-dart-test--send-output "Running tests...\n")
+  (when lsp-dart-test-tree-on-run
+    (lsp-dart-test-show-tree)))
 
 (defun lsp-dart-test--debug (test)
   "Debug Dart/Flutter TEST."
