@@ -86,6 +86,14 @@ Running a test interactively:
 
 ![test](images/run-test.gif)
 
+### Test tree
+
+`lsp-dart-test-show-tree` - Open the test tree containing the latest ran tests.
+
+![test-tree](images/test-tree.gif)
+
+For more options, check the [settings section](#supported-settings).
+
 ### Flutter colors
 
 Display the flutter colors on left fringe.
@@ -185,6 +193,10 @@ lsp-dart supports running Flutter and Dart commands as following:
 | `lsp-dart-flutter-fringe-colors`                 | Enable the Flutter colors on fringe.                                                                                                                                                 | `t`               |
 | `lsp-dart-flutter-widget-guides`                 | Enable the Flutter widget guide lines from parent to child widgets                                                                                                                   | `t`               |
 | `lsp-dart-test-pop-to-buffer-on-run`             | Whether to pop to tests buffer on run, only display or do nothing.                                                                                                                   | `display-only`    |
+| `lsp-dart-test-tree-on-run`                      | Whether to pop to tests tree buffer on run                                                                                                                                           | `t`               |
+| `lsp-dart-test-tree-position-params`             | The test tree position params                                                                                                                                                        | Treemacs default  |
+| `lsp-dart-test-tree-line-spacing`                | The test tree line spacing between nodes                                                                                                                                             | 4                 |
+| `lsp-dart-test-tree-line-spacing`                | The test tree line spacing between nodes                                                                                                                                             | 4                 |
 | `lsp-dart-main-code-lens`                        | Enable the `Run\|Debug` code lens on main methods.                                                                                                                                   | `t`               |
 | `lsp-dart-test-code-lens`                        | Enable the `Run\|Debug` code lens on tests.                                                                                                                                          | `t`               |
 | `lsp-dart-dap-extension-version`                 | The debugger extension version.                                                                                                                                                      | 3.10.1            |

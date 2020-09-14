@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17.0
+* Add test tree feature.
+* Add `lsp-dart-test-show-tree`
+
+## 1.16.0
+* Improve tests backend and output.
+* Prepare for test tree feature.
+
 ## 1.15.0
 * Add `lsp-dart-enable-sdk-formatter` setting.
 * Add `lsp-dart-line-length` setting.
