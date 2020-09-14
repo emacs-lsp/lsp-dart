@@ -44,7 +44,7 @@
 (defface lsp-dart-code-lens-separator
   '((t :height 0.3))
   "The face used for separate test code lens overlays."
-  :group 'lsp-dart-test-support)
+  :group 'lsp-dart)
 
 
 ;; Internal
