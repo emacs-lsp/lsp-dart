@@ -32,8 +32,9 @@
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
-(require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-closing-labels)
+(require 'lsp-dart-dap)
+(require 'lsp-dart-test-support)
 (require 'lsp-dart-code-lens)
 (require 'lsp-dart-outline)
 (require 'lsp-dart-flutter-fringe-colors)
