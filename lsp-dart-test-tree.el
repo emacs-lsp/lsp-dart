@@ -291,6 +291,30 @@ POSITION is the test start position."
      t
      lsp-dart-test-tree--buffer-name)))
 
+(defun lsp-dart-test-tree--handle-run-started ()
+  "Handle run started notification."
+  (when lsp-dart-test-tree-on-run
+    (lsp-dart-test-show-tree)))
+
+(lsp-defun lsp-dart-test-tree--handle-suite ((&SuiteNotification :suite))
+  "Handle suite notification."
+  (lsp-dart-test-tree-add-suite suite))
+
+(defun lsp-dart-test-tree--handle-all-start (_notification)
+  "Handle all start notification."
+  (lsp-dart-test-tree-clean))
+
+(lsp-defun lsp-dart-test-tree--handle-group ((&GroupNotification :group))
+    (lsp-dart-test-tree-set-group group))
+
+(lsp-defun lsp-dart-test-tree--handle-start ((&TestStartNotification :test))
+  "Handle test start notification."
+  (lsp-dart-test-tree-set-test test 'running))
+
+(lsp-defun lsp-dart-test-tree--handle-done ((&TestDoneNotification :test-id :result :time :skipped) _test-name test-start-time)
+  "Handle test done notification."
+  (lsp-dart-test-tree-mark-as-done test-id (- time test-start-time) result skipped))
+
 
 ;;; Public
 
@@ -362,6 +386,12 @@ POSITION is the test start position."
       (setq-local line-spacing lsp-dart-test-tree-line-spacing))
     (display-buffer-in-side-window tree-buffer lsp-dart-test-tree-position-params)))
 
+(add-hook 'lsp-dart-test-run-started-hook #'lsp-dart-test-tree--handle-run-started)
+(add-hook 'lsp-dart-test-suite-notification-hook #'lsp-dart-test-tree--handle-suite)
+(add-hook 'lsp-dart-test-all-start-notification-hook #'lsp-dart-test-tree--handle-all-start)
+(add-hook 'lsp-dart-test-group-notification-hook #'lsp-dart-test-tree--handle-group)
+(add-hook 'lsp-dart-test-start-notification-hook #'lsp-dart-test-tree--handle-start)
+(add-hook 'lsp-dart-test-done-notification-hook #'lsp-dart-test-tree--handle-done)
 
 (provide 'lsp-dart-test-tree)
 ;;; lsp-dart-test-tree.el ends here

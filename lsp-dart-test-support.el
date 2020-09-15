@@ -120,37 +120,32 @@ NOTIFICATION is the event notification.")
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql start)) notification)
   "Handle start NOTIFICATION."
   (setq lsp-dart-test--tests nil)
-  (run-hook-with-args 'lsp-dart-test-all-start-notification-hook notification)
-  (lsp-dart-test-tree-clean))
+  (run-hook-with-args 'lsp-dart-test-all-start-notification-hook notification))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :time :test (test &as &Test :id :group-i-ds :name?)) notification))
+  (-let (((&TestStartNotification :time :test (&Test :id :group-i-ds :name?)) notification))
     (lsp-dart-test--set-test id (make-lsp-dart-test :id id
                                                     :name name?
                                                     :start-time time
                                                     :group-ids group-i-ds))
-    (run-hook-with-args 'lsp-dart-test-start-notification-hook notification)
-    (lsp-dart-test-tree-set-test test 'running)))
+    (run-hook-with-args 'lsp-dart-test-start-notification-hook notification)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
   "Handle allSuites NOTIFICATION.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql suite)) notification)
-  "Handle suites NOTIFICATION."
-  (-let (((&SuiteNotification :suite) notification))
-    (lsp-dart-test-tree-add-suite suite)))
+  "Handle suite NOTIFICATION."
+  (run-hook-with-args 'lsp-dart-test-suite-notification-hook notification))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql group)) notification)
   "Handle group NOTIFICATION."
-  (-let (((&GroupNotification :group) notification))
-    (lsp-dart-test-tree-set-group group)))
+  (run-hook-with-args 'lsp-dart-test-group-notification-hook notification))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
-  (-let (((&TestDoneNotification :test-id :result :time :skipped) notification))
+  (-let (((&TestDoneNotification :test-id) notification))
     (when-let (test (lsp-dart-test--get-test test-id))
-      (lsp-dart-test-tree-mark-as-done test-id (- time (lsp-dart-test-start-time test)) result skipped)
       (run-hook-with-args 'lsp-dart-test-done-notification-hook
                           notification
                           (lsp-dart-test-name test)
@@ -220,9 +215,7 @@ to run otherwise run all tests from file-name in TEST."
                                         (lsp-dart-assoc-if test-arg test-arg)
                                         (append (list test-file)))))
   (lsp-dart-test--run-process (lsp-dart-test--build-command) (lsp-dart-test--build-command-extra-args)))
-  (run-hooks 'lsp-dart-test-run-started-hook)
-  (when lsp-dart-test-tree-on-run
-    (lsp-dart-test-show-tree)))
+  (run-hooks 'lsp-dart-test-run-started-hook))
 
 (defun lsp-dart-test--debug (test)
   "Debug Dart/Flutter TEST."
