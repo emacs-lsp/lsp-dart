@@ -131,6 +131,7 @@ PARAMS is the data sent from server."
   (when lsp-dart-closing-labels (lsp-dart-closing-labels-mode 1))
   (when lsp-dart-outline (lsp-dart-outline-mode 1))
   (when lsp-dart-flutter-outline (lsp-dart-flutter-outline-mode 1))
+  (when (lsp-dart-test-file-p (buffer-file-name)) (lsp-dart-test-mode 1))
   (when lsp-dart-main-code-lens (lsp-dart-main-code-lens-mode 1))
   (when lsp-dart-test-code-lens (lsp-dart-test-code-lens-mode 1)))
 

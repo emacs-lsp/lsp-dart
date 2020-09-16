@@ -35,19 +35,13 @@
 
 (defconst lsp-dart-test--process-buffer-name "*LSP Dart - tests process*")
 
-(defvar lsp-dart-test--tests nil)
+(defvar-local lsp-dart-test--tests nil)
+(defvar lsp-dart-test--running-tests nil)
 
-(cl-defstruct lsp-dart-test
+(cl-defstruct lsp-dart-running-test
   (id nil)
   (name nil)
-  (start-time nil)
-  (group-ids nil))
-
-(cl-defstruct lsp-dart-test-len
-  (file-name nil)
-  (names nil)
-  (position nil)
-  (kind nil))
+  (start-time nil))
 
 (defun lsp-dart-test--test-kind-p (kind)
   "Return non-nil if KIND is a test type."
@@ -100,13 +94,13 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
   "Return non-nil if some test is already running."
   (comint-check-proc lsp-dart-test--process-buffer-name))
 
-(defun lsp-dart-test--set-test (id test)
+(defun lsp-dart-test--set-running-test (id test)
   "Add TEST with key ID."
-  (setf (alist-get id lsp-dart-test--tests) test))
+  (setf (alist-get id lsp-dart-test--running-tests) test))
 
-(defun lsp-dart-test--get-test (id)
+(defun lsp-dart-test--get-running-test (id)
   "Return the test from ID if exists."
-  (alist-get id lsp-dart-test--tests))
+  (alist-get id lsp-dart-test--running-tests))
 
 (cl-defgeneric lsp-dart-test--handle-notification (type notification)
   "Extension point for handling custom events.
@@ -119,16 +113,15 @@ NOTIFICATION is the event notification.")
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql start)) notification)
   "Handle start NOTIFICATION."
-  (setq lsp-dart-test--tests nil)
+  (setq lsp-dart-test--running-tests nil)
   (run-hook-with-args 'lsp-dart-test-all-start-notification-hook notification))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testStart)) notification)
   "Handle testStart NOTIFICATION."
-  (-let (((&TestStartNotification :time :test (&Test :id :group-i-ds :name?)) notification))
-    (lsp-dart-test--set-test id (make-lsp-dart-test :id id
+  (-let (((&TestStartNotification :time :test (&Test :id :name?)) notification))
+    (lsp-dart-test--set-running-test id (make-lsp-dart-running-test :id id
                                                     :name name?
-                                                    :start-time time
-                                                    :group-ids group-i-ds))
+                                                    :start-time time))
     (run-hook-with-args 'lsp-dart-test-start-notification-hook notification)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
@@ -145,11 +138,11 @@ NOTIFICATION is the event notification.")
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql testDone)) notification)
   "Handle test done NOTIFICATION."
   (-let (((&TestDoneNotification :test-id) notification))
-    (when-let (test (lsp-dart-test--get-test test-id))
+    (when-let (test (lsp-dart-test--get-running-test test-id))
       (run-hook-with-args 'lsp-dart-test-done-notification-hook
                           notification
-                          (lsp-dart-test-name test)
-                          (lsp-dart-test-start-time test)))))
+                          (lsp-dart-running-test-name test)
+                          (lsp-dart-running-test-start-time test)))))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql done)) notification)
   "Handle done NOTIFICATION."
@@ -197,9 +190,9 @@ If TEST is nil, it will run all tests from project.
 If TEST is non nil, it will check if contains any test specific name
 to run otherwise run all tests from file-name in TEST."
   (if test
-      (let* ((names (lsp-dart-test-len-names test))
-             (kind (lsp-dart-test-len-kind test))
-             (test-file (file-relative-name (lsp-dart-test-len-file-name test)
+      (let* ((names (plist-get test :names))
+             (kind (plist-get test :kind))
+             (test-file (file-relative-name (plist-get test :file-name)
                                             (lsp-dart-get-project-root)))
              (test-name (lsp-dart-test--build-test-name names))
              (group-kind? (string= kind "UNIT_TEST_GROUP"))
@@ -219,9 +212,9 @@ to run otherwise run all tests from file-name in TEST."
 
 (defun lsp-dart-test--debug (test)
   "Debug Dart/Flutter TEST."
-  (let* ((file-name (lsp-dart-test-len-file-name test))
-         (names (lsp-dart-test-len-names test))
-         (kind (lsp-dart-test-len-kind test))
+  (let* ((file-name (plist-get test :file-name))
+         (names (plist-get test :names))
+         (kind (plist-get test :kind))
          (test-name (lsp-dart-test--build-test-name names))
          (group-kind? (string= kind "UNIT_TEST_GROUP"))
          (regex (concat "^"
@@ -233,17 +226,16 @@ to run otherwise run all tests from file-name in TEST."
         (lsp-dart-dap-debug-flutter-test file-name test-arg)
       (lsp-dart-dap-debug-dart-test file-name test-arg))))
 
-(defun lsp-dart-test--overlay-at-point ()
-  "Return test overlay at point.
-Return the overlay which has the smallest range of all test overlays in
-the current buffer."
-  (-some--> (overlays-in (point-min) (point-max))
-    (--filter (when (overlay-get it 'lsp-dart-test-code-lens)
-                (-let* (((beg . end) (overlay-get it 'lsp-dart-code-lens-overlay-test-range)))
-                  (and (>= (point) beg)
-                       (<= (point) end)))) it)
-    (--min-by (-let* (((beg1 . end1) (overlay-get it 'lsp-dart-code-lens-overlay-test-range))
-                      ((beg2 . end2) (overlay-get other 'lsp-dart-code-lens-overlay-test-range)))
+(defun lsp-dart-test--test-at-point ()
+  "Return the test at point.
+Return the test which has the smallest range of all tests ranges in the
+current buffer."
+  (-some--> lsp-dart-test--tests
+    (--filter (-let* (((beg . end) (plist-get it :code-range)))
+                (and (>= (point) beg)
+                     (<= (point) end))) it)
+    (--min-by (-let* (((beg1 . end1) (plist-get it :code-range))
+                      ((beg2 . end2) (plist-get other :code-range)))
                 (and (< beg1 beg2)
                      (> end1 end2))) it)))
 
@@ -252,6 +244,35 @@ the current buffer."
   (-map (lambda (notification)
           (lsp-dart-test--handle-notification (intern (lsp-get notification :type)) notification))
         (lsp-dart-test--raw->response raw-response)))
+
+(defun lsp-dart-test--add-test (items &optional names)
+  "Add to test listfor ITEMS.
+NAMES arg is optional and are the group of tests representing a test name."
+  (seq-doseq (item items)
+    (-let* (((&Outline :children :code-range test-range :element
+                       (&Element :kind :name :range)) item)
+            (test-kind? (lsp-dart-test--test-kind-p kind))
+            (concatened-names (if test-kind?
+                                  (append names (list name))
+                                names))
+            (new-test (list :file-name (file-truename (buffer-file-name))
+                            :names (append names (list name))
+                            :kind kind
+                            :code-range (lsp--range-to-region test-range)
+                            :element-range (lsp--range-to-region range))))
+      (when test-kind?
+        (add-to-list 'lsp-dart-test--tests new-test))
+      (unless (seq-empty-p children)
+        (lsp-dart-test--add-test children concatened-names)))))
+
+(lsp-defun lsp-dart-test--check-tests ((&OutlineNotification :uri :outline (&Outline :children)))
+  "Check URI and outline for test adding them."
+  (when (lsp-dart-test-file-p uri)
+    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+      (with-current-buffer buffer
+        (setq lsp-dart-test--tests nil)
+        (lsp-dart-test--add-test children)
+        (run-hook-with-args 'lsp-dart-tests-added-hook lsp-dart-test--tests)))))
 
 
 ;;; Public
@@ -265,20 +286,18 @@ the current buffer."
 
 ;;;###autoload
 (defun lsp-dart-run-test-at-point ()
-  "Run test at point.
-Search for the last test overlay."
+  "Run test at point."
   (interactive)
-  (if-let (overlay (lsp-dart-test--overlay-at-point))
-      (lsp-dart-test--run (overlay-get overlay 'lsp-dart-test))
+  (if-let (test (lsp-dart-test--test-at-point))
+      (lsp-dart-test--run test)
     (lsp-dart-log "No test found at point.")))
 
 ;;;###autoload
 (defun lsp-dart-debug-test-at-point ()
-  "Debug test at point.
-Search for the last test overlay."
+  "Debug test at point."
   (interactive)
-  (if-let (overlay (lsp-dart-test--overlay-at-point))
-      (lsp-dart-test--debug (overlay-get overlay 'lsp-dart-test))
+  (if-let (test (lsp-dart-test--test-at-point))
+      (lsp-dart-test--debug test)
     (lsp-dart-log "No test found at point.")))
 
 ;;;###autoload
@@ -289,7 +308,7 @@ Search for the last test overlay."
       (lsp-dart-test--run (->> (current-buffer)
                                buffer-name
                                file-truename
-                               (make-lsp-dart-test-len :file-name)))
+                               (list :file-name)))
     (lsp-dart-log "Current buffer is not a Dart/Flutter test file.")))
 
 ;;;###autoload
@@ -303,17 +322,17 @@ Search for the last test overlay."
   "Visit the last ran test going to test definition."
   (interactive)
   (-if-let* ((test (lsp-workspace-get-metadata "last-ran-test"))
-             (file-name (lsp-dart-test-len-file-name test))
+             (file-name (plist-get test :file-name))
              (buffer (or (get-file-buffer file-name)
                          (find-file file-name)))
-             (position (lsp-dart-test-len-position test)))
+             (beg-position (car (plist-get test :element-range))))
       (if-let ((window (get-buffer-window buffer 'visible)))
           (progn
             (select-window window)
-            (goto-char position))
+            (goto-char beg-position))
         (with-current-buffer buffer
           (switch-to-buffer buffer nil t)
-          (goto-char position)))
+          (goto-char beg-position)))
     (lsp-dart-log "No last test found.")))
 
 ;;;###autoload
@@ -342,6 +361,15 @@ Search for the last test overlay."
       (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH")))
     (setenv "PATH" (concat (lsp-dart-pub-command) ":" (getenv "PATH"))))
   (setq-local comint-output-filter-functions #'lsp-dart-test--handle-process-response))
+
+(define-minor-mode lsp-dart-test-mode
+  "Mode for saving tests info for runs."
+  nil nil nil
+  (cond
+   (lsp-dart-test-mode
+    (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-test--check-tests nil t))
+   (t
+    (remove-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-test--check-tests t))))
 
 
 (provide 'lsp-dart-test-support)
