@@ -29,38 +29,38 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.13.2"
+(defcustom lsp-dart-dap-extension-version "3.14.1"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
 
 (defcustom lsp-dart-dap-debugger-path
-  (expand-file-name "github/Dart-Code.Dart-Code"
+  (expand-file-name "vscode/Dart-Code.Dart-Code"
                     dap-utils-extension-path)
   "The path to dart vscode extension."
   :group 'lsp-dart
   :type 'string)
 
 (defcustom lsp-dart-dap-dart-debugger-program
-  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/dart_debug_entry.js"))
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/dist/debug.js") "dart")
   "The path to the dart debugger."
   :group 'lsp-dart
   :type '(repeat string))
 
 (defcustom lsp-dart-dap-dart-test-debugger-program
-  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/dart_test_debug_entry.js"))
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/dist/debug.js") "dart_test")
   "The path to the dart test debugger."
   :group 'lsp-dart
   :type '(repeat string))
 
 (defcustom lsp-dart-dap-flutter-debugger-program
-  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/flutter_debug_entry.js"))
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/dist/debug.js") "flutter")
   "The path to the Flutter debugger."
   :group 'lsp-dart
   :type '(repeat string))
 
 (defcustom lsp-dart-dap-flutter-test-debugger-program
-  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/src/debug/flutter_test_debug_entry.js"))
+  `("node" ,(f-join lsp-dart-dap-debugger-path "extension/out/dist/debug.js") "flutter_test")
   "The path to the dart test debugger."
   :group 'lsp-dart
   :type '(repeat string))
@@ -133,24 +133,6 @@ Required to support 'Inspect Widget'."
   "Log MSG with ARGS adding lsp-dart-dap prefix."
   (apply #'lsp-dart-custom-log "[DAP]" msg args))
 
-(defun lsp-dart-dap--setup-extension ()
-  "Setup dart debugger extension to run `lsp-dart-dap-dart-debugger-program`."
-  (lsp-dart-dap-log "Setting up debugger...")
-  (if (executable-find "npm")
-      (lsp-async-start-process
-       (lambda ()
-         (lsp-async-start-process
-          (lambda () (lsp-dart-dap-log "Setup done!"))
-          (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
-          (f-join lsp-dart-dap-debugger-path "extension/node_modules/typescript/bin/tsc")
-          "--project" (f-join lsp-dart-dap-debugger-path "extension")))
-       (lambda (_) (lsp-dart-dap-log "Error setting up DAP, check if `npm` is on $PATH"))
-       "npm" "install" "--prefix" (f-join lsp-dart-dap-debugger-path "extension")
-       "--silent" "--no-save")
-    (progn
-      (lsp-dart-dap-log "Required command for setup 'npm' not found on $PATH")
-      (delete-directory lsp-dart-dap-debugger-path t))))
-
 (defun lsp-dart-dap--capabilities-debugger-args (conf)
   "Add capabilities args on CONF checking dart SDK version."
   (-> conf
@@ -182,13 +164,12 @@ Required to support 'Inspect Widget'."
 
 ;; Dart
 
-(dap-utils-github-extension-setup-function
+(dap-utils-vscode-setup-function
  "dap-dart"
  "Dart-Code"
  "Dart-Code"
- lsp-dart-dap-extension-version
  lsp-dart-dap-debugger-path
- #'lsp-dart-dap--setup-extension)
+ lsp-dart-dap-extension-version)
 
 (defun lsp-dart-dap--populate-dart-start-file-args (conf)
   "Populate CONF with the required arguments for dart debug."
