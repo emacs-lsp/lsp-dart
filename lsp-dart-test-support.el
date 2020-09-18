@@ -162,7 +162,8 @@ NOTIFICATION is the event notification.")
     (when (get-buffer-process process-buffer)
       (delete-process (get-buffer-process process-buffer)))
     (with-current-buffer process-buffer
-      (erase-buffer))))
+      (let ((inhibit-read-only t))
+        (erase-buffer)))))
 
 (defun lsp-dart-test--raw->response (raw-response)
   "Parse RAW-RESPONSE into a list of responses."
