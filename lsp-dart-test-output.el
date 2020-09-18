@@ -44,10 +44,12 @@ not become focused, otherwise the buffer is displayed and focused."
 (defconst lsp-dart-test-output--passed-icon "★")
 (defconst lsp-dart-test-output--success-icon "✔")
 (defconst lsp-dart-test-output--skipped-icon "•")
+(defconst lsp-dart-test-output--hidden-icon "○")
 (defconst lsp-dart-test-output--error-icon "✖")
 
 (defvar lsp-dart-test-output--tests-count 0)
 (defvar lsp-dart-test-output--tests-passed 0)
+(defvar lsp-dart-test-output--first-log t)
 
 (defconst lsp-dart-test-output--buffer-name "*LSP Dart tests*")
 
@@ -75,21 +77,37 @@ not become focused, otherwise the buffer is displayed and focused."
 (defvar lsp-dart-test--output-font-lock
   '((lsp-dart-test--font-lock)))
 
-(lsp-defun lsp-dart-test-output--get-icon ((&TestDoneNotification :result :skipped))
+(lsp-defun lsp-dart-test-output--get-icon ((&TestDoneNotification :result :skipped :hidden))
   "Return the icon for test done notification."
-  (if (string= result "success")
-      (if skipped
-          lsp-dart-test-output--skipped-icon
-        lsp-dart-test-output--success-icon)
-    lsp-dart-test-output--error-icon))
+  (cond
+   (hidden
+    lsp-dart-test-output--hidden-icon)
 
-(lsp-defun lsp-dart-test-output--get-face ((&TestDoneNotification :result :skipped))
+   ((and (string= result "success")
+         skipped)
+    lsp-dart-test-output--skipped-icon)
+
+   ((and (string= result "success")
+         (not skipped))
+    lsp-dart-test-output--success-icon)
+
+   (t lsp-dart-test-output--error-icon)))
+
+(lsp-defun lsp-dart-test-output--get-face ((&TestDoneNotification :result :skipped :hidden))
   "Return the icon for test done notification."
-  (if (string= result "success")
-      (if skipped
-          'homoglyph
-        'success)
-    'error))
+  (cond
+   (hidden
+    'font-lock-comment-face)
+
+   ((and (string= result "success")
+         skipped)
+    'homoglyph)
+
+   ((and (string= result "success")
+         (not skipped))
+    'success)
+
+   (t 'error)))
 
 (defun lsp-dart-test-output--send (message &rest args)
   "Send MESSAGE with ARGS to test buffer."
@@ -113,7 +131,8 @@ not become focused, otherwise the buffer is displayed and focused."
   (let ((test-buffer (lsp-dart-test-output--get-buffer-create))
         (inhibit-read-only t))
     (with-current-buffer test-buffer
-      (erase-buffer))
+      (let ((inhibit-read-only t))
+        (erase-buffer)))
     (pcase lsp-dart-test-pop-to-buffer-on-run
       (`display-only
        (let ((orig-buffer (current-buffer)))
@@ -123,8 +142,9 @@ not become focused, otherwise the buffer is displayed and focused."
 
 (defun lsp-dart-test-output--handle-run-started ()
   "Handle test run started."
-  (lsp-dart-test-output--send "Running tests...\n")
-  (lsp-dart-test-output--show-buffer))
+  (setq lsp-dart-test-output--first-log t)
+  (lsp-dart-test-output--show-buffer)
+  (lsp-dart-test-output--send "Running tests...\n"))
 
 (defun lsp-dart-test-output--handle-all-start (_notification)
   "Handle all start notification."
@@ -137,17 +157,24 @@ not become focused, otherwise the buffer is displayed and focused."
 
 (lsp-defun lsp-dart-test-output--handle-done ((notification &as &TestDoneNotification :result :time :hidden) test-name test-start-time)
   "Handle test done notification."
-  (unless hidden
-    (when (string= result "success")
-      (setq lsp-dart-test-output--tests-passed (1+ lsp-dart-test-output--tests-passed))))
-  (let* ((formatted-time (propertize (format "(%s ms)"
-                                             (- time test-start-time))
-                                     'font-lock-face 'font-lock-comment-face))
-         (text (propertize (concat (lsp-dart-test-output--get-icon notification)
-                                   " "
-                                   test-name)
-                           'font-lock-face (lsp-dart-test-output--get-face notification))))
-    (lsp-dart-test-output--send "%s %s" text formatted-time)))
+  (when lsp-dart-test-output--first-log
+    (with-current-buffer (lsp-dart-test-output--get-buffer-create)
+      (let ((inhibit-read-only t))
+        (erase-buffer)))
+    (setq lsp-dart-test-output--first-log nil))
+  (let ((text (propertize (concat (lsp-dart-test-output--get-icon notification)
+                                  " "
+                                  test-name)
+                          'font-lock-face (lsp-dart-test-output--get-face notification))))
+    (if hidden
+        (lsp-dart-test-output--send "%s" text)
+      (progn
+        (when (string= result "success")
+          (setq lsp-dart-test-output--tests-passed (1+ lsp-dart-test-output--tests-passed)))
+        (let ((formatted-time (propertize (format "(%s ms)"
+                                                  (- time test-start-time))
+                                          'font-lock-face 'font-lock-comment-face)))
+          (lsp-dart-test-output--send "%s %s" text formatted-time))))))
 
 (lsp-defun lsp-dart-test-output--handle-all-done ((&DoneNotification :success))
   "Handle all tests done notification."

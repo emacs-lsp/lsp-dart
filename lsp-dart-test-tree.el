@@ -280,7 +280,7 @@ POSITION is the test start position."
            (seq-map #'lsp-dart-test-tree--suite->tree)
            (-flatten-n 1)
            -non-nil)
-      (list (list :label "Loading tests..."))))
+      (list (list :label "Running tests..."))))
 
 (defun lsp-dart-test-tree--render ()
   "Show the test tree buffer."
@@ -293,16 +293,13 @@ POSITION is the test start position."
 
 (defun lsp-dart-test-tree--handle-run-started ()
   "Handle run started notification."
+  (lsp-dart-test-tree-clean)
   (when lsp-dart-test-tree-on-run
     (lsp-dart-test-show-tree)))
 
 (lsp-defun lsp-dart-test-tree--handle-suite ((&SuiteNotification :suite))
   "Handle suite notification."
   (lsp-dart-test-tree-add-suite suite))
-
-(defun lsp-dart-test-tree--handle-all-start (_notification)
-  "Handle all start notification."
-  (lsp-dart-test-tree-clean))
 
 (lsp-defun lsp-dart-test-tree--handle-group ((&GroupNotification :group))
     (lsp-dart-test-tree-set-group group))
@@ -388,7 +385,6 @@ POSITION is the test start position."
 
 (add-hook 'lsp-dart-test-run-started-hook #'lsp-dart-test-tree--handle-run-started)
 (add-hook 'lsp-dart-test-suite-notification-hook #'lsp-dart-test-tree--handle-suite)
-(add-hook 'lsp-dart-test-all-start-notification-hook #'lsp-dart-test-tree--handle-all-start)
 (add-hook 'lsp-dart-test-group-notification-hook #'lsp-dart-test-tree--handle-group)
 (add-hook 'lsp-dart-test-start-notification-hook #'lsp-dart-test-tree--handle-start)
 (add-hook 'lsp-dart-test-done-notification-hook #'lsp-dart-test-tree--handle-done)
