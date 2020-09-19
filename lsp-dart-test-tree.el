@@ -24,6 +24,7 @@
 (require 'lsp-treemacs)
 
 (require 'lsp-dart-protocol)
+(require 'lsp-dart-test-support)
 
 (defcustom lsp-dart-test-tree-on-run t
   "Enable the test tree when running tests."
@@ -232,14 +233,43 @@ Defaults to side following treemacs default."
                                           (car (last (append group-ids nil)))
                                           test))))
 
-(defun lsp-dart-test-tree--ret-action (uri position)
+(defun lsp-dart-test-tree--ret-action (uri &optional position)
   "Build the ret action for an item in the test tree view.
 URI is the test uri.
 POSITION is the test start position."
-  (interactive)
   (lsp-treemacs--open-file-in-mru (lsp--uri-to-path uri))
-  (goto-char (lsp--position-to-point position))
+  (when position
+    (goto-char (lsp--position-to-point position)))
   (run-hooks 'xref-after-jump-hook))
+
+(defun lsp-dart-test-tree--run-test (uri &optional position)
+  "Run test from POSITION and URI from tree."
+  (lsp-treemacs--open-file-in-mru (lsp--uri-to-path uri))
+  (if position
+      (progn
+        (goto-char (lsp--position-to-point position))
+        (lsp-dart-test--run (lsp-dart-test--test-at-point)))
+    (lsp-dart-test--run (list :file-name (lsp--uri-to-path uri)))))
+
+(defun lsp-dart-test-tree--build-suite-actions (suite)
+  "Build the action options for SUITE in test tree view."
+  (let ((uri (plist-get suite :path)))
+    `(["Go to file" (lsp-dart-test-tree--ret-action ,uri)]
+      ["Run file tests again" (lsp-dart-test-tree--run-test ,uri)])))
+
+(defun lsp-dart-test-tree--build-group-actions (group)
+  "Build the action options for GROUP in test tree view."
+  (let ((uri (plist-get group :uri))
+        (position (plist-get group :position)))
+    `(["Go to group" (lsp-dart-test-tree--ret-action ,uri ,position)]
+      ["Run group tests again" (lsp-dart-test-tree--run-test ,uri ,position)])))
+
+(defun lsp-dart-test-tree--build-test-actions (test)
+  "Build the action options for TEST in test tree view."
+  (let ((uri (plist-get test :uri))
+        (position (plist-get test :position)))
+    `(["Go to test" (lsp-dart-test-tree--ret-action ,uri ,position)]
+      ["Run test again" (lsp-dart-test-tree--run-test ,uri ,position)])))
 
 (defun lsp-dart-test-tree--suite->tree (suite-or-group)
   "Map SUITE-OR-GROUP to treemacs tree items."
@@ -251,7 +281,8 @@ POSITION is the test start position."
                                                                   (plist-get test :time))
                         :icon (plist-get test :status)
                         :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get test :uri)
-                                                                                      (plist-get test :position)))))
+                                                                                      (plist-get test :position)))
+                        :actions (lsp-dart-test-tree--build-test-actions test)))
                 (plist-get suite-or-group :tests)))
         (groups (seq-map
                  (-lambda ((group-id . group))
@@ -262,13 +293,15 @@ POSITION is the test start position."
                                                                        (plist-get group :status))
                              :children (lsp-dart-test-tree--suite->tree group)
                              :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)
-                                                                                           (plist-get group :position))))
+                                                                                           (plist-get group :position)))
+                             :actions (lsp-dart-test-tree--build-group-actions group))
                      (list :key (concat "suite-" (number-to-string (plist-get suite-or-group :id)))
                            :label (lsp-dart-test-tree--colorize-name (f-filename (plist-get suite-or-group :path))
                                                                      (plist-get suite-or-group :status))
                            :icon (plist-get suite-or-group :status)
                            :children (lsp-dart-test-tree--suite->tree group)
-                           :ret-action (lambda (&rest _) (lsp-treemacs--open-file-in-mru (plist-get suite-or-group :path))))))
+                           :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)))
+                           :actions (lsp-dart-test-tree--build-suite-actions suite-or-group))))
                  (plist-get suite-or-group :groups))))
     (when (or tests groups)
       (append tests groups))))

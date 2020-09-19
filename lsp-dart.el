@@ -35,6 +35,8 @@
 (require 'lsp-dart-closing-labels)
 (require 'lsp-dart-dap)
 (require 'lsp-dart-test-support)
+(require 'lsp-dart-test-output)
+(require 'lsp-dart-test-tree)
 (require 'lsp-dart-code-lens)
 (require 'lsp-dart-outline)
 (require 'lsp-dart-flutter-fringe-colors)

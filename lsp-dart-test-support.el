@@ -26,8 +26,6 @@
 
 (require 'lsp-dart-protocol)
 (require 'lsp-dart-utils)
-(require 'lsp-dart-test-output)
-(require 'lsp-dart-test-tree)
 (require 'lsp-dart-dap)
 
 
