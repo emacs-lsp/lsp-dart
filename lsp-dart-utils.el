@@ -45,8 +45,8 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
   "Flutter executable name.
 Useful if multiple Flutter installations are present."
   :group 'lsp-dart
-  :risky nil
-  :type '(string))
+  :risky t
+  :type 'string)
 
 
 ;; Internal

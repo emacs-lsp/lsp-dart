@@ -1,8 +1,11 @@
 # Changelog
 
+## 1.17.6
+* Add `lsp-dart-flutter-executable`.
+
 ## 1.17.0
 * Add test tree feature.
-* Add `lsp-dart-test-show-tree`
+* Add `lsp-dart-test-show-tree`.
 
 ## 1.16.0
 * Improve tests backend and output.
@@ -35,19 +38,19 @@
 * Migrate lsp-dart to use lsp-protocol following lsp-mode.
 
 ## 1.11.9
-* Add Dart SDK version to `lsp-dart-version` command. 
+* Add Dart SDK version to `lsp-dart-version` command.
 
 ## 1.11.0
 * Add main code lens support, can be disable setting `lsp-dart-main-code-lens` to `nil`.
 
 ## 1.10.5
-* Add `lsp-dart-run-all-tests` command. 
+* Add `lsp-dart-run-all-tests` command.
 
 ## 1.10.0
-* Support for debugging Dart/Flutter tests. 
+* Support for debugging Dart/Flutter tests.
 * Add "Debug" code lens on tests.
-* Add `lsp-dart-debug-test-at-point` command. 
-* Add `lsp-dart-debug-last-test` command. 
+* Add `lsp-dart-debug-test-at-point` command.
+* Add `lsp-dart-debug-last-test` command.
 
 ## 1.9.0
 * Add `lsp-dart-visit-last-test` command.
