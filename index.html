@@ -1,6 +1,7 @@
 
 
 
+
 <!doctype html>
 <html lang="en" class="no-js">
   <head>
@@ -13,7 +14,7 @@
       
       
       <link rel="shortcut icon" href="images/logo.svg">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.13">
     
     
       
@@ -21,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.4dd2dd8d.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.077507d7.min.css">
       
       
     
@@ -641,7 +642,7 @@
 <img align="right" width="64" alt="dart_logo" src="images/logo.svg"></p>
 <p><a href="https://melpa.org/#/lsp-dart"><img alt="MELPA" src="https://melpa.org/packages/lsp-dart-badge.svg" /></a>
 <a href="https://stable.melpa.org/#/lsp-dart"><img alt="MELPA stable" src="https://stable.melpa.org/packages/lsp-dart-badge.svg" /></a>
-<a href="https://github.com/emacs-lsp/lsp-dart/actions"><img alt="CI" src="https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg" /></a> 
+<a href="https://github.com/emacs-lsp/lsp-dart/actions"><img alt="CI" src="https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg" /></a>
 <a href="https://gitter.im/emacs-lsp/lsp-mode"><img alt="Gitter" src="https://badges.gitter.im/emacs-lsp/lsp-mode.svg" /></a></p>
 <p>Emacs Dart IDE using <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> to connect to <a href="https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server">Dart Analysis Server</a>.</p>
 <p><img width="16" alt="flutter_logo" align="top" src="images/flutter-logo.svg"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
@@ -659,8 +660,8 @@
    <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;use-package</span><span class="p">)))</span>
 
 <span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span> 
-  <span class="nb">:ensure</span> <span class="no">t</span> 
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span>
+  <span class="nb">:ensure</span> <span class="no">t</span>
   <span class="nb">:hook</span> <span class="p">(</span><span class="nv">dart-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">))</span>
 
 <span class="c1">;; Optional packages</span>
@@ -693,7 +694,7 @@
 <p><code>lsp-dart-visit-last-test</code> - Go to last ran test.</p>
 <p><code>lsp-dart-run-last-test</code> - Run last ran test.</p>
 <p><code>lsp-dart-debug-last-test</code> - Debug last ran test.</p>
-<p>Running a test interactively: </p>
+<p>Running a test interactively:</p>
 <p><img alt="test" src="images/run-test.gif" /></p>
 <h3 id="test-tree">Test tree<a class="headerlink" href="#test-tree" title="Permanent link">#</a></h3>
 <p><code>lsp-dart-test-show-tree</code> - Open the test tree containing the latest ran tests.</p>
@@ -762,6 +763,11 @@ matching names.</p>
 <td align="left"><code>lsp-dart-flutter-sdk-dir</code></td>
 <td align="left">The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the <code>flutter</code> executable in <code>$PATH</code> and if not found, it will try in <code>$FLUTTER_ROOT</code>.</td>
 <td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>lsp-dart-flutter-executable</code></td>
+<td align="left">Flutter executable name.</td>
+<td align="left"><code>flutter</code></td>
 </tr>
 <tr>
 <td align="left"><code>lsp-dart-server-command</code></td>
@@ -982,7 +988,7 @@ matching names.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 19, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 22, 2020</span>
     
   </small>
 </div>
@@ -1070,13 +1076,13 @@ matching names.</p>
       
     </div>
     
-      <script src="assets/javascripts/vendor.3636a4ec.min.js"></script>
-      <script src="assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="assets/javascripts/vendor.2d1db4bd.min.js"></script>
+      <script src="assets/javascripts/bundle.6627ddf3.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: ".",
-          features: ["tabs"],
+          features: ['tabs'],
           search: Object.assign({
             worker: "assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
