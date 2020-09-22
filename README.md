@@ -6,7 +6,7 @@ lsp-dart
 
 [![MELPA](https://melpa.org/packages/lsp-dart-badge.svg)](https://melpa.org/#/lsp-dart)
 [![MELPA stable](https://stable.melpa.org/packages/lsp-dart-badge.svg)](https://stable.melpa.org/#/lsp-dart)
-[![CI](https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg)](https://github.com/emacs-lsp/lsp-dart/actions) 
+[![CI](https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg)](https://github.com/emacs-lsp/lsp-dart/actions)
 [![Gitter](https://badges.gitter.im/emacs-lsp/lsp-mode.svg)](https://gitter.im/emacs-lsp/lsp-mode)
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
@@ -30,8 +30,8 @@ The following has a example to setup `lsp-dart`.
    (require 'use-package)))
 
 (use-package lsp-mode :ensure t)
-(use-package lsp-dart 
-  :ensure t 
+(use-package lsp-dart
+  :ensure t
   :hook (dart-mode . lsp))
 
 ;; Optional packages
@@ -82,7 +82,7 @@ Besides the `lsp-mode` features, `lsp-dart` implements the [custom methods featu
 
 `lsp-dart-debug-last-test` - Debug last ran test.
 
-Running a test interactively: 
+Running a test interactively:
 
 ![test](images/run-test.gif)
 
@@ -175,6 +175,7 @@ lsp-dart supports running Flutter and Dart commands as following:
 |:-------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
 | `lsp-dart-sdk-dir`                               | The optional Dart SDK path. If nil and in a flutter project, it will try to find the dart SDK from Flutter SDK cache dir, otherwise it will search for a dart executable in `$PATH`. | `nil`             |
 | `lsp-dart-flutter-sdk-dir`                       | The optional Flutter SDK path. If nil, it will try to find the Flutter SDK from the `flutter` executable in `$PATH` and if not found, it will try in `$FLUTTER_ROOT`.                | `nil`             |
+| `lsp-dart-flutter-executable`                    | Flutter executable name.                                                                                                                                                             | `flutter`         |
 | `lsp-dart-server-command`                        | `analysis_server` executable to use                                                                                                                                                  | Check source file |
 | `lsp-dart-enable-sdk-formatter`                  | Whether to enable server formatting.                                                                                                                                                 | `t`               |
 | `lsp-dart-line-length`                           | Line length used by server formatter.                                                                                                                                                | 80                |
