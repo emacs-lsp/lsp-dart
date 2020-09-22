@@ -41,13 +41,20 @@ FLUTTER_ROOT environment variable and the PATH environment variable."
   :risky t
   :type '(choice directory nil))
 
+(defcustom lsp-dart-flutter-executable "flutter"
+  "Flutter executable name.
+Useful if multiple Flutter installations are present."
+  :group 'lsp-dart
+  :risky nil
+  :type '(string))
+
 
 ;; Internal
 
 (defun lsp-dart--flutter-repo-p ()
   "Return non-nil if buffer is the flutter repository."
-  (if-let (bin-path (locate-dominating-file default-directory "flutter"))
-      (and (file-regular-p (expand-file-name "flutter" bin-path))
+  (if-let (bin-path (locate-dominating-file default-directory lsp-dart-flutter-executable))
+      (and (file-regular-p (expand-file-name lsp-dart-flutter-executable bin-path))
            (->> bin-path
                 (expand-file-name "cache/dart-sdk")
                 file-directory-p))))
@@ -94,7 +101,7 @@ Check for `lsp-dart-flutter-sdk-dir` then
 flutter executable on PATH then
 FLUTTER_ROOT environment variable."
   (or lsp-dart-flutter-sdk-dir
-      (-some-> (executable-find "flutter")
+      (-some-> (executable-find lsp-dart-flutter-executable)
         file-truename
         (locate-dominating-file "bin")
         file-truename)
@@ -120,7 +127,9 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-flutter-command ()
   "Return the flutter executable from Flutter SDK dir."
-  (let* ((executable-path (if (eq system-type 'windows-nt) "bin/flutter.bat" "bin/flutter"))
+  (let* ((executable-path (if (eq system-type 'windows-nt)
+                              "bin/flutter.bat"
+                            (concat "bin/" lsp-dart-flutter-executable)))
          (command (expand-file-name executable-path (lsp-dart-get-flutter-sdk-dir))))
     (if (file-exists-p command)
         command
