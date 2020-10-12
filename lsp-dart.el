@@ -96,17 +96,10 @@ imported into the current file."
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 
-(lsp-defun lsp-dart--configuration (_workspace (&ConfigurationParams :items))
+(defun lsp-dart--configuration (_workspace _items)
   "Return the client workspace configuration."
-  (->> items
-       (seq-map (-lambda ((&ConfigurationItem :scope-uri?))
-                  (-when-let* ((file (lsp--uri-to-path scope-uri?))
-                               (buffer (find-buffer-visiting file))
-                               (workspace-folder (lsp-find-session-folder (lsp-session) file)))
-                    (with-current-buffer buffer
-                      (lsp-make-dart-configuration :dart-enable-sdk-formatter? lsp-dart-enable-sdk-formatter
-                                                   :dart-line-length? lsp-dart-line-length)))))
-       (apply #'vector)))
+  (vector (lsp-ht ("enableSdkFormatter" lsp-dart-enable-sdk-formatter)
+                  ("lineLength" lsp-dart-line-length))))
 
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
@@ -119,11 +112,6 @@ imported into the current file."
           "--lsp"
           "--client-id emacs.lsp-dart"
           ,client-version))))
-
-(lsp-defun lsp-dart--handle-analyzer-status (_workspace (&AnalyzerStatusNotification :is-analyzing))
-  "Handle analyzer status notification for WORKSPACE.
-PARAMS is the data sent from server."
-  (if is-analyzing (lsp--spinner-start) (lsp--spinner-stop)))
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
@@ -155,7 +143,7 @@ PARAMS is the data sent from server."
                                                                                        (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)))
                                                  ("dart/textDocument/publishFlutterOutline" (lambda (_workspace notification)
                                                                                               (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification)))
-                                                 ("$/analyzerStatus" #'lsp-dart--handle-analyzer-status))
+                                                 ("$/analyzerStatus" #'ignore))
                   :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
                   :after-open-fn #'lsp-dart--activate-features
                   :server-id 'dart_analysis_server))
