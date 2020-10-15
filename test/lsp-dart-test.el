@@ -64,16 +64,6 @@
                      "--client-id emacs.lsp-dart"
                      "--client-version 1.123.456")))))
 
-(ert-deftest lsp-dart--handle-analyzer-status--when-analyzing-test ()
-  (with-mock
-    (mock (lsp--spinner-start))
-    (lsp-dart--handle-analyzer-status "workspace" (lsp-make-analyzer-status-notification :is-analyzing t))))
-
-(ert-deftest lsp-dart--handle-analyzer-status--when-not-analyzing-test ()
-  (with-mock
-    (mock (lsp--spinner-stop))
-    (lsp-dart--handle-analyzer-status "workspace" (lsp-make-analyzer-status-notification :is-analyzing nil))))
-
 (ert-deftest lsp-dart-version--test ()
   (let ((pkg-version (lsp-dart-test-package-version "lsp-dart.el")))
     (with-mock
