@@ -157,24 +157,8 @@ Defaults to side following treemacs default."
          (child-length (length child-name)))
     (if (and parent-name
              (> child-length parent-length))
-        (substring child-name (1+ parent-length))
+        (substring child-name parent-length)
       child-name)))
-
-(defun lsp-dart-test-tree--parse-group-name (name parent-id)
-  "Parse the group NAME checking PARENT-ID."
-  (if parent-id
-      (let* ((parent (alist-get parent-id lsp-dart-test-tree--groups-by-id))
-             (parent-name (plist-get parent :name))
-             (name-length (if parent-name
-                              (1+ (length parent-name))
-                            0)))
-        (substring name name-length))
-    name))
-
-(defun lsp-dart-test-tree--parse-test-name (name group-ids)
-  "Parse the test NAME checking the parent GROUP-IDS."
-  (let ((last-group-id (car (last (append group-ids nil)))))
-    (lsp-dart-test-tree--parse-group-name name last-group-id)))
 
 (defun lsp-dart-test--add-suite (suite)
   "Add a test SUITE."
@@ -286,22 +270,22 @@ POSITION is the test start position."
                 (plist-get suite-or-group :tests)))
         (groups (seq-map
                  (-lambda ((group-id . group))
-                   (if (plist-get group :name)
-                       (list :key (concat "group-" (number-to-string group-id))
-                             :icon (plist-get group :status)
-                             :label (lsp-dart-test-tree--colorize-name (plist-get group :name)
-                                                                       (plist-get group :status))
+                   (if (= (length (plist-get group :name)) 0)
+                       (list :key (concat "suite-" (number-to-string (plist-get suite-or-group :id)))
+                             :label (lsp-dart-test-tree--colorize-name (f-filename (plist-get suite-or-group :path))
+                                                                       (plist-get suite-or-group :status))
+                             :icon (plist-get suite-or-group :status)
                              :children (lsp-dart-test-tree--suite->tree group)
-                             :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)
-                                                                                           (plist-get group :position)))
-                             :actions (lsp-dart-test-tree--build-group-actions group))
-                     (list :key (concat "suite-" (number-to-string (plist-get suite-or-group :id)))
-                           :label (lsp-dart-test-tree--colorize-name (f-filename (plist-get suite-or-group :path))
-                                                                     (plist-get suite-or-group :status))
-                           :icon (plist-get suite-or-group :status)
+                             :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)))
+                             :actions (lsp-dart-test-tree--build-suite-actions suite-or-group))
+                     (list :key (concat "group-" (number-to-string group-id))
+                           :icon (plist-get group :status)
+                           :label (lsp-dart-test-tree--colorize-name (plist-get group :name)
+                                                                     (plist-get group :status))
                            :children (lsp-dart-test-tree--suite->tree group)
-                           :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)))
-                           :actions (lsp-dart-test-tree--build-suite-actions suite-or-group))))
+                           :ret-action (lambda (&rest _) (lsp-dart-test-tree--ret-action (plist-get group :uri)
+                                                                                         (plist-get group :position)))
+                           :actions (lsp-dart-test-tree--build-group-actions group))))
                  (plist-get suite-or-group :groups))))
     (when (or tests groups)
       (append tests groups))))
@@ -357,7 +341,7 @@ POSITION is the test start position."
                                                  :url? :line? :column?))
   "Upsert group to test tree."
   (let* ((new-group (list :id id
-                          :name (lsp-dart-test-tree--parse-group-name name? parent-id?)
+                          :name name?
                           :uri url?
                           :position (lsp-make-position :line (when line? (1- line?))
                                                        :character (when column? (1- column?))))))
@@ -376,7 +360,7 @@ POSITION is the test start position."
   (unless (seq-empty-p group-i-ds)
     (let ((new-test (list :id id
                           :suite-id suite-id
-                          :name (lsp-dart-test-tree--parse-test-name name? group-i-ds)
+                          :name name?
                           :status status
                           :uri (or root-url? url?)
                           :position (lsp-make-position :line (1- (or root-line? line?))
