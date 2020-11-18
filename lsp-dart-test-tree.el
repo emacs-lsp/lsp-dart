@@ -149,15 +149,17 @@ Defaults to side following treemacs default."
                                           'face 'lsp-dart-test-tree-time-face))
       test-name)))
 
-(defun lsp-dart-test-tree--substring-group-name (parent-plist child-plist)
-  "Return the group name substringing from PARENT-PLIST and CHILD-PLIST."
+(defun lsp-dart-test-tree--substring-name (parent-plist child-plist)
+  "Return the name substringing from PARENT-PLIST and CHILD-PLIST."
   (let* ((parent-name (plist-get parent-plist :name))
          (child-name (plist-get child-plist :name))
          (parent-length (length parent-name))
          (child-length (length child-name)))
-    (if (and parent-name
-             (> child-length parent-length))
-        (substring child-name parent-length)
+    (if (and (> (length parent-name) 0)
+             (>= child-length parent-length))
+        (-if-let (parent-position (cl-search parent-name child-name))
+            (substring child-name (1+ (+ parent-position parent-length)))
+          child-name)
       child-name)))
 
 (defun lsp-dart-test--add-suite (suite)
@@ -169,7 +171,7 @@ Defaults to side following treemacs default."
 (defun lsp-dart-test-tree--set-child-group (parent-group group target-parent-id)
   "Recursively upsert GROUP for TARGET-PARENT-ID and PARENT-GROUP."
   (if (= (plist-get parent-group :id) target-parent-id)
-      (let ((new-name (lsp-dart-test-tree--substring-group-name parent-group group)))
+      (let ((new-name (lsp-dart-test-tree--substring-name parent-group group)))
         (lsp-dart--plist-set! parent-group :groups (plist-get group :id) (plist-put group :name new-name)))
     (seq-doseq (groups-by-id (plist-get parent-group :groups))
       (lsp-dart-test-tree--set-child-group (cdr groups-by-id)
@@ -197,7 +199,8 @@ Defaults to side following treemacs default."
           (setq parent-group (plist-put parent-group :status 'skipped))
         (setq parent-group (plist-put parent-group :status (plist-get test :status)))))
     (if (= parent-group-id last-group-id)
-        (lsp-dart--plist-set! parent-group :tests (plist-get test :id) test)
+        (let ((new-name (lsp-dart-test-tree--substring-name parent-group test)))
+          (lsp-dart--plist-set! parent-group :tests (plist-get test :id) (plist-put test :name new-name)))
       (seq-doseq (groups-by-id (plist-get parent-group :groups))
         (lsp-dart-test-tree--set-child-test (cdr groups-by-id)
                                             group-ids
