@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.17.9
+* Remove group name from test name on test tree making it clear.
+
+## 1.17.8
+* Fix tests trees with latest dart sdk 2.10.0.
+
 ## 1.17.6
 * Add `lsp-dart-flutter-executable`.
 
