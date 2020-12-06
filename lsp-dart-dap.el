@@ -29,13 +29,13 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.14.1"
+(defcustom lsp-dart-dap-extension-version "3.17.0"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
 
 (defcustom lsp-dart-dap-debugger-path
-  (expand-file-name "vscode/Dart-Code.Dart-Code"
+  (expand-file-name (concat  "vscode/Dart-Code.Dart-Code/" lsp-dart-dap-extension-version)
                     dap-utils-extension-path)
   "The path to dart vscode extension."
   :group 'lsp-dart
@@ -143,21 +143,16 @@ Required to support 'Inspect Widget'."
   "Return the base args for debugging merged with CONF."
   (let ((conf conf))
     (dap--put-if-absent conf :request "launch")
-    (dap--put-if-absent conf :dartPath (lsp-dart-dart-command))
-    (dap--put-if-absent conf :dartVersion (lsp-dart-get-dart-version))
-    (dap--put-if-absent conf :sendLogsToClient t)
+    (dap--put-if-absent conf :dartSdkPath (lsp-dart-get-sdk-dir))
     (dap--put-if-absent conf :maxLogLineLength lsp-dart-dap-max-log-line-length)
     (dap--put-if-absent conf :cwd (lsp-dart-get-project-root))
-    (dap--put-if-absent conf :pubPath (lsp-dart-pub-command))
-    (dap--put-if-absent conf :pubSnapshotPath (lsp-dart-pub-snapshot-command))
     (dap--put-if-absent conf :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
     (dap--put-if-absent conf :vmServicePort lsp-dart-dap-vm-service-port)
     (dap--put-if-absent conf :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
     (dap--put-if-absent conf :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
     (dap--put-if-absent conf :evaluateGettersInDebugViews lsp-dart-dap-evaluate-getters-in-debug-views)
     (dap--put-if-absent conf :evaluateToStringInDebugViews lsp-dart-dap-evaluate-tostring-in-debug-views)
-    (dap--put-if-absent conf :flutterPath (lsp-dart-flutter-command))
-    (dap--put-if-absent conf :flutterVersion (lsp-dart-get-flutter-version))
+    (dap--put-if-absent conf :flutterSdkPath (lsp-dart-get-flutter-sdk-dir))
     (dap--put-if-absent conf :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
     (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
     (lsp-dart-dap--capabilities-debugger-args conf)))
