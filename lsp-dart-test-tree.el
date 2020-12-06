@@ -366,8 +366,8 @@ POSITION is the test start position."
                           :name name?
                           :status status
                           :uri (or root-url? url?)
-                          :position (lsp-make-position :line (1- (or root-line? line?))
-                                                       :character (1- (or root-column? column?)))
+                          :position (lsp-make-position :line (1- (or root-line? line? 0))
+                                                       :character (1- (or root-column? column? 0)))
                           :group-ids group-i-ds)))
       (add-to-list 'lsp-dart-test-tree--tests-by-id (cons id new-test))
       (lsp-dart-test-tree--set-test suite-id
