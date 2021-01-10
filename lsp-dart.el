@@ -142,7 +142,8 @@ imported into the current file."
                                                  ("dart/textDocument/publishOutline" (lambda (_workspace notification)
                                                                                        (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)))
                                                  ("dart/textDocument/publishFlutterOutline" (lambda (_workspace notification)
-                                                                                              (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification)))
+                                                                                              (when (lsp-dart--flutter-project-p)
+                                                                                                (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification))))
                                                  ("$/analyzerStatus" #'ignore))
                   :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
                   :after-open-fn #'lsp-dart--activate-features

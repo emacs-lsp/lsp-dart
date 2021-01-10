@@ -51,6 +51,15 @@ Useful if multiple Flutter installations are present."
 
 ;; Internal
 
+(defvar-local lsp-dart--project-type-cache nil)
+
+(defun lsp-dart--set-project-type-cache (flutter?)
+  "Update project type cache checking FLUTTER?."
+  (if flutter?
+      (setq lsp-dart--project-type-cache 'flutter)
+    (setq lsp-dart--project-type-cache 'dart))
+  flutter?)
+
 (defun lsp-dart--flutter-repo-p ()
   "Return non-nil if buffer is the flutter repository."
   (if-let (bin-path (locate-dominating-file default-directory lsp-dart-flutter-executable))
@@ -61,13 +70,17 @@ Useful if multiple Flutter installations are present."
 
 (defun lsp-dart--flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
-  (or (lsp-dart--flutter-repo-p)
-      (-when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
-                                 (expand-file-name "pubspec.yaml")))
-        (with-temp-buffer
-          (insert-file-contents pubspec-path)
-          (goto-char (point-min))
-          (re-search-forward "sdk\s*:\s*flutter" nil t)))))
+  (if lsp-dart--project-type-cache
+      (eq lsp-dart--project-type-cache 'flutter)
+    (let ((flutter-project? (or (-when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
+                                                           (expand-file-name "pubspec.yaml")))
+                                  (with-temp-buffer
+                                    (insert-file-contents pubspec-path)
+                                    (goto-char (point-min))
+                                    (re-search-forward "sdk\s*:\s*flutter" nil t)))
+                                (lsp-dart--flutter-repo-p))))
+      (lsp-dart--set-project-type-cache flutter-project?)
+      flutter-project?)))
 
 (defun lsp-dart-remove-from-alist (key alist)
   "Remove item with KEY from ALIST."
