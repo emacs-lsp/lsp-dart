@@ -22,10 +22,10 @@ build:
 	cask install
 
 unix-ci: WINDOWS-INSTALL=
-unix-ci: clean build compile checkdoc lint test
+unix-ci: clean build compile checkdoc lint unix-test
 
 windows-ci: CASK=
-windows-ci: clean compile checkdoc lint test
+windows-ci: clean compile checkdoc lint windows-test
 
 compile:
 	@echo "Compiling..."
@@ -66,8 +66,16 @@ lint:
 		--eval $(LINT) \
 		*.el
 
-test:
+unix-test:
 	@$(CASK) exec ert-runner
+
+windows-test:
+	@$(EMACS) -Q --batch \
+		$(WINDOWS-INSTALL) \
+		-L . -L clients \
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 clean:
 	rm -rf .cask *.elc
@@ -85,4 +93,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint test clean tag
+.PHONY : ci compile checkdoc lint unix-test windows-test clean tag
