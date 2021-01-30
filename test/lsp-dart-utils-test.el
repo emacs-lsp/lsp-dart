@@ -20,7 +20,6 @@
 ;;; Code:
 
 (require 'lsp-dart-utils)
-(require 'ert-runner)
 (require 'el-mock)
 
 (ert-deftest lsp-dart--flutter-repo-p--true-test ()
