@@ -29,7 +29,7 @@
                                          user-emacs-directory))
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("gnu" . "http://elpa.gnu.org/packages/")))
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs (append '(lsp-treemacs lsp-mode dap-mode f dash pkg-info dart-mode)
                      '(el-mock ert-runner undercover spinner))))
   (package-initialize)
