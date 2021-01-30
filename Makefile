@@ -3,6 +3,8 @@ SHELL=/usr/bin/env bash
 EMACS ?= emacs
 CASK ?= cask
 
+WINDOWS-INSTALL="-l test/windows-bootstrap.el"
+
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -19,23 +21,16 @@ LINT="(progn \
 build:
 	cask install
 
-unix-ci: clean build unix-compile checkdoc lint test
+unix-ci: WINDOWS-INSTALL=
+unix-ci: clean build compile checkdoc lint test
 
 windows-ci: CASK=
-windows-ci: clean windows-compile checkdoc lint test
+windows-ci: clean compile checkdoc lint test
 
-unix-compile:
+compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-L . \
-		--eval '(setq byte-compile-error-on-warn t)' \
-		-f batch-byte-compile \
-		*.el
-
-windows-compile:
-	@echo "Compiling..."
-	@$(CASK) $(EMACS) -Q --batch \
-		-l test/windows-bootstrap.el \
+		$(WINDOWS-INSTALL) \
 		-L . \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
@@ -49,6 +44,7 @@ checkdoc:
 
 	@for f in *.el ; do \
 		$(CASK) $(EMACS) -Q --batch \
+			$(WINDOWS-INSTALL) \
 			-L . \
 			--eval "(checkdoc-file \"$$f\")" \
 			*.el 2>&1 | tee -a $(LOG); \
@@ -64,6 +60,7 @@ checkdoc:
 lint:
 	@echo "package linting..."
 	@$(CASK) $(EMACS) -Q --batch \
+		$(WINDOWS-INSTALL) \
 		-L . \
 		--eval $(INIT) \
 		--eval $(LINT) \
@@ -88,4 +85,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci unix-compile windows-compile checkdoc lint test clean tag
+.PHONY : ci compile checkdoc lint test clean tag
