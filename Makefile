@@ -72,7 +72,7 @@ unix-test:
 windows-test:
 	@$(EMACS) -Q --batch \
 		$(WINDOWS-INSTALL) \
-		-L . -L clients \
+		-L . \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
 		'(and (not (tag no-win)) (not (tag org))))"
