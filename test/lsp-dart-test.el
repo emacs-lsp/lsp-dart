@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'lsp-dart)
+(require 'ert-runner)
 (require 'el-mock)
 
 (ert-deftest lsp-dart--library-folders--non-lib-file-test ()
