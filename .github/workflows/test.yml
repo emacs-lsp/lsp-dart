@@ -10,9 +10,10 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         emacs-version:
           - 26.1
           - 26.2
@@ -42,4 +43,3 @@ jobs:
 
     - name: Run tests
       run: 'make ci'
-
