@@ -30,7 +30,8 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "http://elpa.gnu.org/packages/")))
-       (pkgs '(lsp-treemacs lsp-mode dap-mode f dash pkg-info dart-mode)))
+       (pkgs (append '(lsp-treemacs lsp-mode dap-mode f dash pkg-info dart-mode)
+                     '(el-mock ert-runner undercover spinner))))
   (package-initialize)
   (package-refresh-contents)
 
