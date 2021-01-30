@@ -10,10 +10,9 @@ on:
 
 jobs:
   unix-test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
         emacs-version:
           - 26.1
           - 26.2
@@ -45,9 +44,10 @@ jobs:
       run: 'make unix-ci'
 
   windows-test:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [windows-latest, macos-latest]
         emacs-version:
           - 26.1
           - 26.2
