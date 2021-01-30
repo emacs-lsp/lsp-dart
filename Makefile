@@ -19,11 +19,23 @@ LINT="(progn \
 build:
 	cask install
 
-ci: clean build compile checkdoc lint test
+unix-ci: clean build unix-compile checkdoc lint test
 
-compile:
+windows-ci: CASK=
+windows-ci: clean windows-compile checkdoc lint test
+
+unix-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
+		-L . \
+		--eval '(setq byte-compile-error-on-warn t)' \
+		-f batch-byte-compile \
+		*.el
+
+windows-compile:
+	@echo "Compiling..."
+	@$(CASK) $(EMACS) -Q --batch \
+		-l test/windows-bootstrap.el \
 		-L . \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
@@ -76,4 +88,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint test clean tag
+.PHONY : ci unix-compile windows-compile checkdoc lint test clean tag
