@@ -43,7 +43,7 @@ jobs:
     - name: Run tests
       run: 'make unix-ci'
 
-  linux-test:
+  macos-test:
     runs-on: macos-latest
     strategy:
       matrix:
