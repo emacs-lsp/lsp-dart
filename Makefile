@@ -3,7 +3,7 @@ SHELL=/usr/bin/env bash
 EMACS ?= emacs
 CASK ?= cask
 
-WINDOWS-INSTALL="-l test/windows-bootstrap.el"
+WINDOWS-INSTALL=-l test/windows-bootstrap.el
 
 INIT="(progn \
   (require 'package) \
