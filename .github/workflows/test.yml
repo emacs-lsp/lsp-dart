@@ -9,10 +9,11 @@ on:
       - master
 
 jobs:
-  linux-test:
-    runs-on: ubuntu-latest
+  unix-test:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         emacs-version:
           - 26.1
           - 26.2
@@ -42,27 +43,6 @@ jobs:
 
     - name: Run tests
       run: 'make unix-ci'
-
-  macos-test:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        emacs-version:
-          - 26.1
-          - 26.2
-          - 26.3
-          - 27.1
-          - snapshot
-
-    steps:
-    - uses: actions/checkout@v1
-
-    - uses: purcell/setup-emacs@master
-      with:
-        version: ${{ matrix.emacs-version }}
-
-    - name: Run tests
-      run: 'make windows-ci'
 
   windows-test:
     runs-on: windows-latest
