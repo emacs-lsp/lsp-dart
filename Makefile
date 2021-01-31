@@ -59,7 +59,6 @@ checkdoc:
 lint:
 	@echo "package linting..."
 	@$(CASK) $(EMACS) -Q --batch \
-		$(WINDOWS-INSTALL) \
 		-L . \
 		--eval $(INIT) \
 		--eval $(LINT) \
