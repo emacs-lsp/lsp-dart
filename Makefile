@@ -21,7 +21,7 @@ LINT="(progn \
 ARCHIVES-INIT="(progn \
   (require 'package) \
   (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
-						   (\"gnu\" . \"https://elpa.gnu.org/packages/\")))"
+						   (\"gnu\" . \"https://elpa.gnu.org/packages/\"))))"
 
 build:
 	@$(CASK) $(EMACS) -Q --batch \
