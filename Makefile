@@ -19,7 +19,10 @@ LINT="(progn \
 		(package-lint-batch-and-exit))"
 
 build:
+	@$(CASK) $(EMACS) -Q --batch \
+		--eval $(INIT)
 	cask install
+
 
 unix-ci: WINDOWS-INSTALL=
 unix-ci: clean build compile checkdoc lint unix-test
