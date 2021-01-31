@@ -44,7 +44,6 @@ checkdoc:
 
 	@for f in *.el ; do \
 		$(CASK) $(EMACS) -Q --batch \
-			$(WINDOWS-INSTALL) \
 			-L . \
 			--eval "(checkdoc-file \"$$f\")" \
 			*.el 2>&1 | tee -a $(LOG); \
