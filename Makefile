@@ -27,7 +27,8 @@ ARCHIVES-INIT="(progn \
 # version 26.x. By setting variable `package-archives` manually resolved
 # this issue.
 build:
-	@$(CASK) $(EMACS) -Q --batch --eval $(ARCHIVES-INIT)
+	@$(CASK) $(EMACS) -Q --batch \
+		--eval $(ARCHIVES-INIT)
 	cask install
 
 
