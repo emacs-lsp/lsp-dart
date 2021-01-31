@@ -25,7 +25,7 @@ unix-ci: WINDOWS-INSTALL=
 unix-ci: clean build compile checkdoc lint unix-test
 
 windows-ci: CASK=
-windows-ci: clean compile checkdoc
+windows-ci: clean checkdoc
 
 compile:
 	@echo "Compiling..."
