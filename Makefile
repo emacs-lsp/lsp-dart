@@ -3,6 +3,8 @@ SHELL=/usr/bin/env bash
 EMACS ?= emacs
 CASK ?= cask
 
+WINDOWS-INSTALL=-l test/windows-bootstrap.el
+
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -16,14 +18,30 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
+ARCHIVES-INIT="(progn \
+  (require 'package) \
+  (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
+						   (\"gnu\" . \"https://elpa.gnu.org/packages/\"))))"
+
+# NOTE: Bad request occurs during Cask installation on macOS in Emacs
+# version 26.x. By setting variable `package-archives` manually resolved
+# this issue.
 build:
+	@$(CASK) $(EMACS) -Q --batch \
+		--eval $(ARCHIVES-INIT)
 	cask install
 
-ci: clean build compile checkdoc lint test
+
+unix-ci: WINDOWS-INSTALL=
+unix-ci: clean build compile checkdoc lint unix-test
+
+windows-ci: CASK=
+windows-ci: clean compile checkdoc lint windows-test
 
 compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
+		$(WINDOWS-INSTALL) \
 		-L . \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
@@ -57,8 +75,16 @@ lint:
 		--eval $(LINT) \
 		*.el
 
-test:
+unix-test:
 	@$(CASK) exec ert-runner
+
+windows-test:
+	@$(EMACS) -Q --batch \
+		$(WINDOWS-INSTALL) \
+		-L . \
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 clean:
 	rm -rf .cask *.elc
@@ -76,4 +102,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint test clean tag
+.PHONY : ci compile checkdoc lint unix-test windows-test clean tag
