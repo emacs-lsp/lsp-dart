@@ -23,9 +23,11 @@ ARCHIVES-INIT="(progn \
   (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
 						   (\"gnu\" . \"https://elpa.gnu.org/packages/\"))))"
 
+# NOTE: Bad request occurs during Cask installation on macOS in Emacs
+# version 26.x. By setting variable `package-archives` manually resolved
+# this issue.
 build:
-	@$(CASK) $(EMACS) -Q --batch \
-		--eval $(ARCHIVES-INIT)
+	@$(CASK) $(EMACS) -Q --batch --eval $(ARCHIVES-INIT)
 	cask install
 
 
