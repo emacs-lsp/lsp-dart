@@ -21,7 +21,9 @@ LINT="(progn \
 ARCHIVES-INIT="(progn \
   (require 'package) \
   (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
-						   (\"gnu\" . \"http://elpa.gnu.org/packages/\"))))"
+						   (\"gnu\" . \"http://elpa.gnu.org/packages/\")))
+  (when (and (version< emacs-version \"26.3\") (>= libgnutls-version 30604)) \
+	(setq gnutls-algorithm-priority \"NORMAL:-VERS-TLS1.3\")))"
 
 # NOTE: Bad request occurs during Cask installation on macOS in Emacs
 # version 26.x. By setting variable `package-archives` manually resolved
