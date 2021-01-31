@@ -18,9 +18,14 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
+ARCHIVES-INIT="(progn \
+  (require 'package) \
+  (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
+						   (\"gnu\" . \"https://elpa.gnu.org/packages/\")))"
+
 build:
 	@$(CASK) $(EMACS) -Q --batch \
-		--eval $(INIT)
+		--eval $(ARCHIVES-INIT)
 	cask install
 
 
