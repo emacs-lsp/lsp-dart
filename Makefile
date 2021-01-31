@@ -21,7 +21,7 @@ LINT="(progn \
 ARCHIVES-INIT="(progn \
   (require 'package) \
   (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
-						   (\"gnu\" . \"https://elpa.gnu.org/packages/\"))))"
+						   (\"gnu\" . \"http://elpa.gnu.org/packages/\"))))"
 
 # NOTE: Bad request occurs during Cask installation on macOS in Emacs
 # version 26.x. By setting variable `package-archives` manually resolved
