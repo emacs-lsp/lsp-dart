@@ -19,10 +19,7 @@ LINT="(progn \
 		(package-lint-batch-and-exit))"
 
 
-unix-ci: clean compile checkdoc lint windows-test
-
-windows-ci: CASK=
-windows-ci: clean compile checkdoc lint windows-test
+ci: clean compile checkdoc lint test
 
 compile:
 	@echo "Compiling..."
@@ -64,9 +61,8 @@ lint:
 unix-test:
 	@$(CASK) exec ert-runner
 
-windows-test:
+test:
 	@$(EMACS) -Q --batch \
-		$(WINDOWS-INSTALL) \
 		-L . \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
