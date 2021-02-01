@@ -5,7 +5,7 @@ CASK ?= cask
 
 WINDOWS-INSTALL=-l test/windows-bootstrap.el
 
-TEST-FILES := test/windows-bootstrap.el $(shell ls test/lsp-dart-*.el)
+TEST-FILES := test/windows-bootstrap.el test/test-helper.el $(shell ls test/lsp-dart-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
