@@ -34,7 +34,7 @@ windows-ci: CASK=
 windows-ci: clean compile checkdoc lint windows-test
 
 compile:
-	@echo "Compiling..."
+	@echo "Compiling...a"
 	@$(CASK) $(EMACS) -Q --batch \
 		$(WINDOWS-INSTALL) \
 		-L . \
