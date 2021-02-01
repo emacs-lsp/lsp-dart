@@ -23,7 +23,7 @@ ci: CASK=
 ci: clean compile checkdoc lint test
 
 compile:
-	@echo "Compiling..."
+	@echo "Compiling...5"
 	@$(CASK) $(EMACS) -Q --batch \
 		$(WINDOWS-INSTALL) \
 		-L . \
