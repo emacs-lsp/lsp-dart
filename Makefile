@@ -18,17 +18,8 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
-# NOTE: Bad request occurs during Cask installation on macOS in Emacs
-# version 26.x. By setting variable `package-archives` manually resolved
-# this issue.
-build:
-	@$(CASK) $(EMACS) -Q --batch \
-		-l test/windows-bootstrap.el
-	cask install
 
-
-unix-ci: WINDOWS-INSTALL=
-unix-ci: clean build compile checkdoc lint unix-test
+unix-ci: clean compile checkdoc lint windows-test
 
 windows-ci: CASK=
 windows-ci: clean compile checkdoc lint windows-test
