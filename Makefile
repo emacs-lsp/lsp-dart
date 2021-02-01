@@ -24,6 +24,7 @@ LINT="(progn \
 build:
 	@$(CASK) $(EMACS) -Q --batch \
 		-l test/windows-bootstrap.el
+	cask install
 
 
 unix-ci: WINDOWS-INSTALL=
