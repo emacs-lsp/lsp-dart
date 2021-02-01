@@ -68,6 +68,7 @@ unix-test:
 
 windows-test:
 	@$(EMACS) -Q --batch \
+		$(WINDOWS-INSTALL) \
 		-L . \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
