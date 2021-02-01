@@ -5,6 +5,10 @@ CASK ?= cask
 
 WINDOWS-INSTALL=-l test/windows-bootstrap.el
 
+TEST-FILES := test/windows-bootstrap.el $(shell ls test/lsp-dart-*.el)
+LOAD-FILE = -l $(test-file)
+LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
+
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -20,7 +24,7 @@ LINT="(progn \
 
 
 ci: CASK=
-ci: clean compile checkdoc lint test
+ci: clean compile checkdoc lint windows-test
 
 compile:
 	@echo "Compiling..."
@@ -62,7 +66,7 @@ lint:
 unix-test:
 	@$(CASK) exec ert-runner
 
-test:
+windows-test:
 	@$(EMACS) -Q --batch \
 		-L . \
 		$(LOAD-TEST-FILES) \
@@ -85,4 +89,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint unix-test test clean tag
+.PHONY : ci compile checkdoc lint unix-test windows-test clean tag
