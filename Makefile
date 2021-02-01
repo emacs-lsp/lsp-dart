@@ -84,4 +84,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint unix-test windows-test clean tag
+.PHONY : ci compile checkdoc lint unix-test test clean tag
