@@ -19,6 +19,7 @@ LINT="(progn \
 		(package-lint-batch-and-exit))"
 
 
+ci: CASK=
 ci: clean compile checkdoc lint test
 
 compile:
