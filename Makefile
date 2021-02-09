@@ -22,6 +22,9 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
+build:
+	cask install
+
 unix-ci: WINDOWS-INSTALL=
 unix-ci: clean build compile checkdoc lint unix-test
 
