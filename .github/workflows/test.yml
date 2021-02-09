@@ -42,7 +42,7 @@ jobs:
         version: 0.8.4
 
     - name: Run tests
-      run: 'make ci'
+      run: 'make unix-ci'
 
   windows-test:
     runs-on: windows-latest
@@ -68,4 +68,4 @@ jobs:
           version: ${{ matrix.emacs-version }}
 
       - name: Run tests
-        run: 'make ci'
+        run: 'make windows-ci'

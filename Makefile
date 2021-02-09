@@ -22,9 +22,11 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
+unix-ci: WINDOWS-INSTALL=
+unix-ci: clean build compile checkdoc lint unix-test
 
-ci: CASK=
-ci: clean compile checkdoc lint windows-test
+windows-ci: CASK=
+windows-ci: clean compile checkdoc lint windows-test
 
 compile:
 	@echo "Compiling..."
