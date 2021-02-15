@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.13
+
+* Bump debugger extension: 3.17 -> 3.19.2
+
 ## 1.17.9
 * Remove group name from test name on test tree making it clear.
 
