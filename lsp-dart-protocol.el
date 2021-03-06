@@ -54,7 +54,6 @@
  (FlutterDaemonEmulatorLaunch (:emulatorId)))
 
 (lsp-interface
- (Notification (:type :time) nil)
  (StartNotification (:type :time :protocolVersion) (:runnerVersion))
  (AllSuitesNotification (:type :time :count) nil)
  (SuiteNotification (:type :time :suite) nil)
