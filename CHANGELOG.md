@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.14
+
+* Fix cache when debugging devices/emulators - Fixes #96
+
 ## 1.17.13
 
 * Bump debugger extension: 3.17 -> 3.19.2

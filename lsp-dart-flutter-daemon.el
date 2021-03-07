@@ -35,8 +35,6 @@
 (defvar lsp-dart-flutter-daemon-commands '())
 (defvar lsp-dart-flutter-daemon-device-added-listeners '())
 
-(defvar lsp-dart-flutter-daemon-current-device nil)
-
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
   (unless (string= "STATUS" (upcase level))
@@ -46,7 +44,7 @@
 
 (defun lsp-dart-flutter-daemon--generate-command-id ()
   "Generate a random command id."
-  (random 10000))
+  (random 100000))
 
 (defun lsp-dart-flutter-daemon--running-p ()
   "Return non-nil if the Flutter daemon is already running."
@@ -60,8 +58,6 @@
       (with-current-buffer buffer
         (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
           (lsp-dart-flutter-daemon-mode))
-        (remove-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device t)
-        (add-hook 'dap-terminated-hook #'lsp-dart-flutter-daemon--reset-current-device nil t)
         (setq-local comint-output-filter-functions #'lsp-dart-flutter-daemon--handle-responses))
       (lsp-dart-flutter-daemon--send "device.enable"))))
 
@@ -149,20 +145,12 @@ of this command."
 
 (lsp-defun lsp-dart-flutter-daemon-launch ((device &as &FlutterDaemonDevice :id :is-device?) callback)
   "Launch DEVICE and wait for connected state and call CALLBACK."
-  (if lsp-dart-flutter-daemon-current-device
-      (funcall callback lsp-dart-flutter-daemon-current-device)
-    (progn
-      (setq lsp-dart-flutter-daemon-current-device device)
-      (if is-device?
-          (funcall callback device)
-        (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id id)))
-          (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
-                       (cons id (list :callback callback)))
-          (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))))
-
-(defun lsp-dart-flutter-daemon--reset-current-device (_session)
-  "Reset the current device."
-  (setq lsp-dart-flutter-daemon-current-device nil))
+  (if is-device?
+      (funcall callback device)
+    (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id id)))
+      (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
+                   (cons id (list :callback callback)))
+      (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))
 
 ;;;###autoload
 (define-derived-mode lsp-dart-flutter-daemon-mode comint-mode lsp-dart-flutter-daemon-name
