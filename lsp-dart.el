@@ -84,6 +84,17 @@ imported into the current file."
   :type 'number
   :group 'lsp-dart)
 
+(defcustom lsp-dart-show-todos nil
+  "Whether to generate diagnostics for TODO comments.
+If unspecified, diagnostics will not be generated."
+  :type 'boolean
+  :group 'lsp-dart)
+
+(defcustom lsp-dart-complete-function-calls t
+  "Completes functions/methods with their required parameters."
+  :type 'boolean
+  :group 'lsp-dart)
+
 
 ;;; Internal
 
@@ -99,6 +110,8 @@ imported into the current file."
 (defun lsp-dart--configuration (_workspace _items)
   "Return the client workspace configuration."
   (vector (lsp-ht ("enableSdkFormatter" lsp-dart-enable-sdk-formatter)
+                  ("completeFunctionCalls" lsp-dart-complete-function-calls)
+                  ("showTodos" lsp-dart-show-todos)
                   ("lineLength" lsp-dart-line-length))))
 
 (defun lsp-dart--server-command ()

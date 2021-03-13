@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.18.0
+
+* Add `lsp-dart-show-todos` as false by default.
+* Add `lsp-dart-complete-function-calls` as true by default.
+
 ## 1.17.14
 
 * Fix cache when debugging devices/emulators - Fixes #96
