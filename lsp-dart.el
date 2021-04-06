@@ -63,7 +63,8 @@
 (defcustom lsp-dart-only-analyze-projects-with-open-files nil
   "Analyze project root of open files even if not using workspace folders.
 When set to non-nil, even if the file was not openned as a workspace project,
-the analysis server will try to find the project root and analyze all project files."
+the analysis server will try to find the project root and analyze all project
+files."
   :type 'boolean
   :group 'lsp-dart)
 
