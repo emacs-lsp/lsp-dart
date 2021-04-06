@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.1
+
+* Change the default of `lsp-dart-only-analyze-projects-with-open-files` to `nil` as a recommendation from Dart LSP server.
+
 ## 1.18.0
 
 * Add `lsp-dart-show-todos` as false by default.
