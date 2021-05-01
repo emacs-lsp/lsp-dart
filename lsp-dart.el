@@ -142,8 +142,10 @@ If unspecified, diagnostics will not be generated."
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection #'lsp-dart--server-command)
-                  :major-modes '(dart-mode)
-                  :priority -1
+                  :activation-fn (lambda (filename &optional _)
+                                   (or (derived-mode-p 'dart-mode)
+                                       (string= (f-filename filename) "pubspec.yaml")))
+                  :priority 1
                   :initialization-options
                   `((onlyAnalyzeProjectsWithOpenFiles . ,lsp-dart-only-analyze-projects-with-open-files)
                     (suggestFromUnimportedLibraries . ,lsp-dart-suggest-from-unimported-libraries)
