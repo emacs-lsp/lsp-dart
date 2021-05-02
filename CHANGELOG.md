@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.2
+
+* Support lsp-dart on pubspec.yaml, allowing completions
+
 ## 1.18.1
 
 * Change the default of `lsp-dart-only-analyze-projects-with-open-files` to `nil` as a recommendation from Dart LSP server.
