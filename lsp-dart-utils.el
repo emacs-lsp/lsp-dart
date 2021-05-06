@@ -68,14 +68,14 @@ Useful if multiple Flutter installations are present."
                 (expand-file-name "cache/dart-sdk")
                 file-directory-p))))
 
-(defun lsp-dart--flutter-project-p ()
+(defun lsp-dart-flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
   (if lsp-dart--project-type-cache
       (eq lsp-dart--project-type-cache 'flutter)
     (let ((flutter-project? (or (-when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
                                                            (expand-file-name "pubspec.yaml")))
                                   (with-temp-buffer
-                                    (insert-file-contents pubspec-path)
+                                    (insert-file-contents (-some->> (lsp-dart-get-project-root) (expand-file-name "pubspec.yaml")))
                                     (goto-char (point-min))
                                     (re-search-forward "sdk\s*:\s*flutter" nil t)))
                                 (lsp-dart--flutter-repo-p))))
@@ -101,7 +101,7 @@ Check for PATH environment variable.
 When editing a Flutter project, the version of Dart included in the Flutter SDK
 is used in preference."
   (or lsp-dart-sdk-dir
-      (when (lsp-dart--flutter-project-p)
+      (when (lsp-dart-flutter-project-p)
         (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-get-flutter-sdk-dir)))
       (-some-> (executable-find "dart")
         file-truename

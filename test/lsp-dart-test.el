@@ -68,9 +68,17 @@
   (let ((pkg-version (lsp-dart-test-package-version "lsp-dart.el")))
     (with-mock
      (stub lsp-dart-get-full-dart-version => "2.8.2")
-     (should (equal (lsp-dart-version) (format "[LSP Dart] %s at %s @ Emacs %s\n[Dart SDK] 2.8.2"
-                                               pkg-version
-                                               (format-time-string "%Y.%m.%d" (current-time))
-                                               emacs-version))))))
+     (stub lsp-dart-get-sdk-dir => t)
+     (stub lsp-dart-get-flutter-sdk-dir => "flutter-sdk")
+     (stub lsp-dart-flutter-project-p => t)
+     (stub lsp-dart-get-project-entrypoint => "/path/to/entrypoint")
+     (should (equal (lsp-dart-version) (concat (format "[LSP Dart] %s at %s @ Emacs %s\n"
+                                                       pkg-version
+                                                       (format-time-string "%Y.%m.%d" (current-time))
+                                                       emacs-version)
+                                               "[Dart SDK] 2.8.2\n"
+                                               "[Flutter SDK] flutter-sdk\n"
+                                               "[Flutter project] true\n"
+                                               "[Project entrypoint] /path/to/entrypoint"))))))
 
 ;;; lsp-dart-test.el ends here

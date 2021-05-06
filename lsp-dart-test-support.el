@@ -59,13 +59,13 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
 
 (defun lsp-dart-test--build-command ()
   "Build the dart or flutter build command checking project type."
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       (lsp-dart-flutter-command)
     (lsp-dart-pub-command)))
 
 (defun lsp-dart-test--build-command-extra-args ()
   "Build the dart or flutter extra args."
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       '("test" "--machine")
     '("run" "test" "-r" "json")))
 
@@ -221,7 +221,7 @@ to run otherwise run all tests from file-name in TEST."
                         (unless group-kind? "$")))
          (test-arg `("--name" ,regex)))
     (lsp-workspace-set-metadata "last-ran-test" test)
-    (if (lsp-dart--flutter-project-p)
+    (if (lsp-dart-flutter-project-p)
         (lsp-dart-dap-debug-flutter-test file-name test-arg)
       (lsp-dart-dap-debug-dart-test file-name test-arg))))
 
@@ -356,7 +356,7 @@ NAMES arg is optional and are the group of tests representing a test name."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
   (setq process-connection-type nil)
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH")))
     (setenv "PATH" (concat (lsp-dart-pub-command) ":" (getenv "PATH"))))
   (setq-local comint-output-filter-functions #'lsp-dart-test--handle-process-response))

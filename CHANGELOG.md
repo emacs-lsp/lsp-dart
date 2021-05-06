@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.3
+
+* Improve `lsp-dart-version` command with more details to help debug issues
+
 ## 1.18.2
 
 * Support lsp-dart on pubspec.yaml, allowing completions

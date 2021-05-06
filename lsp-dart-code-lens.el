@@ -80,10 +80,10 @@ ACTION-FN is the function to be called with ACTION-ARGS when clicked."
   "Run Dart/Flutter application from PATH.
 If TEST-FILE? debug tests otherwise debug application."
   (if test-file?
-      (if (lsp-dart--flutter-project-p)
+      (if (lsp-dart-flutter-project-p)
           (lsp-dart-dap-debug-flutter-test path)
         (lsp-dart-dap-debug-dart-test path))
-    (if (lsp-dart--flutter-project-p)
+    (if (lsp-dart-flutter-project-p)
         (lsp-dart-dap-run-flutter path)
       (lsp-dart-dap-run-dart path))))
 
@@ -91,10 +91,10 @@ If TEST-FILE? debug tests otherwise debug application."
   "Debug Dart/Flutter application from PATH.
 If TEST-FILE? debug tests otherwise debug application."
   (if test-file?
-      (if (lsp-dart--flutter-project-p)
+      (if (lsp-dart-flutter-project-p)
           (lsp-dart-dap-debug-flutter-test path)
         (lsp-dart-dap-debug-dart-test path))
-    (if (lsp-dart--flutter-project-p)
+    (if (lsp-dart-flutter-project-p)
         (lsp-dart-dap-debug-flutter path)
       (lsp-dart-dap-debug-dart path))))
 

@@ -62,7 +62,7 @@
 If it is Flutter project, run `flutter pub get` otherwise run
 `pub get`."
   (interactive)
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       (lsp-dart--flutter-pub-get)
     (lsp-dart--pub-get)))
 
@@ -72,7 +72,7 @@ If it is Flutter project, run `flutter pub get` otherwise run
 If it is Flutter project, run `flutter pub upgrade` otherwise run
 `pub upgrade`."
   (interactive)
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       (lsp-dart--flutter-pub-upgrade)
     (lsp-dart--pub-upgrade)))
 
@@ -82,7 +82,7 @@ If it is Flutter project, run `flutter pub upgrade` otherwise run
 If it is Flutter project, run `flutter pub outdated` otherwise run
 `pub outdated`."
   (interactive)
-  (if (lsp-dart--flutter-project-p)
+  (if (lsp-dart-flutter-project-p)
       (lsp-dart--flutter-pub-outdated)
     (lsp-dart--pub-outdated)))
 

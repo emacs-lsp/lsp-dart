@@ -129,7 +129,7 @@ If unspecified, diagnostics will not be generated."
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
-  (when (lsp-dart--flutter-project-p) (lsp-dart-flutter-daemon-start))
+  (when (lsp-dart-flutter-project-p) (lsp-dart-flutter-daemon-start))
   (when lsp-dart-flutter-widget-guides (lsp-dart-flutter-widget-guides-mode 1))
   (when lsp-dart-flutter-fringe-colors (lsp-dart-flutter-fringe-colors-mode 1))
   (when lsp-dart-closing-labels (lsp-dart-closing-labels-mode 1))
@@ -158,7 +158,7 @@ If unspecified, diagnostics will not be generated."
                                                  ("dart/textDocument/publishOutline" (lambda (_workspace notification)
                                                                                        (run-hook-with-args 'lsp-dart-outline-arrived-hook notification)))
                                                  ("dart/textDocument/publishFlutterOutline" (lambda (_workspace notification)
-                                                                                              (when (lsp-dart--flutter-project-p)
+                                                                                              (when (lsp-dart-flutter-project-p)
                                                                                                 (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification))))
                                                  ("$/analyzerStatus" #'ignore))
                   :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
@@ -177,17 +177,25 @@ The returned string includes the version from main file header,
 
 If the version number could not be determined, signal an error."
   (interactive)
-  (if (require 'pkg-info nil t)
-      (let* ((version (pkg-info-version-info 'lsp-dart))
-             (lsp-dart-string (format "%s at %s @ Emacs %s"
-                                      version
-                                      (format-time-string "%Y.%m.%d" (current-time))
-                                      emacs-version))
-             (dart-sdk-string (concat (propertize "[Dart SDK] "
-                                                  'face 'font-lock-function-name-face)
-                                      (lsp-dart-get-full-dart-version))))
-        (lsp-dart-log "%s\n%s" lsp-dart-string dart-sdk-string))
-    (error "Cannot determine version without package 'pkg-info'")))
+  (let* ((version (and (require 'pkg-info nil t)
+                       (pkg-info-version-info 'lsp-dart)))
+         (lsp-dart-string (format "%s at %s @ Emacs %s"
+                                  (or version "unknown")
+                                  (format-time-string "%Y.%m.%d" (current-time))
+                                  emacs-version))
+         (dart-sdk-string (if (lsp-dart-get-sdk-dir)
+                              (concat (propertize "[Dart SDK] " 'face 'font-lock-function-name-face)
+                                      (lsp-dart-get-full-dart-version))
+                            (concat "No Dart SDK found, `lsp-dart-sdk-dir` is: %s" lsp-dart-sdk-dir)))
+         (flutter-sdk-dir-string (concat "[Flutter SDK] " (or (lsp-dart-get-flutter-sdk-dir) "Not found")))
+         (flutter-project-string (concat "[Flutter project] " (if (lsp-dart-flutter-project-p) "true" "false")))
+         (project-entrypoint-string (concat "[Project entrypoint] " (or (lsp-dart-get-project-entrypoint) "Not found"))))
+    (lsp-dart-log (string-join (list lsp-dart-string
+                                     dart-sdk-string
+                                     flutter-sdk-dir-string
+                                     flutter-project-string
+                                     project-entrypoint-string)
+                               "\n"))))
 
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))

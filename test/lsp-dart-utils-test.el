@@ -42,21 +42,21 @@
     (mock (file-directory-p "/not-sdk/bin/cache/dart-sdk") => nil)
     (should-not (lsp-dart--flutter-repo-p))))
 
-(ert-deftest lsp-dart--flutter-project-p--flutter-repo-test ()
+(ert-deftest lsp-dart-flutter-project-p--flutter-repo-test ()
   (with-mock
     (mock (lsp-dart--flutter-repo-p) => t)
-    (should (lsp-dart--flutter-project-p))))
+    (should (lsp-dart-flutter-project-p))))
 
-(ert-deftest lsp-dart--flutter-project-p--flutter-project-test ()
+(ert-deftest lsp-dart-flutter-project-p--flutter-project-test ()
   (lsp-dart-test-from-flutter-project
-   (should (lsp-dart--flutter-project-p))))
+   (should (lsp-dart-flutter-project-p))))
 
-(ert-deftest lsp-dart--flutter-project-p--dart-project-test ()
+(ert-deftest lsp-dart-flutter-project-p--dart-project-test ()
   (lsp-dart-test-from-dart-project
-   (should-not (lsp-dart--flutter-project-p))))
+   (should-not (lsp-dart-flutter-project-p))))
 
-(ert-deftest lsp-dart--flutter-project-p--other-project-test ()
-  (should-not (lsp-dart--flutter-project-p)))
+(ert-deftest lsp-dart-flutter-project-p--other-project-test ()
+  (should-not (lsp-dart-flutter-project-p)))
 
 (ert-deftest lsp-dart-get-sdk-dir--custom-dir-test ()
   (let ((lsp-dart-sdk-dir "/some/sdk"))
