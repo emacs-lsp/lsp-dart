@@ -166,6 +166,13 @@ Required to support 'Inspect Widget'."
  lsp-dart-dap-debugger-path
  lsp-dart-dap-extension-version)
 
+(dap-utils-vscode-update-function
+ "dap-dart"                    
+ "Dart-Code"                   
+ "Dart-Code"
+ lsp-dart-dap-extension-version
+ lsp-dart-dap-debugger-path)
+
 (defun lsp-dart-dap--populate-dart-start-file-args (conf)
   "Populate CONF with the required arguments for dart debug."
   (-> conf
