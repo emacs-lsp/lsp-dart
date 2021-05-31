@@ -38,7 +38,7 @@ The following has a example to setup `lsp-dart`.
 (use-package projectile :ensure t) ;; project management
 (use-package yasnippet
   :ensure t
-  :config (yas-global-mode)) ;; snipets
+  :config (yas-global-mode)) ;; snippets
 (use-package lsp-ui :ensure t) ;; UI for LSP
 (use-package company :ensure t) ;; Auto-complete
 
