@@ -7,7 +7,7 @@ lsp-dart
 [![MELPA](https://melpa.org/packages/lsp-dart-badge.svg)](https://melpa.org/#/lsp-dart)
 [![MELPA stable](https://stable.melpa.org/packages/lsp-dart-badge.svg)](https://stable.melpa.org/#/lsp-dart)
 [![CI](https://github.com/emacs-lsp/lsp-dart/workflows/CI/badge.svg)](https://github.com/emacs-lsp/lsp-dart/actions)
-[![Gitter](https://badges.gitter.im/emacs-lsp/lsp-mode.svg)](https://gitter.im/emacs-lsp/lsp-mode)
+[![](https://discordapp.com/api/guilds/789885435026604033/widget.png?style=shield)](https://discord.gg/swuxy5AAgT)
 
 Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connect to [Dart Analysis Server](https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server).
 
