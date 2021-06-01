@@ -196,7 +196,9 @@ RANGE is the overlay range to build."
 
 (define-minor-mode lsp-dart-test-code-lens-mode
   "Mode for displaying code lens on main methods."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-test-code-lens-mode
     (lsp-dart-define-key "t t" #'lsp-dart-run-test-at-point)
