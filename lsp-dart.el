@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020 Eric Dallo
 
-;; Version: 1.18.4
+;; Version: 1.18.5
 ;; Package-Requires: ((emacs "26.1") (lsp-treemacs "0.3") (lsp-mode "7.0.1") (dap-mode "0.6") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
