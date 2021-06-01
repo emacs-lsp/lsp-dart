@@ -161,7 +161,9 @@ ANCHOR is the anchor point of the widget guide at LINE."
 
 (define-minor-mode lsp-dart-flutter-widget-guides-mode
   "Mode for displaying flutter widget guide lines."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-flutter-widget-guides-mode
     (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart-flutter-widget-guide-check nil t))

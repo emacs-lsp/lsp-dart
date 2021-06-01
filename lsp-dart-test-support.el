@@ -363,7 +363,9 @@ NAMES arg is optional and are the group of tests representing a test name."
 
 (define-minor-mode lsp-dart-test-mode
   "Mode for saving tests info for runs."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-test-mode
     (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart-test--check-tests nil t))

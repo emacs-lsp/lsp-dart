@@ -68,7 +68,9 @@ The hook will receive the notification data as argument."
 
 (define-minor-mode lsp-dart-closing-labels-mode
   "Mode for displaying flutter closing labels on the end of methods/contructors."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-closing-labels-mode
     (add-hook 'lsp-dart-closing-labels-arrived-hook #'lsp-dart--closing-labels-check nil t))

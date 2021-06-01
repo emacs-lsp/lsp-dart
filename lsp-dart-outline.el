@@ -254,7 +254,9 @@ It updates the Flutter outline view if it already exists."
 
 (define-minor-mode lsp-dart-outline-mode
   "Mode for updating outline."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-outline-mode
     (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--outline-check nil t))
@@ -263,7 +265,9 @@ It updates the Flutter outline view if it already exists."
 
 (define-minor-mode lsp-dart-flutter-outline-mode
   "Mode for updating flutter outline."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-flutter-outline-mode
     (add-hook 'lsp-dart-flutter-outline-arrived-hook #'lsp-dart--flutter-outline-check nil t))

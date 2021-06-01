@@ -95,7 +95,9 @@
 
 (define-minor-mode lsp-dart-flutter-fringe-colors-mode
   "Mode for displaying colors in fringe."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-flutter-fringe-colors-mode
     (add-hook 'lsp-on-change-hook (-partial #'lsp-dart-flutter-fringe--update-colors (current-buffer)) nil t))

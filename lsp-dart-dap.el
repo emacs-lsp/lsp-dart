@@ -396,7 +396,9 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (define-minor-mode lsp-dart-dap-mode
   "Mode for when debugging Dart/Flutter code."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-dap-mode
     (add-hook 'after-save-hook #'lsp-dart-dap--on-save))

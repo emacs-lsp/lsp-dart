@@ -183,7 +183,9 @@ RANGE is the overlay range to build."
 
 (define-minor-mode lsp-dart-main-code-lens-mode
   "Mode for displaying code lens on main methods."
-  nil nil nil
+  :global nil
+  :init-value nil
+  :lighter nil
   (cond
    (lsp-dart-main-code-lens-mode
     (add-hook 'lsp-dart-outline-arrived-hook #'lsp-dart--main-code-lens-check nil t))
