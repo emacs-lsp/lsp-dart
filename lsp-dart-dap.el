@@ -402,9 +402,6 @@ Call CALLBACK when the device is chosen and started successfully."
                       (lambda (e)
                         (lsp-dart-log "Error installing Dart debugger. %s" e))))
 
-(defalias 'dap-dart-setup 'lsp-dart-dap-setup)
-(make-obsolete 'dap-dart-setup 'lsp-dart-dap-setup "lsp-dart 1.19.0")
-
 (defun lsp-dart-dap-flutter-hot-restart ()
   "Hot restart current Flutter debug session."
   (interactive)

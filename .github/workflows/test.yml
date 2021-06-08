@@ -12,6 +12,7 @@ jobs:
   unix-test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         emacs-version:
@@ -19,6 +20,7 @@ jobs:
           - 26.2
           - 26.3
           - 27.1
+          - 27.2
           - snapshot
 
     steps:
@@ -47,14 +49,15 @@ jobs:
   windows-test:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         emacs-version:
           - 26.1
           - 26.2
           - 26.3
           - 27.1
+          - 27.2
           - snapshot
-
     steps:
       - uses: actions/checkout@v2
 
