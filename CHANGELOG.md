@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.19.0
+
+* Deprecate `dap-dart-setup`, use `lsp-dart-dap-setup` now.
+* Improve debugger setup downloading directly from Dart-Code repo.
+* Bump debugger from 3.19.2 to 3.23.0.
+* Fix device label for web/chrome
+
 ## 1.18.3
 
 * Improve `lsp-dart-version` command with more details to help debug issues

@@ -29,14 +29,20 @@
 (require 'lsp-dart-flutter-daemon)
 (require 'lsp-dart-devtools)
 
-(defcustom lsp-dart-dap-extension-version "3.19.2"
+(defcustom lsp-dart-dap-extension-version "3.23.0"
   "The extension version."
   :group 'lsp-dart
   :type 'string)
 
+(defcustom lsp-dart-dap-extension-url (format "https://github.com/Dart-Code/Dart-Code/releases/download/v%s/dart-code-%s.vsix"
+                                              lsp-dart-dap-extension-version
+                                              lsp-dart-dap-extension-version)
+  "The extension url to download from."
+  :group 'lsp-dart
+  :type 'string)
+
 (defcustom lsp-dart-dap-debugger-path
-  (expand-file-name (concat  "vscode/Dart-Code.Dart-Code/" lsp-dart-dap-extension-version)
-                    dap-utils-extension-path)
+  (f-join dap-utils-extension-path (concat  "github/Dart-Code/Dart-Code/" lsp-dart-dap-extension-version))
   "The path to dart vscode extension."
   :group 'lsp-dart
   :type 'string)
@@ -157,14 +163,13 @@ Required to support 'Inspect Widget'."
     (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
     (lsp-dart-dap--capabilities-debugger-args conf)))
 
-;; Dart
+(lsp-dependency
+ 'dart-debugger
+ `(:download :url lsp-dart-dap-extension-url
+             :decompress :zip
+             :store-path ,(f-join lsp-dart-dap-debugger-path "dart-code")))
 
-(dap-utils-vscode-setup-function
- "dap-dart"
- "Dart-Code"
- "Dart-Code"
- lsp-dart-dap-debugger-path
- lsp-dart-dap-extension-version)
+;; Dart
 
 (defun lsp-dart-dap--populate-dart-start-file-args (conf)
   "Populate CONF with the required arguments for dart debug."
@@ -388,6 +393,17 @@ Call CALLBACK when the device is chosen and started successfully."
 
 
 ;; Public Interface
+
+(defun lsp-dart-dap-setup ()
+  "Install the Dart/Flutter debugger extension."
+  (interactive)
+  (lsp-package-ensure 'dart-debugger
+                      (lambda (&rest _) (lsp-dart-log "Dart debugger installed successfully!"))
+                      (lambda (e)
+                        (lsp-dart-log "Error installing Dart debugger. %s" e))))
+
+(defalias 'dap-dart-setup 'lsp-dart-dap-setup)
+(make-obsolete 'dap-dart-setup 'lsp-dart-dap-setup "lsp-dart 1.19.0")
 
 (defun lsp-dart-dap-flutter-hot-restart ()
   "Hot restart current Flutter debug session."

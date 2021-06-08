@@ -113,7 +113,7 @@ You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
 ### Debug
 
 For debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart).
-You only need to run `dap-dart-setup` one time to setup the debugger to your Emacs and `dap-debug` to start the debug.
+You only need to run `lsp-dart-dap-setup` one time to setup the debugger to your Emacs and `dap-debug` to start the debug.
 
 ![debug](images/debug.gif)
 
