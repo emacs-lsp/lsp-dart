@@ -187,12 +187,17 @@ Required to support 'Inspect Widget'."
   "Return a friendly label for device with ID, NAME IS-DEVICE and PLATFORM.
 Check for icons if supports it."
   (let* ((device-name (if name name id))
-         (type-text (if is-device "device" "emulator"))
+         (type-text (if (string= "web" platform)
+                        "browser"
+                      (if is-device
+                          "device"
+                        "emulator")))
          (default (concat platform " - " type-text " - " device-name)))
     (if (featurep 'all-the-icons)
         (pcase platform
-          ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green) " " type-text " - " device-name))
-          ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver) " " type-text " - " device-name))
+          ("web" (concat (all-the-icons-faicon "chrome" :face 'all-the-icons-blue :v-adjust 0.0) " " type-text " - " device-name))
+          ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green  :v-adjust 0.0) " " type-text " - " device-name))
+          ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver :v-adjust 0.0) " " type-text " - " device-name))
           (_ default))
       default)))
 
