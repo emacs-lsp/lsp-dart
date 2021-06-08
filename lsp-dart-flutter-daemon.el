@@ -157,7 +157,6 @@ of this command."
   "Major mode for `lsp-dart-flutter-daemon-start`."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
-  (setenv "CHROME_EXECUTABLE" "/nix/store/4dqgvxp1hdzqqhxfjp83l2c9ll32z5f0-system-path/bin/google-chrome-stable")
   (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH"))))
 
 (provide 'lsp-dart-flutter-daemon)
