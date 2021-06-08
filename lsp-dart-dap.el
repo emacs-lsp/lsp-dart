@@ -163,6 +163,14 @@ Required to support 'Inspect Widget'."
     (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
     (lsp-dart-dap--capabilities-debugger-args conf)))
 
+(defun lsp-dart-dap--enable-mode ()
+  "Enable `lsp-dart-dap-mode'."
+  (lsp-dart-dap-mode 1))
+
+(defun lsp-dart-dap--disable-mode ()
+  "Enable `lsp-dart-dap-mode'."
+  (lsp-dart-dap-mode -1))
+
 (lsp-dependency
  'dart-debugger
  `(:download :url lsp-dart-dap-extension-url
@@ -301,7 +309,7 @@ Call CALLBACK when the device is chosen and started successfully."
                  :originalUrl url
                  :exposedUrl url)))
 
-(cl-defmethod dap-handle-event ((_event (eql dart.webLaunchUrl)) session params)
+(cl-defmethod dap-handle-event ((_event (eql dart.webLaunchUrl)) _session params)
   "Open url in browser from SESSION and PARAMS."
   (-let (((&hash "launched" "url") params))
     (unless launched
@@ -436,7 +444,8 @@ Call CALLBACK when the device is chosen and started successfully."
    (t
     (remove-hook 'after-save-hook #'lsp-dart-dap--on-save))))
 
-(add-hook 'dap-session-created-hook #'lsp-dart-dap-mode)
+(add-hook 'dap-session-created-hook #'lsp-dart-dap--enable-mode)
+(add-hook 'dap-terminated-hook #'lsp-dart-dap--disable-mode)
 
 (provide 'lsp-dart-dap)
 ;;; lsp-dart-dap.el ends here
