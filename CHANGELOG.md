@@ -2,6 +2,7 @@
 
 ## 1.19.0
 
+* Supports web debug on google chrome via dap-mode.
 * Deprecate `dap-dart-setup`, use `lsp-dart-dap-setup` now.
 * Improve debugger setup downloading directly from Dart-Code repo.
 * Bump debugger from 3.19.2 to 3.23.0.

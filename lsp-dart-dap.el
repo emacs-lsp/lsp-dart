@@ -294,6 +294,19 @@ Call CALLBACK when the device is chosen and started successfully."
   "Handle debugger uris EVENT for SESSION with PARAMS."
   (lsp-dart-dap-log "App ready!"))
 
+(cl-defmethod dap-handle-event ((_event (eql dart.exposeUrl)) session params)
+  "Respond SESSION with the url from given PARAMS."
+  (-let (((&hash "url") params))
+    (dap-request session "exposeUrlResponse"
+                 :originalUrl url
+                 :exposedUrl url)))
+
+(cl-defmethod dap-handle-event ((_event (eql dart.webLaunchUrl)) session params)
+  "Open url in browser from SESSION and PARAMS."
+  (-let (((&hash "launched" "url") params))
+    (unless launched
+      (browse-url url))))
+
 (cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.hotReloadRequest)) _session _params)
