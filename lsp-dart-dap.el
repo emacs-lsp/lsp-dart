@@ -163,11 +163,11 @@ Required to support 'Inspect Widget'."
     (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
     (lsp-dart-dap--capabilities-debugger-args conf)))
 
-(defun lsp-dart-dap--enable-mode ()
+(defun lsp-dart-dap--enable-mode (&rest _)
   "Enable `lsp-dart-dap-mode'."
   (lsp-dart-dap-mode 1))
 
-(defun lsp-dart-dap--disable-mode ()
+(defun lsp-dart-dap--disable-mode (&rest _)
   "Enable `lsp-dart-dap-mode'."
   (lsp-dart-dap-mode -1))
 
