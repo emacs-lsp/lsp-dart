@@ -5,6 +5,10 @@ CASK ?= cask
 
 WINDOWS-INSTALL=-l test/windows-bootstrap.el
 
+TEST-FILES := test/windows-bootstrap.el test/test-helper.el $(shell ls test/lsp-dart-*.el)
+LOAD-FILE = -l $(test-file)
+LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
+
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -18,19 +22,8 @@ LINT="(progn \
 		(setq package-lint-main-file \"lsp-dart.el\") \
 		(package-lint-batch-and-exit))"
 
-ARCHIVES-INIT="(progn \
-  (require 'package) \
-  (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
-						   (\"gnu\" . \"http://elpa.gnu.org/packages/\"))))"
-
-# NOTE: Bad request occurs during Cask installation on macOS in Emacs
-# version 26.x. By setting variable `package-archives` manually resolved
-# this issue.
 build:
-	@$(CASK) $(EMACS) -Q --batch \
-		--eval $(ARCHIVES-INIT)
 	cask install
-
 
 unix-ci: WINDOWS-INSTALL=
 unix-ci: clean build compile checkdoc lint unix-test
