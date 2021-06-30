@@ -18,32 +18,26 @@ Emacs Dart IDE using [lsp-mode](https://github.com/emacs-lsp/lsp-mode) to connec
 The following has a example to setup `lsp-dart`.
 
 ```elisp
-;; Install use-package
-(condition-case nil
-    (require 'use-package)
-  (file-error
-   (require 'package)
-   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-   (package-initialize)
-   (package-refresh-contents)
-   (package-install 'use-package)
-   (require 'use-package)))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
 
-(use-package lsp-mode :ensure t)
-(use-package lsp-dart
-  :ensure t
-  :hook (dart-mode . lsp))
+(setq package-selected-packages 
+  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+    ;; Optional packages
+    lsp-ui company hover))
 
-;; Optional packages
-(use-package projectile :ensure t) ;; project management
-(use-package yasnippet
-  :ensure t
-  :config (yas-global-mode)) ;; snippets
-(use-package lsp-ui :ensure t) ;; UI for LSP
-(use-package company :ensure t) ;; Auto-complete
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
 
-;; Optional Flutter packages
-(use-package hover :ensure t) ;; run app from desktop without emulator
+(add-hook 'dart-mode 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      company-minimum-prefix-length 1
+      lsp-lens-enable t
+      lsp-signature-auto-activate nil)
 ```
 
 ## Features
