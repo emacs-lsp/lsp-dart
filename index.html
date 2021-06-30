@@ -686,32 +686,26 @@
 <p><img width="16" alt="flutter_logo" align="top" src="images/flutter-logo.svg"> LSP works great with <a href="https://flutter.dev/">Flutter</a>, but there are also other packages that may help to improve your development, for more info see <a href="#additional-packages">Additional packages</a>.</p>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">#</a></h2>
 <p>The following has a example to setup <code>lsp-dart</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1">;; Install use-package</span>
-<span class="p">(</span><span class="k">condition-case</span> <span class="no">nil</span>
-    <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;use-package</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">file-error</span>
-   <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
-   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;melpa&quot;</span> <span class="o">.</span> <span class="s">&quot;http://melpa.org/packages/&quot;</span><span class="p">))</span>
-   <span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
-   <span class="p">(</span><span class="nv">package-refresh-contents</span><span class="p">)</span>
-   <span class="p">(</span><span class="nv">package-install</span> <span class="ss">&#39;use-package</span><span class="p">)</span>
-   <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;use-package</span><span class="p">)))</span>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;melpa&quot;</span> <span class="o">.</span> <span class="s">&quot;http://melpa.org/packages/&quot;</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-dart</span>
-  <span class="nb">:ensure</span> <span class="no">t</span>
-  <span class="nb">:hook</span> <span class="p">(</span><span class="nv">dart-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">))</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">package-selected-packages</span> 
+  <span class="o">&#39;</span><span class="p">(</span><span class="nv">dart-mode</span> <span class="nv">lsp-mode</span> <span class="nv">lsp-dart</span> <span class="nv">lsp-treemacs</span> <span class="nv">flycheck</span> <span class="nv">company</span>
+    <span class="c1">;; Optional packages</span>
+    <span class="nv">lsp-ui</span> <span class="nv">company</span> <span class="nv">hover</span><span class="p">))</span>
 
-<span class="c1">;; Optional packages</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">projectile</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; project management</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">yasnippet</span>
-  <span class="nb">:ensure</span> <span class="no">t</span>
-  <span class="nb">:config</span> <span class="p">(</span><span class="nv">yas-global-mode</span><span class="p">))</span> <span class="c1">;; snippets</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ui</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; UI for LSP</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">company</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; Auto-complete</span>
+<span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">cl-find-if-not</span> <span class="nf">#&#39;</span><span class="nv">package-installed-p</span> <span class="nv">package-selected-packages</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">package-refresh-contents</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">mapc</span> <span class="nf">#&#39;</span><span class="nv">package-install</span> <span class="nv">package-selected-packages</span><span class="p">))</span>
 
-<span class="c1">;; Optional Flutter packages</span>
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">hover</span> <span class="nb">:ensure</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; run app from desktop without emulator</span>
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;dart-mode</span> <span class="ss">&#39;lsp</span><span class="p">)</span>
+
+<span class="p">(</span><span class="k">setq</span> <span class="nv">gc-cons-threshold</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">100</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
+      <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
+      <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
+      <span class="nv">lsp-lens-enable</span> <span class="no">t</span>
+      <span class="nv">lsp-signature-auto-activate</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
 <p>Besides the <code>lsp-mode</code> features, <code>lsp-dart</code> implements the <a href="https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md#custom-methods">custom methods features from the <code>dart_analysis_server</code></a>.</p>
@@ -1035,7 +1029,7 @@ matching names.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 8, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 30, 2021</span>
     
   </small>
 </div>
