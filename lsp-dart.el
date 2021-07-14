@@ -103,8 +103,10 @@ If unspecified, diagnostics will not be generated."
 
 (defun lsp-dart--library-folders ()
   "Return the library folders path to analyze."
-  (let ((sdk-lib (expand-file-name "lib" (lsp-dart-get-sdk-dir))))
-    (if (string-prefix-p sdk-lib (buffer-file-name))
+  (let ((sdk-root (if (lsp-dart-flutter-project-p)
+                      (lsp-dart-get-flutter-sdk-dir)
+                    (lsp-dart-get-sdk-dir))))
+    (if (string-prefix-p sdk-root (buffer-file-name))
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 
