@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.1
+
+* Fixes the way lsp-dart handle library files, flutter/dart files. (requires lsp-mode upgrade)
+
 ## 1.19.0
 
 * Supports web debug on google chrome via dap-mode.
