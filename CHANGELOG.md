@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Add error message when dart sdk not found for flutter installations.
+
 ## 1.19.1
 
 * Fixes the way lsp-dart handle library files, flutter/dart files. (requires lsp-mode upgrade)

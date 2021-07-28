@@ -102,7 +102,10 @@ When editing a Flutter project, the version of Dart included in the Flutter SDK
 is used in preference."
   (or lsp-dart-sdk-dir
       (when (lsp-dart-flutter-project-p)
-        (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-get-flutter-sdk-dir)))
+        (let ((dart-sdk (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-get-flutter-sdk-dir))))
+          (if (file-exists-p dart-sdk)
+              dart-sdk
+            (error "Dart SDK not found inside flutter cache dir %s. Consider setting `lsp-dart-sdk-dir` variable" dart-sdk))))
       (-some-> (executable-find "dart")
         file-truename
         (locate-dominating-file "bin")
