@@ -31,7 +31,7 @@ The following has a example to setup `lsp-dart`.
   (package-refresh-contents)
   (mapc #'package-install package-selected-packages))
 
-(add-hook 'dart-mode 'lsp)
+(add-hook 'dart-mode-hook 'lsp)
 
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
@@ -231,6 +231,10 @@ lsp-dart supports running Flutter and Dart commands as following:
 :grey_question: `LSP :: No LSP server for dart-mode(check *lsp-log*).`
 
 :small_blue_diamond: Try to set the `lsp-dart-sdk-dir` to the Dart SDK dir installation or if you are using Flutter, `<your-flutter-dir>/bin/cache/dart-sdk/`.
+
+:grey_question: `dap-debug` couldn't run the app on advices or white screen.
+
+:small_blue_diamond: Try to set `export NO_PROXY=localhost,127.0.0.1` into your `.bash_profile` file.
 
 ## Community
 
