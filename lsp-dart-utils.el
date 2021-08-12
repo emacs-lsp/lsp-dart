@@ -105,7 +105,7 @@ is used in preference."
         (let ((dart-sdk (expand-file-name "bin/cache/dart-sdk/" (lsp-dart-get-flutter-sdk-dir))))
           (if (file-exists-p dart-sdk)
               dart-sdk
-            (error "Dart SDK not found inside flutter cache dir %s. Consider setting `lsp-dart-sdk-dir` variable" dart-sdk))))
+            (error "Dart SDK not found inside flutter cache dir %s.  Consider setting `lsp-dart-sdk-dir` variable" dart-sdk))))
       (-some-> (executable-find "dart")
         file-truename
         (locate-dominating-file "bin")
