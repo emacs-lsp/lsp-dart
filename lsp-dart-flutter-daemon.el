@@ -138,19 +138,29 @@ of this command."
    "emulator.getEmulators"
    nil
    (-lambda (emulators)
-     (->> lsp-dart-flutter-daemon-devices
-          (-map #'cdr)
-          (append emulators)
-          (funcall callback)))))
+     (let ((devices-excluding-emulators (-remove (-lambda ((&FlutterDaemonDevice :emulator-id?))
+                                                   (and emulator-id?
+                                                        (-first (lambda (emulator) (string= emulator-id? (lsp:flutter-daemon-device-id emulator)))
+                                                                (append emulators nil))))
+                                                 (-map #'cdr lsp-dart-flutter-daemon-devices))))
+       (->> devices-excluding-emulators
+            (append emulators)
+            (funcall callback))))))
 
 (lsp-defun lsp-dart-flutter-daemon-launch ((device &as &FlutterDaemonDevice :id :is-device?) callback)
   "Launch DEVICE and wait for connected state and call CALLBACK."
   (if is-device?
       (funcall callback device)
-    (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id id)))
-      (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
-                   (cons id (list :callback callback)))
-      (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))
+    (lsp-dart-flutter-daemon--send
+     "device.getDevices"
+     nil
+     (-lambda (devices)
+       (if-let (emulator-running? (-first (-lambda ((&FlutterDaemonDevice :emulator-id?)) (string= emulator-id? id)) (append devices nil)))
+           (funcall callback device)
+         (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id id)))
+           (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
+                        (cons id (list :callback callback)))
+           (lsp-dart-flutter-daemon--send "emulator.launch" params callback)))))))
 
 ;;;###autoload
 (define-derived-mode lsp-dart-flutter-daemon-mode comint-mode lsp-dart-flutter-daemon-name

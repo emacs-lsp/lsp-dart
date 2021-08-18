@@ -50,7 +50,7 @@
  (FlutterDaemonCommand (:id :method) (:params))
  (FlutterDaemonResponse (:id) (:result :event :params))
  (FlutterDaemonResponseParams nil (:level :message))
- (FlutterDaemonDevice (:id :name :platform :category :platformType :ephemeral :emulator) (:isDevice))
+ (FlutterDaemonDevice (:id :name :platform :category :platformType :ephemeral :emulator) (:isDevice :emulatorId))
  (FlutterDaemonEmulatorLaunch (:emulatorId)))
 
 (lsp-interface
