@@ -100,7 +100,6 @@ If unspecified, diagnostics will not be generated."
 ;;; Internal
 
 (defvar lsp-dart-version-string "1.19.2")
-(declare-function pkg-info-version-info "ext:pkg-info")
 
 (defun lsp-dart--library-folders ()
   "Return the library folders path to analyze."
