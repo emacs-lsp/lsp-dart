@@ -56,29 +56,29 @@
   (with-mock
     (stub lsp-dart-dart-command => "/sdk/bin/dart")
     (stub lsp-dart-get-sdk-dir => "/sdk")
-    (mock (pkg-info-version-info 'lsp-dart) => "1.123.456")
     (should (equal (lsp-dart--server-command)
                    '("/sdk/bin/dart"
                      "/sdk/bin/snapshots/analysis_server.dart.snapshot"
                      "--lsp"
                      "--client-id emacs.lsp-dart"
-                     "--client-version 1.123.456")))))
+                     "--client-version unknown-version")))))
 
 (ert-deftest lsp-dart-version--test ()
-  (let ((pkg-version (lsp-dart-test-package-version "lsp-dart.el")))
-    (with-mock
-     (stub lsp-dart-get-full-dart-version => "2.8.2")
-     (stub lsp-dart-get-sdk-dir => t)
-     (stub lsp-dart-get-flutter-sdk-dir => "flutter-sdk")
-     (stub lsp-dart-flutter-project-p => t)
-     (stub lsp-dart-get-project-entrypoint => "/path/to/entrypoint")
-     (should (equal (lsp-dart-version) (concat (format "[LSP Dart] %s at %s @ Emacs %s\n"
-                                                       pkg-version
-                                                       (format-time-string "%Y.%m.%d" (current-time))
-                                                       emacs-version)
-                                               "[Dart SDK] 2.8.2\n"
-                                               "[Flutter SDK] flutter-sdk\n"
-                                               "[Flutter project] true\n"
-                                               "[Project entrypoint] /path/to/entrypoint"))))))
+  (with-mock
+   (stub lsp-dart-get-full-dart-version => "2.8.2")
+   (stub lsp-dart-get-sdk-dir => t)
+   (stub lsp-dart-get-flutter-sdk-dir => "flutter-sdk")
+   (stub lsp-dart-flutter-project-p => t)
+   (stub lsp-dart-get-project-entrypoint => "/path/to/entrypoint")
+   (mock (require 'pkg-info nil t) => t)
+   (mock (pkg-info-version-info 'lsp-dart) => "1.2.3")
+   (should (equal (lsp-dart-version) (concat (format "[LSP Dart] %s at %s @ Emacs %s\n"
+                                                     "1.2.3"
+                                                     (format-time-string "%Y.%m.%d" (current-time))
+                                                     emacs-version)
+                                             "[Dart SDK] 2.8.2\n"
+                                             "[Flutter SDK] flutter-sdk\n"
+                                             "[Flutter project] true\n"
+                                             "[Project entrypoint] /path/to/entrypoint")))))
 
 ;;; lsp-dart-test.el ends here

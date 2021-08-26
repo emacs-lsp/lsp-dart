@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 Eric Dallo
 
 ;; Version: 1.19.2
-;; Package-Requires: ((emacs "26.1") (lsp-treemacs "0.3") (lsp-mode "7.0.1") (dap-mode "0.6") (f "0.20.0") (dash "2.14.1") (pkg-info "0.4") (dart-mode "1.0.5"))
+;; Package-Requires: ((emacs "26.1") (lsp-treemacs "0.3") (lsp-mode "7.0.1") (dap-mode "0.6") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
 
@@ -119,15 +119,16 @@ If unspecified, diagnostics will not be generated."
 
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
-  (let ((client-version (when (require 'pkg-info nil t)
-                          (format "--client-version %s"
-                                  (pkg-info-version-info 'lsp-dart)))))
+  (let ((client-version (format "--client-version %s"
+                                (or (when (require 'pkg-info nil t)
+                                      (pkg-info-version-info 'lsp-dart))
+                                    "unknown-version"))))
     (or lsp-dart-server-command
-        `(,(lsp-dart-dart-command)
-          ,(expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
-          "--lsp"
-          "--client-id emacs.lsp-dart"
-          ,client-version))))
+        (list (lsp-dart-dart-command)
+              (expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
+              "--lsp"
+              "--client-id emacs.lsp-dart"
+              client-version))))
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."
