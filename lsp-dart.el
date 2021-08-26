@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020 Eric Dallo
 
-;; Version: 1.19.2
+;; Version: 1.19.3
 ;; Package-Requires: ((emacs "26.1") (lsp-treemacs "0.3") (lsp-mode "7.0.1") (dap-mode "0.6") (f "0.20.0") (dash "2.14.1") (dart-mode "1.0.5"))
 ;; Keywords: languages, extensions
 ;; URL: https://emacs-lsp.github.io/lsp-dart
@@ -99,7 +99,7 @@ If unspecified, diagnostics will not be generated."
 
 ;;; Internal
 
-(defvar lsp-dart-version-string "1.19.2")
+(defvar lsp-dart-version-string "1.19.3")
 
 (defun lsp-dart--library-folders ()
   "Return the library folders path to analyze."
