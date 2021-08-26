@@ -57,11 +57,11 @@
     (stub lsp-dart-dart-command => "/sdk/bin/dart")
     (stub lsp-dart-get-sdk-dir => "/sdk")
     (should (equal (lsp-dart--server-command)
-                   '("/sdk/bin/dart"
+                   `("/sdk/bin/dart"
                      "/sdk/bin/snapshots/analysis_server.dart.snapshot"
                      "--lsp"
                      "--client-id emacs.lsp-dart"
-                     "--client-version unknown-version")))))
+                     ,(concat "--client-version " lsp-dart-version-string))))))
 
 (ert-deftest lsp-dart-version--test ()
   (with-mock
@@ -70,10 +70,8 @@
    (stub lsp-dart-get-flutter-sdk-dir => "flutter-sdk")
    (stub lsp-dart-flutter-project-p => t)
    (stub lsp-dart-get-project-entrypoint => "/path/to/entrypoint")
-   (mock (require 'pkg-info nil t) => t)
-   (mock (pkg-info-version-info 'lsp-dart) => "1.2.3")
    (should (equal (lsp-dart-version) (concat (format "[LSP Dart] %s at %s @ Emacs %s\n"
-                                                     "1.2.3"
+                                                     lsp-dart-version-string
                                                      (format-time-string "%Y.%m.%d" (current-time))
                                                      emacs-version)
                                              "[Dart SDK] 2.8.2\n"
