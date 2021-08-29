@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.20.0
+
+* Add new command to run your flutter/dart app `lsp-dart-run`, which use dap-mode to run flutter but without debug support, this command also supports custom args as prefix-argument
+* Improve logs during run/debug, some logs were not being logged and now this was fixed.
+* Add new `lsp-dart-dap-only-essential-log` with default as `nil` which should reduce the debug/run output
+
+## 1.19.2
+
 * Add error message when dart sdk not found for flutter installations.
 
 ## 1.19.1
