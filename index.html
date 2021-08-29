@@ -342,11 +342,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#debug" class="md-nav__link">
-    Debug
+  <a href="#run-or-debug" class="md-nav__link">
+    Run or Debug
   </a>
   
-    <nav class="md-nav" aria-label="Debug">
+    <nav class="md-nav" aria-label="Run or Debug">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -572,11 +572,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#debug" class="md-nav__link">
-    Debug
+  <a href="#run-or-debug" class="md-nav__link">
+    Run or Debug
   </a>
   
-    <nav class="md-nav" aria-label="Debug">
+    <nav class="md-nav" aria-label="Run or Debug">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -739,7 +739,8 @@
 <p>Display widget guide lines from parent to child widgets on flutter. <a href="#features-only-available-for-dart-sdk-version-280-currently-the-dev-branch-or-above"><img alt="⚠" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/26a0.svg" title=":warning:" />*</a></p>
 <p><img alt="flutter-widget-guides" src="images/flutter-widget-guides.png" /></p>
 <p>You can disable the feature setting <code>lsp-dart-flutter-widget-guides</code> to <code>nil</code>.</p>
-<h3 id="debug">Debug<a class="headerlink" href="#debug" title="Permanent link">#</a></h3>
+<h3 id="run-or-debug">Run or Debug<a class="headerlink" href="#run-or-debug" title="Permanent link">#</a></h3>
+<p>To run your app you can use <code>lsp-dart-run</code> which will use <code>dap-mode</code> but for running without debug. to pass custom arguments it's possible to pass a prefix-argument with arguments separated by space.</p>
 <p>For debugging, <code>lsp-dart</code> uses <a href="https://github.com/emacs-lsp/dap-mode#dart"><code>dap-mode</code></a>.
 You only need to run <code>lsp-dart-dap-setup</code> one time to setup the debugger to your Emacs and <code>dap-debug</code> to start the debug.</p>
 <p><img alt="debug" src="images/debug.gif" /></p>
@@ -976,8 +977,8 @@ matching names.</p>
 <td align="left"><code>t</code></td>
 </tr>
 <tr>
-<td align="left"><code>lsp-dart-dap-flutter-verbose-log</code></td>
-<td align="left">Whether to enable verbose logs from Flutter DAP</td>
+<td align="left"><code>lsp-dart-dap-only-essential-log</code></td>
+<td align="left">Whether to logs only essential log</td>
 <td align="left"><code>nil</code></td>
 </tr>
 <tr>
@@ -1029,7 +1030,7 @@ matching names.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 26, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 29, 2021</span>
     
   </small>
 </div>
