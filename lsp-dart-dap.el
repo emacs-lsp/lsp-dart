@@ -117,8 +117,8 @@ Required to support 'Inspect Widget'."
   :group 'lsp-dart
   :type 'string)
 
-(defcustom lsp-dart-dap-flutter-verbose-log nil
-  "Whether to enable logs from Flutter DAP."
+(defcustom lsp-dart-dap-only-essential-log nil
+  "Whether to log only essential log from debugger."
   :group 'lsp-dart
   :type 'boolean)
 
@@ -139,6 +139,13 @@ Required to support 'Inspect Widget'."
   "Log MSG with ARGS adding lsp-dart-dap prefix."
   (apply #'lsp-dart-custom-log "[DAP]" msg args))
 
+(defun lsp-dart-dap--flutter-debugger-args (conf)
+  "Add capabilities args on CONF checking dart SDK version."
+  (-> conf
+      (dap--put-if-absent :flutterSdkPath (lsp-dart-get-flutter-sdk-dir))
+      (dap--put-if-absent :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
+      (dap--put-if-absent :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)))
+
 (defun lsp-dart-dap--capabilities-debugger-args (conf)
   "Add capabilities args on CONF checking dart SDK version."
   (-> conf
@@ -147,21 +154,18 @@ Required to support 'Inspect Widget'."
 
 (defun lsp-dart-dap--base-debugger-args (conf)
   "Return the base args for debugging merged with CONF."
-  (let ((conf conf))
-    (dap--put-if-absent conf :request "launch")
-    (dap--put-if-absent conf :dartSdkPath (lsp-dart-get-sdk-dir))
-    (dap--put-if-absent conf :maxLogLineLength lsp-dart-dap-max-log-line-length)
-    (dap--put-if-absent conf :cwd (lsp-dart-get-project-root))
-    (dap--put-if-absent conf :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
-    (dap--put-if-absent conf :vmServicePort lsp-dart-dap-vm-service-port)
-    (dap--put-if-absent conf :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
-    (dap--put-if-absent conf :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
-    (dap--put-if-absent conf :evaluateGettersInDebugViews lsp-dart-dap-evaluate-getters-in-debug-views)
-    (dap--put-if-absent conf :evaluateToStringInDebugViews lsp-dart-dap-evaluate-tostring-in-debug-views)
-    (dap--put-if-absent conf :flutterSdkPath (lsp-dart-get-flutter-sdk-dir))
-    (dap--put-if-absent conf :flutterTrackWidgetCreation lsp-dart-dap-flutter-track-widget-creation)
-    (dap--put-if-absent conf :useFlutterStructuredErrors lsp-dart-dap-flutter-structured-errors)
-    (lsp-dart-dap--capabilities-debugger-args conf)))
+  (dap--put-if-absent conf :request "launch")
+  (dap--put-if-absent conf :dartSdkPath (lsp-dart-get-sdk-dir))
+  (dap--put-if-absent conf :maxLogLineLength lsp-dart-dap-max-log-line-length)
+  (dap--put-if-absent conf :cwd (lsp-dart-get-project-root))
+  (dap--put-if-absent conf :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
+  (dap--put-if-absent conf :vmServicePort lsp-dart-dap-vm-service-port)
+  (dap--put-if-absent conf :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
+  (dap--put-if-absent conf :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
+  (dap--put-if-absent conf :evaluateGettersInDebugViews lsp-dart-dap-evaluate-getters-in-debug-views)
+  (dap--put-if-absent conf :evaluateToStringInDebugViews lsp-dart-dap-evaluate-tostring-in-debug-views)
+  (lsp-dart-dap--flutter-debugger-args conf)
+  (lsp-dart-dap--capabilities-debugger-args conf))
 
 (defun lsp-dart-dap--enable-mode (&rest _)
   "Enable `lsp-dart-dap-mode'."
@@ -186,6 +190,7 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :type "dart")
       (dap--put-if-absent :name "Dart")
       (dap--put-if-absent :dap-server-path lsp-dart-dap-dart-debugger-program)
+      (dap--put-if-absent :output-filter-function #'lsp-dart-dap--output-filter-function)
       (dap--put-if-absent :program (lsp-dart-get-project-entrypoint))))
 
 (dap-register-debug-provider "dart" 'lsp-dart-dap--populate-dart-start-file-args)
@@ -221,13 +226,19 @@ Call CALLBACK when the device is chosen and started successfully."
    (lambda (devices)
      (if (seq-empty-p devices)
          (lsp-dart-log "No devices found. Try to create a device first via `flutter emulators` command")
-       (let ((chosen-device (dap--completing-read "Select a device to use: "
+       (let ((chosen-device (dap--completing-read "Select a device to debug/run: "
                                                   devices
                                                   (-lambda ((&FlutterDaemonDevice :id :name :is-device? :platform-type platform))
                                                     (lsp-dart-dap--device-label id name is-device? platform))
                                                   nil
                                                   t)))
          (lsp-dart-flutter-daemon-launch chosen-device callback))))))
+
+(defun lsp-dart-dap--output-filter-function (msg)
+  "Output filter for dap-mode when parsing MSG."
+  (if lsp-dart-dap-only-essential-log
+      msg
+    ""))
 
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
@@ -236,6 +247,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :type "flutter")
                       (dap--put-if-absent :flutterMode "debug")
                       (dap--put-if-absent :dap-server-path lsp-dart-dap-flutter-debugger-program)
+                      (dap--put-if-absent :output-filter-function #'lsp-dart-dap--output-filter-function)
                       (dap--put-if-absent :program (lsp-dart-get-project-entrypoint)))))
     (lambda (start-debugging-callback)
       (lsp-dart-dap--flutter-get-or-start-device
@@ -274,12 +286,24 @@ Call CALLBACK when the device is chosen and started successfully."
   (when lsp-dart-dap--flutter-progress-reporter
     (progress-reporter-update lsp-dart-dap--flutter-progress-reporter)))
 
+(defun lsp-dart-dap--parse-log-message (raw)
+  "Parse log RAW from debugger events."
+  (let ((msg (--> raw
+                  (replace-regexp-in-string (regexp-quote "<== ") "" it nil)
+                  (replace-regexp-in-string (regexp-quote "==> ") "" it nil)
+                  (replace-regexp-in-string (regexp-quote "\^M") "" it nil))))
+    (condition-case nil
+        (if (booleanp (lsp--read-json msg))
+            nil)
+      ('error msg))))
+
 (cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (when lsp-dart-dap-flutter-verbose-log
-    (-let* (((&hash "message") params)
-            (msg (replace-regexp-in-string (regexp-quote "\n") "" message nil 'literal)))
-      (lsp-dart-dap-log msg))))
+  (unless lsp-dart-dap-only-essential-log
+    (when-let (dap-session (dap--cur-session))
+      (-let* (((&hash "message") params))
+        (when-let (msg (lsp-dart-dap--parse-log-message message))
+          (dap--print-to-output-buffer dap-session msg))))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressStart)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
@@ -355,23 +379,25 @@ Call CALLBACK when the device is chosen and started successfully."
 
 ;; Public
 
-(defun lsp-dart-dap-run-dart (path)
-  "Start Dart application without debugging from PATH."
+(defun lsp-dart-dap-run-dart (&optional path args)
+  "Start Dart application without debugging.
+Run program PATH if not nil passing ARGS if not nil."
   (-> (list :type "dart"
             :name "Dart Run"
             :program path
-            :noDebug t
-            :shouldConnectDebugger nil)
+            :args args
+            :noDebug t)
       lsp-dart-dap--populate-dart-start-file-args
       dap-start-debugging))
 
-(defun lsp-dart-dap-run-flutter (path)
-  "Start Flutter app without debugging from PATH."
+(defun lsp-dart-dap-run-flutter (&optional path args)
+  "Start Flutter app without debugging.
+Run program PATH if not nil passing ARGS if not nil."
   (-> (list :type "flutter"
             :name "Flutter Run"
             :program path
-            :noDebug t
-            :shouldConnectDebugger nil)
+            :args args
+            :noDebug t)
       lsp-dart-dap--populate-flutter-start-file-args
       (funcall #'dap-start-debugging)))
 

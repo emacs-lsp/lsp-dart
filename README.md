@@ -104,7 +104,9 @@ Display widget guide lines from parent to child widgets on flutter. [:warning:*]
 
 You can disable the feature setting `lsp-dart-flutter-widget-guides` to `nil`.
 
-### Debug
+### Run or Debug
+
+To run your app you can use `lsp-dart-run` which will use `dap-mode` but for running without debug. to pass custom arguments it's possible to pass a prefix-argument with arguments separated by space.
 
 For debugging, `lsp-dart` uses [`dap-mode`](https://github.com/emacs-lsp/dap-mode#dart).
 You only need to run `lsp-dart-dap-setup` one time to setup the debugger to your Emacs and `dap-debug` to start the debug.
@@ -176,7 +178,7 @@ lsp-dart supports running Flutter and Dart commands as following:
 | `lsp-dart-show-todos`                            | Whether to generate diagnostics for TODO comments. If unspecified, diagnostics will not be generated.                                                                                | `nil`             |
 | `lsp-dart-complete-function-calls`               | Completes functions/methods with their required parameters.                                                                                                                          | `t`               |
 | `lsp-dart-extra-library-directories`             | Extra libs to analyze besides Dart SDK libs                                                                                                                                          | `'()`             |
-| `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder                                                                              | `nil`               |
+| `lsp-dart-only-analyze-projects-with-open-files` | Analysis will only be performed for projects that have open files rather than the root workspace folder                                                                              | `nil`             |
 | `lsp-dart-suggest-from-unimported-libraries`     | Completion will not include symbols that are not already imported into the current file.                                                                                             | `t`               |
 | `lsp-dart-closing-labels`                        | Enable the closing labels feature on server lsp                                                                                                                                      | `t`               |
 | `lsp-dart-closing-labels-prefix`                 | The prefix string to be concatenated with the closing label                                                                                                                          | `""`              |
@@ -205,7 +207,7 @@ lsp-dart supports running Flutter and Dart commands as following:
 | `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.                                                                                                                            | `""`              |
 | `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.                                                                                        | `t`               |
 | `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                                                                                                         | `t`               |
-| `lsp-dart-dap-flutter-verbose-log`               | Whether to enable verbose logs from Flutter DAP                                                                                                                                      | `nil`             |
+| `lsp-dart-dap-only-essential-log`                | Whether to logs only essential log                                                                                                                                                   | `nil`             |
 | `lsp-dart-dap-flutter-hot-reload-on-save`        | When enabled, every buffer save triggers a `lsp-dart-dap-flutter-hot-reload`                                                                                                         | `nil`             |
 | `lsp-dart-dap-flutter-hot-restart-on-save`       | When enabled, every buffer save triggers a `lsp-dart-dap-flutter-hot-restart`                                                                                                        | `nil`             |
 | `lsp-dart-devtools-theme`                        | The devtools theme when openning via `lsp-dart-dap-open-devtools`                                                                                                                    | `"dark"`          |

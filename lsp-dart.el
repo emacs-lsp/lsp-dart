@@ -194,6 +194,20 @@ If the version number could not be determined, signal an error."
                                      project-entrypoint-string)
                                "\n"))))
 
+;;;###autoload
+(defun lsp-dart-run (&optional args)
+  "Run application without debug mode.
+
+ARGS is an optional space-delimited string of the same flags passed to
+`flutter` when running from CLI.  Call with a prefix to be prompted for
+args."
+  (interactive
+   (list (when current-prefix-arg
+           (split-string (read-string "Args: ") " "))))
+  (if (lsp-dart-flutter-project-p)
+      (lsp-dart-dap-run-flutter nil args)
+    (lsp-dart-dap-run-dart nil args)))
+
 
 ;;;###autoload(with-eval-after-load 'lsp-mode (require 'lsp-dart))
 
