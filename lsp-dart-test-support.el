@@ -63,10 +63,15 @@ IGNORE-CASE is a optional arg to ignore the case sensitive on regex search."
       (lsp-dart-flutter-command)
     (lsp-dart-pub-command)))
 
+(defcustom lsp-dart-test-extra-args '()
+  "Extra arguments to be passed to test command (e.g: --no-sound-null-safety)."
+  :type '(repeat string)
+  :group 'lsp-dart)
+
 (defun lsp-dart-test--build-command-extra-args ()
   "Build the dart or flutter extra args."
   (if (lsp-dart-flutter-project-p)
-      '("test" "--machine")
+      (append '("test" "--machine") lsp-dart-test-extra-args)
     '("run" "test" "-r" "json")))
 
 (defun lsp-dart-test--build-test-name (names)
