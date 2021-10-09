@@ -110,13 +110,6 @@ If unspecified, diagnostics will not be generated."
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 
-(defun lsp-dart--configuration (_workspace _items)
-  "Return the client workspace configuration."
-  (vector (lsp-ht ("enableSdkFormatter" lsp-dart-enable-sdk-formatter)
-                  ("completeFunctionCalls" lsp-dart-complete-function-calls)
-                  ("showTodos" lsp-dart-show-todos)
-                  ("lineLength" lsp-dart-line-length))))
-
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
@@ -137,6 +130,12 @@ If unspecified, diagnostics will not be generated."
   (when (lsp-dart-test-file-p (buffer-file-name)) (lsp-dart-test-mode 1))
   (when lsp-dart-main-code-lens (lsp-dart-main-code-lens-mode 1))
   (when lsp-dart-test-code-lens (lsp-dart-test-code-lens-mode 1)))
+
+(lsp-register-custom-settings
+ '(("dart.enableSdkFormatter" lsp-dart-enable-sdk-formatter)
+   ("dart.completeFunctionCalls" lsp-dart-complete-function-calls)
+   ("dart.showTodos" lsp-dart-show-todos)
+   ("dart.lineLength" lsp-dart-line-length)))
 
 (lsp-register-client
  (make-lsp-client :new-connection
@@ -160,7 +159,6 @@ If unspecified, diagnostics will not be generated."
                                                                                               (when (lsp-dart-flutter-project-p)
                                                                                                 (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification))))
                                                  ("$/analyzerStatus" #'ignore))
-                  :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
                   :after-open-fn #'lsp-dart--activate-features
                   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
                   :server-id 'dart_analysis_server))
