@@ -162,6 +162,7 @@ If unspecified, diagnostics will not be generated."
                                                  ("$/analyzerStatus" #'ignore))
                   :request-handlers (lsp-ht ("workspace/configuration" #'lsp-dart--configuration))
                   :after-open-fn #'lsp-dart--activate-features
+                  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
                   :server-id 'dart_analysis_server))
 
 
