@@ -31,7 +31,9 @@ When editing a Flutter project, the version of Dart included in the Flutter SDK
 is used in preference."
   :group 'lsp-dart
   :risky t
-  :type '(choice directory nil))
+  :type '(choice
+          (const :tag "Default" nil)
+          (string :tag "Directory")))
 
 (defcustom lsp-dart-flutter-sdk-dir nil
   "Path to the Flutter SDK.
@@ -39,7 +41,9 @@ If nil, Dart Code will attempt to find it from the project folder,
 FLUTTER_ROOT environment variable and the PATH environment variable."
   :group 'lsp-dart
   :risky t
-  :type '(choice directory nil))
+  :type '(choice
+          (const :tag "Default" nil)
+          (string :tag "Directory")))
 
 (defcustom lsp-dart-flutter-executable "flutter"
   "Flutter executable name.

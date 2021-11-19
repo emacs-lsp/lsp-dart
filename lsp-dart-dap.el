@@ -363,11 +363,13 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (defun lsp-dart-dap--flutter-hot-reload ()
   "Hot reload current Flutter debug session."
-  (dap-request (dap--cur-session) "hotReload"))
+  (when (dap--cur-session)
+    (dap-request (dap--cur-session) "hotReload")))
 
 (defun lsp-dart-dap--flutter-hot-restart ()
   "Hot restart current Flutter debug session."
-  (dap-request (dap--cur-session) "hotRestart"))
+  (when (dap--cur-session)
+    (dap-request (dap--cur-session) "hotRestart")))
 
 (defun lsp-dart-dap--on-save ()
   "Run when `after-save-hook' is triggered."
