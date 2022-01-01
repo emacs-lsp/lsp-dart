@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add support for specifying different program entrypoints via variable `lsp-dart-program-entrypoints` used by DAP for example.
+
 ## 1.20.0
 
 * Add new command to run your flutter/dart app `lsp-dart-run`, which use dap-mode to run flutter but without debug support, this command also supports custom args as prefix-argument

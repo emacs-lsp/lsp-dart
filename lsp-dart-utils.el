@@ -52,6 +52,14 @@ Useful if multiple Flutter installations are present."
   :risky t
   :type 'string)
 
+(defcustom lsp-dart-program-entrypoints '("lib/main.dart" "bin/main.dart")
+  "Relative paths from projet to the main entrypoint of your app.
+It will check all paths of this variable and use it if any of these exists.
+Used by features that needs to know project entrypoint like DAP support."
+  :group 'lsp-dart
+  :risky t
+  :type '(repeat string))
+
 
 ;; Internal
 
@@ -166,15 +174,10 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-get-project-entrypoint ()
   "Return the dart or flutter project entrypoint."
-  (let* ((root (lsp-dart-get-project-root))
-         (lib-entry (expand-file-name "lib/main.dart" root))
-         (bin-entry (expand-file-name "bin/main.dart" root)))
-    (cond
-     ((file-exists-p lib-entry)
-      lib-entry)
-
-     ((file-exists-p bin-entry)
-      bin-entry))))
+  (let* ((root (lsp-dart-get-project-root)))
+    (->> lsp-dart-program-entrypoints
+         (--map (expand-file-name it root))
+         (--first (file-exists-p it)))))
 
 (defmacro lsp-dart-from-project-root (&rest body)
   "Execute BODY with cwd set to the project root."
