@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Add support for specifying different program entrypoints via variable `lsp-dart-program-entrypoints` used by DAP for example.
+* Drop support for Eamcs 26.1 and 26.2
 
 ## 1.20.0
 
