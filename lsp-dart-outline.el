@@ -184,8 +184,9 @@ OUTLINES are the outline items."
                          (unless (seq-empty-p children)
                            (lsp-dart-outline--flutter-outline->tree uri children)))
              :ret-action (lambda (&rest _) (lsp-dart-outline--outline-tree-ret-action uri code-range))
-             :actions (when widget?
-                        (lsp-dart-outline--build-flutter-outline-widget-actions uri code-range))
+             :actions (lambda (&rest _)
+                        (when widget?
+                          (lsp-dart-outline--build-flutter-outline-widget-actions uri code-range)))
              :uri uri)))
    outlines))
 
