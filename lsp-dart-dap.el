@@ -91,10 +91,10 @@
   :group 'lsp-dart
   :type 'boolean)
 
-(defcustom lsp-dart-dap-vm-additional-args ""
+(defcustom lsp-dart-dap-vm-additional-args []
   "Additional args for dart debugging VM."
   :group 'lsp-dart
-  :type 'string)
+  :type '(repeat string))
 
 (defcustom lsp-dart-dap-vm-service-port 0
   "Service port for dart debugging VM."

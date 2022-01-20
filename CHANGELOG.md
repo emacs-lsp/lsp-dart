@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Change `lsp-dart-dap-vm-additional-args` from string to vector type following debugger server changes. #136
+
 ## 1.21.0
 
 * Add support for specifying different program entrypoints via variable `lsp-dart-program-entrypoints` used by DAP for example.
