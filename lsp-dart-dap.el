@@ -373,10 +373,14 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (defun lsp-dart-dap--on-save ()
   "Run when `after-save-hook' is triggered."
-  (if lsp-dart-dap-flutter-hot-restart-on-save
-      (lsp-dart-dap--flutter-hot-restart)
-    (when lsp-dart-dap-flutter-hot-reload-on-save
-      (lsp-dart-dap--flutter-hot-reload))))
+  (let ((extension (file-name-extension (buffer-file-name))))
+    (when (or (string= "dart" extension)
+              (string= "yaml" extension)
+              (string= "yml" extension))
+      (if lsp-dart-dap-flutter-hot-restart-on-save
+          (lsp-dart-dap--flutter-hot-restart)
+        (when lsp-dart-dap-flutter-hot-reload-on-save
+          (lsp-dart-dap--flutter-hot-reload))))))
 
 
 ;; Public
