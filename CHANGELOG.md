@@ -4,6 +4,7 @@
 
 * Change `lsp-dart-dap-vm-additional-args` from string to vector type following debugger server changes. #136
 * Check for dart related file extension during hot-reload/restart when auto-save enabled. #134
+* Run flutter proccess if not already running during hot-restart/hot-reload. #143
 
 ## 1.21.0
 

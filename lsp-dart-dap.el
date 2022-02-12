@@ -178,8 +178,8 @@ Required to support 'Inspect Widget'."
 (lsp-dependency
  'dart-debugger
  `(:download :url lsp-dart-dap-extension-url
-             :decompress :zip
-             :store-path ,(f-join lsp-dart-dap-debugger-path "dart-code")))
+   :decompress :zip
+   :store-path ,(f-join lsp-dart-dap-debugger-path "dart-code")))
 
 ;; Dart
 
@@ -458,12 +458,16 @@ Run program PATH if not nil passing ARGS if not nil."
 (defun lsp-dart-dap-flutter-hot-restart ()
   "Hot restart current Flutter debug session."
   (interactive)
-  (lsp-dart-dap--flutter-hot-restart))
+  (if (dap--cur-session)
+      (lsp-dart-dap--flutter-hot-restart)
+    (lsp-dart-dap-run-flutter)))
 
 (defun lsp-dart-dap-flutter-hot-reload ()
   "Hot reload current Flutter debug session."
   (interactive)
-  (lsp-dart-dap--flutter-hot-reload))
+  (if (dap--cur-session)
+      (lsp-dart-dap--flutter-hot-reload)
+    (lsp-dart-dap-run-flutter)))
 
 (define-minor-mode lsp-dart-dap-mode
   "Mode for when debugging Dart/Flutter code."
