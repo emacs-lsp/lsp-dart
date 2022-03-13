@@ -122,11 +122,6 @@ Required to support 'Inspect Widget'."
   :group 'lsp-dart
   :type 'string)
 
-(defcustom lsp-dart-dap-only-essential-log nil
-  "Whether to log only essential log from debugger."
-  :group 'lsp-dart
-  :type 'boolean)
-
 (defcustom lsp-dart-dap-flutter-hot-reload-on-save nil
   "Send hot reload to flutter during the debug."
   :group 'lsp-dart
@@ -202,7 +197,6 @@ Required to support 'Inspect Widget'."
       (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
                                                `(,(lsp-dart-dart-command) "debug_adapter")
                                              lsp-dart-dap-dart-debugger-program))
-      (dap--put-if-absent :output-filter-function #'lsp-dart-dap--output-filter-function)
       (dap--put-if-absent :program (or (lsp-dart-get-project-entrypoint)
                                        (buffer-file-name)))))
 
@@ -247,12 +241,6 @@ Call CALLBACK when the device is chosen and started successfully."
                                                   t)))
          (lsp-dart-flutter-daemon-launch chosen-device callback))))))
 
-(defun lsp-dart-dap--output-filter-function (msg)
-  "Output filter for dap-mode when parsing MSG."
-  (if lsp-dart-dap-only-essential-log
-      msg
-    ""))
-
 (defun lsp-dart-dap--populate-flutter-start-file-args (conf)
   "Populate CONF with the required arguments for Flutter debug."
   (let ((pre-conf (-> conf
@@ -262,7 +250,6 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
                                                                `(,(lsp-dart-flutter-command) "debug_adapter")
                                                              lsp-dart-dap-flutter-debugger-program))
-                      (dap--put-if-absent :output-filter-function #'lsp-dart-dap--output-filter-function)
                       (dap--put-if-absent :program (or (lsp-dart-get-project-entrypoint)
                                                        (buffer-file-name))))))
     (lambda (start-debugging-callback)
@@ -315,11 +302,10 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (unless lsp-dart-dap-only-essential-log
-    (when-let (dap-session (dap--cur-session))
-      (-let* (((&hash "message") params))
-        (when-let (msg (lsp-dart-dap--parse-log-message message))
-          (dap--print-to-output-buffer dap-session msg))))))
+  (when-let (dap-session (dap--cur-session))
+    (-let* (((&hash "message") params))
+      (when-let (msg (lsp-dart-dap--parse-log-message message))
+        (dap--print-to-output-buffer dap-session msg)))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressStart)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
