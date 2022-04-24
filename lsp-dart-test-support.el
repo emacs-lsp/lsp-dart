@@ -181,9 +181,9 @@ NOTIFICATION is the event notification.")
   "Spawn COMMAND with ARGS on a separated buffer."
   (lsp-dart-test--clean-process-buffer)
   (let ((process-buffer (get-buffer-create lsp-dart-test--process-buffer-name))
-        (project-root (lsp-dart-get-project-root)))
+        (project-rt (lsp-dart-get-project-root)))
     (with-current-buffer process-buffer
-      (setq-local default-directory (or project-root default-directory))
+      (setq-local default-directory (or project-rt default-directory))
       (unless (derived-mode-p 'lsp-dart-test-process-mode)
         (lsp-dart-test-process-mode))
       (apply #'make-comint-in-buffer lsp-dart-test--process-buffer-name process-buffer command nil args))))

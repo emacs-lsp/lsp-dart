@@ -42,7 +42,7 @@ lint:
 
 test:
 	$(EASK) install-deps --dev
-	$(EASK) ert
+	$(EASK) ert ./test/*.el
 
 clean:
 	$(EASK) clean-all
