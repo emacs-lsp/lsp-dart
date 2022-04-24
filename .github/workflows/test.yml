@@ -29,6 +29,14 @@ jobs:
       with:
         version: ${{ matrix.emacs-version }}
 
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - uses: emacs-eask/setup-eask@master
+      with:
+        version: 'snapshot'
+
     - name: Set workaround env var
       run: |
         echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV
