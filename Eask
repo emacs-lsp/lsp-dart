@@ -4,7 +4,7 @@
 
 (package-file "lsp-dart.el")
 
-(files "lsp-dart-**.el")
+(files "*.el")
 
 (source "gnu")
 (source "melpa")
