@@ -147,7 +147,7 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-dart-command ()
   "Return the dart executable from Dart SDK dir."
-  (let* ((executable-path (if (eq system-type 'windows-nt) "bin/dart.exe" "bin/dart"))
+  (let* ((executable-path (if (eq system-type 'windows-nt) "bin/dart.bat" "bin/dart"))
          (command (expand-file-name executable-path (lsp-dart-get-sdk-dir))))
     (if (file-exists-p command)
         command

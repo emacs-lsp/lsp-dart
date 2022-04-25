@@ -25,8 +25,8 @@
 (ert-deftest lsp-dart--flutter-repo-p--true-test ()
   (with-mock
     (mock (locate-dominating-file * "flutter") => "/sdk/bin")
-    (mock (file-regular-p "/sdk/bin/flutter") => t)
-    (mock (file-directory-p "/sdk/bin/cache/dart-sdk") => t)
+    (mock (file-regular-p (f-join (f-root) "/sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "/sdk/bin/cache/dart-sdk")) => t)
     (should (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
@@ -38,8 +38,8 @@
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
   (with-mock
     (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
-    (mock (file-regular-p "/not-sdk/bin/flutter") => t)
-    (mock (file-directory-p "/not-sdk/bin/cache/dart-sdk") => nil)
+    (mock (file-regular-p (f-join (f-root) "/not-sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "/not-sdk/bin/cache/dart-sdk")) => nil)
     (should-not (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart-flutter-project-p--flutter-repo-test ()
@@ -76,7 +76,10 @@
    (mock (lsp-dart-flutter-project-p) => t)
    (mock (lsp-dart-get-flutter-sdk-dir) => "/flutter-sdk")
    (mock (file-exists-p "/flutter-sdk/bin/cache/dart-sdk/") => t)
-   (should (equal (lsp-dart-get-sdk-dir) "/flutter-sdk/bin/cache/dart-sdk/"))))
+   (should (equal (lsp-dart-get-sdk-dir)
+                  (if (eq system-type 'windows-nt)
+                      (f-join (f-root) "/flutter-sdk/bin/cache/dart-sdk/")
+                    "/flutter-sdk/bin/cache/dart-sdk/")))))
 
 (ert-deftest lsp-dart-get-sdk-dir--project-without-dart-on-path-test ()
   (lsp-dart-test-from-dart-project
@@ -112,11 +115,11 @@
 
 (ert-deftest lsp-dart-dart-command--test ()
   (lsp-dart-test-with-dart-sdk
-   (should (equal (lsp-dart-dart-command) (f-expand "bin/dart" dart-sdk)))))
+   (should (equal (lsp-dart-dart-command) (f-expand (if (eq system-type 'windows-nt) "bin/dart.bat" "bin/dart") dart-sdk)))))
 
 (ert-deftest lsp-dart-flutter-command--test ()
   (lsp-dart-test-with-flutter-sdk
-   (should (equal (lsp-dart-flutter-command) (f-expand "bin/flutter" flutter-sdk)))))
+   (should (equal (lsp-dart-flutter-command) (f-expand (if (eq system-type 'windows-nt) "bin/flutter.bat" "bin/flutter") flutter-sdk)))))
 
 (ert-deftest lsp-dart-get-project-root--test ()
   (lsp-dart-test-from-dart-project
