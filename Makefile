@@ -1,7 +1,7 @@
 SHELL=/usr/bin/env bash
 
 EMACS ?= emacs
-CASK ?= cask
+EASK ?= eask
 
 WINDOWS-INSTALL=-l test/windows-bootstrap.el
 
@@ -23,71 +23,29 @@ ARCHIVES-INIT="(progn \
   (setq package-archives '((\"melpa\" . \"https://melpa.org/packages/\") \
 						   (\"gnu\" . \"http://elpa.gnu.org/packages/\"))))"
 
-# NOTE: Bad request occurs during Cask installation on macOS in Emacs
-# version 26.x. By setting variable `package-archives` manually resolved
-# this issue.
 build:
-	@$(CASK) $(EMACS) -Q --batch \
-		--eval $(ARCHIVES-INIT)
-	cask install
+	$(EASK) package
+	$(EASK) install
 
-
-unix-ci: WINDOWS-INSTALL=
-unix-ci: clean build compile checkdoc lint unix-test
-
-windows-ci: CASK=
-windows-ci: clean compile checkdoc lint windows-test
+ci: clean build compile checkdoc lint test
 
 compile:
 	@echo "Compiling..."
-	@$(CASK) $(EMACS) -Q --batch \
-		$(WINDOWS-INSTALL) \
-		-L . \
-		--eval '(setq byte-compile-error-on-warn t)' \
-		-f batch-byte-compile \
-		*.el
+	$(EASK) compile
 
 checkdoc:
-	$(eval LOG := $(shell mktemp -d)/checklog.log)
-	@touch $(LOG)
-
-	@echo "checking doc..."
-
-	@for f in *.el ; do \
-		$(CASK) $(EMACS) -Q --batch \
-			-L . \
-			--eval "(checkdoc-file \"$$f\")" \
-			*.el 2>&1 | tee -a $(LOG); \
-	done
-
-	@if [ -s $(LOG) ]; then \
-		echo ''; \
-		exit 1; \
-	else \
-		echo 'checkdoc ok!'; \
-	fi
+	$(EASK) checkdoc
 
 lint:
 	@echo "package linting..."
-	@$(CASK) $(EMACS) -Q --batch \
-		-L . \
-		--eval $(INIT) \
-		--eval $(LINT) \
-		*.el
+	$(EASK) lint
 
-unix-test:
-	@$(CASK) exec ert-runner
-
-windows-test:
-	@$(EMACS) -Q --batch \
-		$(WINDOWS-INSTALL) \
-		-L . \
-		$(LOAD-TEST-FILES) \
-		--eval "(ert-run-tests-batch-and-exit \
-		'(and (not (tag no-win)) (not (tag org))))"
+test:
+	$(EASK) install-deps --dev
+	$(EASK) ert ./test/*.el
 
 clean:
-	rm -rf .cask *.elc
+	$(EASK) clean-all
 
 tag:
 	$(eval TAG := $(filter-out $@,$(MAKECMDGOALS)))
@@ -103,4 +61,4 @@ tag:
 %:
 	@:
 
-.PHONY : ci compile checkdoc lint unix-test windows-test clean tag
+.PHONY : ci compile checkdoc lint test clean tag
