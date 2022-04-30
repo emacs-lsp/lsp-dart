@@ -72,17 +72,14 @@
                                                    "/"))))))
 
 (ert-deftest lsp-dart-get-sdk-dir--flutter-project-test ()
-  (lsp-dart-test-from-flutter-project
-   (mock (lsp-dart-flutter-project-p) => t)
-   (mock (lsp-dart-get-flutter-sdk-dir) => "/flutter-sdk")
-   (mock (file-exists-p (if (eq system-type 'windows-nt)
-                            "d:/"
-                          "/flutter-sdk/bin/cache/dart-sdk/"))
-         => t)
-   (should (equal (lsp-dart-get-sdk-dir)
-                  (if (eq system-type 'windows-nt)
+  (let ((dart-sdk (if (eq system-type 'windows-nt)
                       (f-join (f-root) "/flutter-sdk/bin/cache/dart-sdk/")
-                    "/flutter-sdk/bin/cache/dart-sdk/")))))
+                    "/flutter-sdk/bin/cache/dart-sdk/")))
+    (lsp-dart-test-from-flutter-project
+     (mock (lsp-dart-flutter-project-p) => t)
+     (mock (lsp-dart-get-flutter-sdk-dir) => "/flutter-sdk")
+     (mock (file-exists-p dart-sdk) => t)
+     (should (equal (lsp-dart-get-sdk-dir) dart-sdk)))))
 
 (ert-deftest lsp-dart-get-sdk-dir--project-without-dart-on-path-test ()
   (lsp-dart-test-from-dart-project
