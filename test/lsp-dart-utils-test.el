@@ -24,28 +24,28 @@
 
 (ert-deftest lsp-dart--flutter-repo-p--true-test ()
   (with-mock
-   (mock (locate-dominating-file * "flutter") => "/sdk/bin")
-   (mock (file-regular-p (f-join (f-root) "/sdk/bin/flutter")) => t)
-   (mock (file-directory-p (f-join (f-root) "/sdk/bin/cache/dart-sdk")) => t)
-   (should (lsp-dart--flutter-repo-p))))
+    (mock (locate-dominating-file * "flutter") => "/sdk/bin")
+    (mock (file-regular-p (f-join (f-root) "/sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "/sdk/bin/cache/dart-sdk")) => t)
+    (should (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
   (with-mock
-   (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
-   (mock (file-regular-p "/sdk/bin/flutter") => nil)
-   (should-not (lsp-dart--flutter-repo-p))))
+    (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
+    (mock (file-regular-p "/sdk/bin/flutter") => nil)
+    (should-not (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
   (with-mock
-   (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
-   (mock (file-regular-p (f-join (f-root) "/not-sdk/bin/flutter")) => t)
-   (mock (file-directory-p (f-join (f-root) "/not-sdk/bin/cache/dart-sdk")) => nil)
-   (should-not (lsp-dart--flutter-repo-p))))
+    (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
+    (mock (file-regular-p (f-join (f-root) "/not-sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "/not-sdk/bin/cache/dart-sdk")) => nil)
+    (should-not (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart-flutter-project-p--flutter-repo-test ()
   (with-mock
-   (mock (lsp-dart--flutter-repo-p) => t)
-   (should (lsp-dart-flutter-project-p))))
+    (mock (lsp-dart--flutter-repo-p) => t)
+    (should (lsp-dart-flutter-project-p))))
 
 (ert-deftest lsp-dart-flutter-project-p--flutter-project-test ()
   (lsp-dart-test-from-flutter-project
@@ -76,7 +76,7 @@
    (mock (lsp-dart-flutter-project-p) => t)
    (mock (lsp-dart-get-flutter-sdk-dir) => "/flutter-sdk")
    (mock (file-exists-p (if (eq system-type 'windows-nt)
-                            (f-join (f-root) "/flutter-sdk/bin/cache/dart-sdk/")
+                            "d:/"
                           "/flutter-sdk/bin/cache/dart-sdk/"))
          => t)
    (should (equal (lsp-dart-get-sdk-dir)
@@ -156,25 +156,25 @@
 
 (ert-deftest lsp-dart-workspace-status--non-nil-message-test ()
   (with-mock
-   (mock (lsp-workspace-status "[LSP Dart] test" "workspace"))
-   (lsp-dart-workspace-status "test" "workspace")))
+    (mock (lsp-workspace-status "[LSP Dart] test" "workspace"))
+    (lsp-dart-workspace-status "test" "workspace")))
 
 (ert-deftest lsp-dart-workspace-status--nil-message-test ()
   (with-mock
-   (mock (lsp-workspace-status nil "workspace"))
-   (lsp-dart-workspace-status nil "workspace")))
+    (mock (lsp-workspace-status nil "workspace"))
+    (lsp-dart-workspace-status nil "workspace")))
 
 (ert-deftest lsp-dart-get-full-dart-version--test ()
   (with-mock
-   (mock (lsp-dart-dart-command) => "dart")
-   (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
-   (should (equal (lsp-dart-get-full-dart-version) "Dart VM version: 2.9.0-4.0.dev"))))
+    (mock (lsp-dart-dart-command) => "dart")
+    (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
+    (should (equal (lsp-dart-get-full-dart-version) "Dart VM version: 2.9.0-4.0.dev"))))
 
 (ert-deftest lsp-dart--get-dart-version--test ()
   (with-mock
-   (mock (lsp-dart-dart-command) => "dart")
-   (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
-   (should (equal (lsp-dart-get-dart-version) "2.9.0-4.0.dev"))))
+    (mock (lsp-dart-dart-command) => "dart")
+    (mock (shell-command-to-string "dart --version") => "Dart VM version: 2.9.0-4.0.dev")
+    (should (equal (lsp-dart-get-dart-version) "2.9.0-4.0.dev"))))
 
 (ert-deftest lsp-dart-version->number--dart-test ()
   (should (equal (lsp-dart-version->number "2.9.0-dev.10.0") "2.9.0.0.10.0")))
@@ -184,42 +184,42 @@
 
 (ert-deftest lsp-dart-version-at-least-p--a-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.9.0-dev.10.0")
-   (should (lsp-dart-version-at-least-p "2.9.0-dev.9.0"))))
+    (mock (lsp-dart-get-dart-version) => "2.9.0-dev.10.0")
+    (should (lsp-dart-version-at-least-p "2.9.0-dev.9.0"))))
 
 (ert-deftest lsp-dart-version-at-least-p--b-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.9.0-dev.10.0")
-   (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+    (mock (lsp-dart-get-dart-version) => "2.9.0-dev.10.0")
+    (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
 
 (ert-deftest lsp-dart-version-at-least-p--c-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.10.0")
-   (should (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+    (mock (lsp-dart-get-dart-version) => "2.10.0")
+    (should (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
 
 (ert-deftest lsp-dart-version-at-least-p--d-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.8.0")
-   (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
+    (mock (lsp-dart-get-dart-version) => "2.8.0")
+    (should-not (lsp-dart-version-at-least-p "2.9.0-dev.11.0"))))
 
 (ert-deftest lsp-dart-version-at-least-p--e-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.9.0-5.0.dev.10-flutter-4da5b40fb6")
-   (should-not (lsp-dart-version-at-least-p "2.9.0-5.0.dev.11-flutter-asd"))))
+    (mock (lsp-dart-get-dart-version) => "2.9.0-5.0.dev.10-flutter-4da5b40fb6")
+    (should-not (lsp-dart-version-at-least-p "2.9.0-5.0.dev.11-flutter-asd"))))
 
 (ert-deftest lsp-dart-version-at-least-p--f-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.9.0-5.0.dev.10-flutter-4da5b40fb6")
-   (should (lsp-dart-version-at-least-p "2.9.0-5.0.dev.09-flutter-asd"))))
+    (mock (lsp-dart-get-dart-version) => "2.9.0-5.0.dev.10-flutter-4da5b40fb6")
+    (should (lsp-dart-version-at-least-p "2.9.0-5.0.dev.09-flutter-asd"))))
 
 (ert-deftest lsp-dart-version-at-least-p--g-test ()
   (with-mock
-   (mock (lsp-dart-get-dart-version) => "2.10.0-dev.1.2")
-   (should (lsp-dart-version-at-least-p "2.10.0-dev.1.2"))))
+    (mock (lsp-dart-get-dart-version) => "2.10.0-dev.1.2")
+    (should (lsp-dart-version-at-least-p "2.10.0-dev.1.2"))))
 
 (ert-deftest lsp-dart-assert-sdk-min-version ()
   (with-mock
-   (mock (lsp-dart-version-at-least-p "2.8.0") => t)
-   (lsp-dart-assert-sdk-min-version "2.8.0")))
+    (mock (lsp-dart-version-at-least-p "2.8.0") => t)
+    (lsp-dart-assert-sdk-min-version "2.8.0")))
 
 ;;; lsp-dart-utils-test.el ends here
