@@ -482,7 +482,8 @@ Run program PATH if not nil passing ARGS if not nil."
   :lighter nil
   (cond
    (lsp-dart-dap-mode
-    (add-hook 'after-save-hook #'lsp-dart-dap--on-save))
+    (add-hook 'after-save-hook #'lsp-dart-dap--on-save)
+    (add-to-list 'dap-output-buffer-filter "console"))
    (t
     (remove-hook 'after-save-hook #'lsp-dart-dap--on-save))))
 
