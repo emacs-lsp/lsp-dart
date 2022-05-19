@@ -194,9 +194,6 @@ Required to support 'Inspect Widget'."
       lsp-dart-dap--base-debugger-args
       (dap--put-if-absent :type "dart")
       (dap--put-if-absent :name "Dart")
-      (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
-                                               `(,(lsp-dart-dart-command) "debug_adapter")
-                                             lsp-dart-dap-dart-debugger-program))
       (dap--put-if-absent :program (or (lsp-dart-get-project-entrypoint)
                                        (buffer-file-name)))))
 
@@ -247,9 +244,6 @@ Call CALLBACK when the device is chosen and started successfully."
                       lsp-dart-dap--base-debugger-args
                       (dap--put-if-absent :type "flutter")
                       (dap--put-if-absent :flutterMode "debug")
-                      (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
-                                                               `(,(lsp-dart-flutter-command) "debug_adapter")
-                                                             lsp-dart-dap-flutter-debugger-program))
                       (dap--put-if-absent :program (or (lsp-dart-get-project-entrypoint)
                                                        (buffer-file-name))))))
     (lambda (start-debugging-callback)
@@ -259,6 +253,9 @@ Call CALLBACK when the device is chosen and started successfully."
                   (-> pre-conf
                       (dap--put-if-absent :deviceId device-id)
                       (dap--put-if-absent :deviceName device-name)
+                      (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
+                                                               `(,(lsp-dart-flutter-command) "debug_adapter" "-d" ,device-id)
+                                                             lsp-dart-dap-flutter-debugger-program))
                       (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
