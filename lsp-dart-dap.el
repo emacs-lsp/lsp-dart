@@ -1,6 +1,6 @@
 ;;; lsp-dart-dap.el --- DAP support for lsp-dart -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Eric Dallo
+;; Copyright (C) 2022 Eric Dallo
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -257,6 +257,7 @@ Call CALLBACK when the device is chosen and started successfully."
                                                                `(,(lsp-dart-flutter-command) "debug_adapter" "-d" ,device-id)
                                                              lsp-dart-dap-flutter-debugger-program))
                       (dap--put-if-absent :flutterPlatform "default")
+                      (dap--put-if-absent :toolArgs `("-d" ,device-id))
                       (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
 
 (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
@@ -355,6 +356,8 @@ Call CALLBACK when the device is chosen and started successfully."
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.updatePlatformOverride)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql dart.flutter.updateIsWidgetCreationTracked)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql flutter.serviceExtensionStateChanged)) _session _params)
   "Ignore this event.")
 
 (cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)

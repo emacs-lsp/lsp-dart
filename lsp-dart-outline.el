@@ -1,6 +1,6 @@
 ;;; lsp-dart-outline.el --- Outline support for lsp-dart -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Eric Dallo
+;; Copyright (C) 2022 Eric Dallo
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

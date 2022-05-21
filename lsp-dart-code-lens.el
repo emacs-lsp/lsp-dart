@@ -1,6 +1,6 @@
 ;;; lsp-dart-code-lens.el --- Code lens support for LSP Dart -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Eric Dallo
+;; Copyright (C) 2022 Eric Dallo
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
