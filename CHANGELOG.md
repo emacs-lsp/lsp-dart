@@ -5,9 +5,10 @@
 * Change `lsp-dart-dap-vm-additional-args` from string to vector type following debugger server changes. #136
 * Check for dart related file extension during hot-reload/restart when auto-save enabled. #134
 * Run flutter proccess if not already running during hot-restart/hot-reload. #143
-* Bump dart debugger extension to 3.36.0
+* Bump dart debugger extension to 3.40.0
 * Add flag to use Dart SDK debugger instead of vscode extension. #128
 * Drop variable `lsp-dart-dap-only-essential-log`, usually it filters important logs.
+* Improve flutter debugging, fixing some cases where multiple devices available would result in error.
 
 ## 1.21.0
 
