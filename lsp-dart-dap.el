@@ -204,6 +204,7 @@ Required to support 'Inspect Widget'."
 ;; Flutter
 
 (declare-function all-the-icons-faicon "ext:all-the-icons")
+(declare-function all-the-icons-material "ext:all-the-icons")
 
 (defun lsp-dart-dap--device-label (id name is-device platform)
   "Return a friendly label for device with ID, NAME IS-DEVICE and PLATFORM.
@@ -219,6 +220,9 @@ Check for icons if supports it."
         (pcase platform
           ("web" (concat (all-the-icons-faicon "chrome" :face 'all-the-icons-blue :v-adjust 0.0) " " type-text " - " device-name))
           ("android" (concat (all-the-icons-faicon "android" :face 'all-the-icons-green  :v-adjust 0.0) " " type-text " - " device-name))
+          ("linux" (concat (all-the-icons-faicon "linux" :face 'all-the-icons-yellow  :v-adjust 0.0) " " type-text " - " device-name))
+          ("macos" (concat (all-the-icons-material "laptop_mac" :face 'all-the-icons-lsilver  :v-adjust 0.0) " " type-text " - " device-name))
+          ("windows" (concat (all-the-icons-faicon "windows" :face 'all-the-icons-blue  :v-adjust 0.0) " " type-text " - " device-name))
           ("ios" (concat (all-the-icons-faicon "apple" :face 'all-the-icons-lsilver :v-adjust 0.0) " " type-text " - " device-name))
           (_ default))
       default)))

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* Fix some emulators not starting for new sdk debugger. #167
+
+## 1.22.0
+
 * Change `lsp-dart-dap-vm-additional-args` from string to vector type following debugger server changes. #136
 * Check for dart related file extension during hot-reload/restart when auto-save enabled. #134
 * Run flutter proccess if not already running during hot-restart/hot-reload. #143
