@@ -304,10 +304,11 @@ Call CALLBACK when the device is chosen and started successfully."
 
 (cl-defmethod dap-handle-event ((_event (eql dart.log)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."
-  (when-let (dap-session (dap--cur-session))
-    (-let* (((&hash "message") params))
-      (when-let (msg (lsp-dart-dap--parse-log-message message))
-        (dap--print-to-output-buffer dap-session msg)))))
+  (when (lsp-dart-dap-use-sdk-debugger-p)
+    (when-let (dap-session (dap--cur-session))
+      (-let* (((&hash "message") params))
+        (when-let (msg (lsp-dart-dap--parse-log-message message))
+          (dap--print-to-output-buffer dap-session msg))))))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.progressStart)) _session params)
   "Handle debugger uris EVENT for SESSION with PARAMS."

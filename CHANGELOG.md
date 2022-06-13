@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Fix some emulators not starting for new sdk debugger. #167
+* Fix duplicated logs on old debugger. #154
 
 ## 1.22.0
 
