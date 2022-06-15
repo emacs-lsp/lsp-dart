@@ -28,7 +28,7 @@
 (defun lsp-dart--run-command (command args)
   "Run COMMAND with ARGS from the project root."
   (lsp-dart-from-project-root
-   (compilation-start (format "%s %s" command args)
+   (compilation-start (format "%s %s" (string-join command " ") args)
                       t
                       (lambda (_) lsp-dart-commands-buffer-name))))
 

@@ -105,9 +105,15 @@
    (mock (getenv "FLUTTER_ROOT") => "/flutter/sdk")
    (should (equal (lsp-dart-get-flutter-sdk-dir) "/flutter/sdk"))))
 
-(ert-deftest lsp-dart-pub-command--test ()
+(ert-deftest lsp-dart-pub-command--old-version-test ()
   (lsp-dart-test-with-dart-sdk
-   (should (equal (lsp-dart-pub-command) (f-expand "bin/pub" dart-sdk)))))
+   (mock (lsp-dart-get-dart-version) => "2.15.5")
+   (should (equal (lsp-dart-pub-command) (list (f-expand "bin/pub" dart-sdk))))))
+
+(ert-deftest lsp-dart-pub-command--new-version-test ()
+  (lsp-dart-test-with-dart-sdk
+   (mock (lsp-dart-get-dart-version) => "2.16.0")
+   (should (equal (lsp-dart-pub-command) (list (f-expand "bin/dart" dart-sdk) "pub")))))
 
 (ert-deftest lsp-dart-pub-snapshot-command--test ()
   (lsp-dart-test-with-dart-sdk
@@ -119,7 +125,7 @@
 
 (ert-deftest lsp-dart-flutter-command--test ()
   (lsp-dart-test-with-flutter-sdk
-   (should (equal (lsp-dart-flutter-command) (f-expand (if (eq system-type 'windows-nt) "bin/flutter.bat" "bin/flutter") flutter-sdk)))))
+   (should (equal (lsp-dart-flutter-command) (list (f-expand (if (eq system-type 'windows-nt) "bin/flutter.bat" "bin/flutter") flutter-sdk))))))
 
 (ert-deftest lsp-dart-get-project-root--test ()
   (lsp-dart-test-from-dart-project

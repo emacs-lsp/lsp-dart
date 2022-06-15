@@ -53,8 +53,9 @@
 (defun lsp-dart-flutter-daemon-start ()
   "Start the Flutter daemon."
   (unless (lsp-dart-flutter-daemon--running-p)
-    (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name)))
-      (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (lsp-dart-flutter-command) nil "daemon")
+    (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name))
+          (command (lsp-dart-flutter-command)))
+      (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (car command) nil (append (cdr command) '("daemon")))
       (with-current-buffer buffer
         (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
           (lsp-dart-flutter-daemon-mode))
@@ -167,7 +168,7 @@ of this command."
   "Major mode for `lsp-dart-flutter-daemon-start`."
   (setq comint-prompt-read-only nil)
   (setq comint-process-echoes nil)
-  (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH"))))
+  (setenv "PATH" (concat (car (lsp-dart-flutter-command)) ":" (getenv "PATH"))))
 
 (provide 'lsp-dart-flutter-daemon)
 ;;; lsp-dart-flutter-daemon.el ends here

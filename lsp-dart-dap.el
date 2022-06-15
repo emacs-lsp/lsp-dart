@@ -261,7 +261,7 @@ Call CALLBACK when the device is chosen and started successfully."
                       (dap--put-if-absent :deviceId device-id)
                       (dap--put-if-absent :deviceName device-name)
                       (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
-                                                               `(,(lsp-dart-flutter-command) "debug_adapter" "-d" ,device-id)
+                                                               (append (lsp-dart-flutter-command) (list "debug_adapter" "-d" device-id))
                                                              lsp-dart-dap-flutter-debugger-program))
                       (dap--put-if-absent :flutterPlatform "default")
                       (dap--put-if-absent :toolArgs `("-d" ,device-id))
@@ -453,7 +453,7 @@ Run program PATH if not nil passing ARGS if not nil."
   (-> (list :name "Flutter Tests"
             :type "flutter"
             :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
-                                 `(,(lsp-dart-flutter-command) "debug_adapter" "--test")
+                                 (append (lsp-dart-flutter-command) '("debug_adapter" "--test"))
                                lsp-dart-dap-flutter-test-debugger-program)
             :program path
             :noDebug nil

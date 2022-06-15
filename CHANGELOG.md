@@ -6,6 +6,7 @@
 * Fix duplicated logs on old debugger. #154
 * Fix `lsp-dart-run` for dart only files. #168
 * Fix test tree when debugging dart/flutter tests.
+* Fix some dart commands not working after dart sdk 2.16.0.
 
 ## 1.22.0
 

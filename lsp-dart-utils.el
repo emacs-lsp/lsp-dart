@@ -135,16 +135,6 @@ FLUTTER_ROOT environment variable."
         file-truename)
       (getenv "FLUTTER_ROOT")))
 
-(defun lsp-dart-pub-command ()
-  "Return the pub executable path from Dart SDK path."
-  (if (eq system-type 'windows-nt)
-      (expand-file-name "bin/pub.bat" (lsp-dart-get-sdk-dir)))
-  (expand-file-name "bin/pub" (lsp-dart-get-sdk-dir)))
-
-(defun lsp-dart-pub-snapshot-command ()
-  "Return the pub snapshot executable path from Dart SDK path."
-  (expand-file-name "bin/snapshots/pub.dart.snapshot" (lsp-dart-get-sdk-dir)))
-
 (defun lsp-dart-dart-command ()
   "Return the dart executable from Dart SDK dir."
   (let* ((executable-path (if (eq system-type 'windows-nt) "bin/dart.bat" "bin/dart"))
@@ -153,6 +143,18 @@ FLUTTER_ROOT environment variable."
         command
       (lsp-dart-log "Dart command not found in path '%s'" command))))
 
+(defun lsp-dart-pub-command ()
+  "Return the pub executable path from Dart SDK path."
+  (if (lsp-dart-version-at-least-p "2.16.0")
+      (list (lsp-dart-dart-command) "pub")
+    (if (eq system-type 'windows-nt)
+        (list (expand-file-name "bin/pub.bat" (lsp-dart-get-sdk-dir)))
+      (list (expand-file-name "bin/pub" (lsp-dart-get-sdk-dir))))))
+
+(defun lsp-dart-pub-snapshot-command ()
+  "Return the pub snapshot executable path from Dart SDK path."
+  (expand-file-name "bin/snapshots/pub.dart.snapshot" (lsp-dart-get-sdk-dir)))
+
 (defun lsp-dart-flutter-command ()
   "Return the flutter executable from Flutter SDK dir."
   (let* ((executable-path (if (eq system-type 'windows-nt)
@@ -160,7 +162,7 @@ FLUTTER_ROOT environment variable."
                             (concat "bin/" lsp-dart-flutter-executable)))
          (command (expand-file-name executable-path (lsp-dart-get-flutter-sdk-dir))))
     (if (file-exists-p command)
-        command
+        (list command)
       (lsp-dart-log "Flutter command not found in path '%s'" command))))
 
 
@@ -229,7 +231,7 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-get-full-flutter-version ()
   "Retrieve the Flutter version from shell command."
-  (->> (concat (lsp-dart-flutter-command) " --version")
+  (->> (concat (string-join (lsp-dart-flutter-command) " ") " --version")
        shell-command-to-string))
 
 (defun lsp-dart-get-dart-version ()

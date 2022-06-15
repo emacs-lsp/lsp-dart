@@ -123,8 +123,8 @@ NOTIFICATION is the event notification.")
   "Handle testStart NOTIFICATION."
   (-let (((&TestStartNotification :time :test (&Test :id :name?)) notification))
     (lsp-dart-test--set-running-test id (make-lsp-dart-running-test :id id
-                                                    :name name?
-                                                    :start-time time))
+                                                                    :name name?
+                                                                    :start-time time))
     (run-hook-with-args 'lsp-dart-test-start-notification-hook notification)))
 
 (cl-defmethod lsp-dart-test--handle-notification ((_event (eql allSuites)) _notification)
@@ -186,7 +186,7 @@ NOTIFICATION is the event notification.")
       (setq-local default-directory (or project-rt default-directory))
       (unless (derived-mode-p 'lsp-dart-test-process-mode)
         (lsp-dart-test-process-mode))
-      (apply #'make-comint-in-buffer lsp-dart-test--process-buffer-name process-buffer command nil args))))
+      (apply #'make-comint-in-buffer lsp-dart-test--process-buffer-name process-buffer (car command) nil (append (cdr command) args)))))
 
 (defun lsp-dart-test--run (&optional test)
   "Run Dart/Flutter test command in a compilation buffer.
@@ -211,7 +211,7 @@ to run otherwise run all tests from file-name in TEST."
                                         (lsp-dart-assoc-if test-arg "--name")
                                         (lsp-dart-assoc-if test-arg test-arg)
                                         (append (list test-file)))))
-  (lsp-dart-test--run-process (lsp-dart-test--build-command) (lsp-dart-test--build-command-extra-args)))
+    (lsp-dart-test--run-process (lsp-dart-test--build-command) (lsp-dart-test--build-command-extra-args)))
   (run-hooks 'lsp-dart-test-run-started-hook))
 
 (defun lsp-dart-test--debug (test)
@@ -362,8 +362,8 @@ NAMES arg is optional and are the group of tests representing a test name."
   (setq comint-process-echoes nil)
   (setq process-connection-type nil)
   (if (lsp-dart-flutter-project-p)
-      (setenv "PATH" (concat (lsp-dart-flutter-command) ":" (getenv "PATH")))
-    (setenv "PATH" (concat (lsp-dart-pub-command) ":" (getenv "PATH"))))
+      (setenv "PATH" (concat (car (lsp-dart-flutter-command)) ":" (getenv "PATH")))
+    (setenv "PATH" (concat (car (lsp-dart-pub-command)) ":" (getenv "PATH"))))
   (setq-local comint-output-filter-functions #'lsp-dart-test--handle-process-response))
 
 (define-minor-mode lsp-dart-test-mode
