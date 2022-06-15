@@ -4,6 +4,8 @@
 
 * Fix some emulators not starting for new sdk debugger. #167
 * Fix duplicated logs on old debugger. #154
+* Fix `lsp-dart-run` for dart only files. #168
+* Fix test tree when debugging dart/flutter tests.
 
 ## 1.22.0
 

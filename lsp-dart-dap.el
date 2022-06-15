@@ -194,6 +194,9 @@ Required to support 'Inspect Widget'."
       lsp-dart-dap--base-debugger-args
       (dap--put-if-absent :type "dart")
       (dap--put-if-absent :name "Dart")
+      (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
+                                               `(,(lsp-dart-dart-command) "debug_adapter")
+                                             lsp-dart-dap-dart-debugger-program))
       (dap--put-if-absent :program (or (lsp-dart-get-project-entrypoint)
                                        (buffer-file-name)))))
 
@@ -343,6 +346,11 @@ Call CALLBACK when the device is chosen and started successfully."
   (-let (((&hash "launched" "url") params))
     (unless launched
       (browse-url url))))
+
+(declare-function lsp-dart-test--handle-notification "lsp-dart-test-support")
+(cl-defmethod dap-handle-event ((_event (eql dart.testNotification)) _session params)
+  "Handle dart test notifications where PARAMS is the test notification."
+  (lsp-dart-test--handle-notification (intern (lsp-get params :type)) params))
 
 (cl-defmethod dap-handle-event ((_event (eql dart.hotRestartRequest)) _session _params)
   "Ignore this event.")
