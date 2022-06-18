@@ -55,7 +55,7 @@
   (unless (lsp-dart-flutter-daemon--running-p)
     (let ((buffer (get-buffer-create lsp-dart-flutter-daemon-buffer-name))
           (command (lsp-dart-flutter-command)))
-      (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (car command) nil (append (cdr command) '("daemon")))
+      (make-comint-in-buffer lsp-dart-flutter-daemon-name buffer (car command) nil (string-join (append (cdr command) '("daemon")) " "))
       (with-current-buffer buffer
         (unless (derived-mode-p 'lsp-dart-flutter-daemon-mode)
           (lsp-dart-flutter-daemon-mode))

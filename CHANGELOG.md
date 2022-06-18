@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.22.2
+
+* Fix `(wront-type-argument stringp ("daemon"))` on last version. #171
+
+## 1.22.1
+
 * Fix some emulators not starting for new sdk debugger. #167
 * Fix duplicated logs on old debugger. #154
 * Fix `lsp-dart-run` for dart only files. #168
