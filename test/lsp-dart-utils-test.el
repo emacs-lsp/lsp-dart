@@ -25,8 +25,8 @@
 (ert-deftest lsp-dart--flutter-repo-p--true-test ()
   (with-mock
     (mock (locate-dominating-file * "flutter") => "/sdk/bin")
-    (mock (file-regular-p (f-join (f-root) "/sdk/bin/flutter")) => t)
-    (mock (file-directory-p (f-join (f-root) "/sdk/bin/cache/dart-sdk")) => t)
+    (mock (file-regular-p (f-join (f-root) "sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "sdk/bin/cache/dart-sdk")) => t)
     (should (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
@@ -38,8 +38,8 @@
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
   (with-mock
     (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
-    (mock (file-regular-p (f-join (f-root) "/not-sdk/bin/flutter")) => t)
-    (mock (file-directory-p (f-join (f-root) "/not-sdk/bin/cache/dart-sdk")) => nil)
+    (mock (file-regular-p (f-join (f-root) "not-sdk/bin/flutter")) => t)
+    (mock (file-directory-p (f-join (f-root) "not-sdk/bin/cache/dart-sdk")) => nil)
     (should-not (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart-flutter-project-p--flutter-repo-test ()
@@ -73,7 +73,7 @@
 
 (ert-deftest lsp-dart-get-sdk-dir--flutter-project-test ()
   (let ((dart-sdk (if (eq system-type 'windows-nt)
-                      (f-join (f-root) "/flutter-sdk/bin/cache/dart-sdk/")
+                      (f-join (f-root) "flutter-sdk/bin/cache/dart-sdk/")
                     "/flutter-sdk/bin/cache/dart-sdk/")))
     (lsp-dart-test-from-flutter-project
      (mock (lsp-dart-flutter-project-p) => t)
@@ -108,12 +108,19 @@
 (ert-deftest lsp-dart-pub-command--old-version-test ()
   (lsp-dart-test-with-dart-sdk
    (mock (lsp-dart-get-dart-version) => "2.15.5")
-   (should (equal (lsp-dart-pub-command) (list (f-expand "bin/pub" dart-sdk))))))
+   (should (equal (lsp-dart-pub-command) (list (f-expand (if (eq system-type 'windows-nt)
+                                                             "bin/pub.exe"
+                                                           "bin/pub")
+                                                         dart-sdk))))))
 
 (ert-deftest lsp-dart-pub-command--new-version-test ()
   (lsp-dart-test-with-dart-sdk
    (mock (lsp-dart-get-dart-version) => "2.16.0")
-   (should (equal (lsp-dart-pub-command) (list (f-expand "bin/dart" dart-sdk) "pub")))))
+   (should (equal (lsp-dart-pub-command) (list (f-expand (if (eq system-type 'windows-nt)
+                                                             "bin/dart.bat"
+                                                           "bin/dart")
+                                                         dart-sdk)
+                                               "pub")))))
 
 (ert-deftest lsp-dart-pub-snapshot-command--test ()
   (lsp-dart-test-with-dart-sdk
