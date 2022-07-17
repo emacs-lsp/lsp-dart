@@ -180,10 +180,9 @@ NOTIFICATION is the event notification.")
 (defun lsp-dart-test--run-process (command &optional args)
   "Spawn COMMAND with ARGS on a separated buffer."
   (lsp-dart-test--clean-process-buffer)
-  (let ((process-buffer (get-buffer-create lsp-dart-test--process-buffer-name))
-        (project-rt (lsp-dart-get-project-root)))
+  (let ((process-buffer (get-buffer-create lsp-dart-test--process-buffer-name)))
     (with-current-buffer process-buffer
-      (setq-local default-directory (or project-rt default-directory))
+      (setq-local default-directory (or (lsp-dart-get-project-root) default-directory))
       (unless (derived-mode-p 'lsp-dart-test-process-mode)
         (lsp-dart-test-process-mode))
       (apply #'make-comint-in-buffer lsp-dart-test--process-buffer-name process-buffer (car command) nil (append (cdr command) args)))))

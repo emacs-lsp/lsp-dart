@@ -174,9 +174,10 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-get-project-root ()
   "Return the dart or flutter project root."
-  (-some-> default-directory
-    (locate-dominating-file "pubspec.yaml")
-    file-truename))
+  (or (lsp-workspace-root)
+      (-some-> default-directory
+        (locate-dominating-file "pubspec.yaml")
+        file-truename)))
 
 (defun lsp-dart-get-project-entrypoint ()
   "Return the dart or flutter project entrypoint."

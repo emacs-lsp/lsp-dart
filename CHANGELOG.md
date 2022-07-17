@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Fix `lsp-dart-run` when default-directory is not the project root. #173
+
 ## 1.22.2
 
 * Fix `(wront-type-argument stringp ("daemon"))` on last version. #171
