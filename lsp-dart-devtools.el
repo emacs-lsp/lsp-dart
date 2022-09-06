@@ -38,7 +38,6 @@
   :type 'string)
 
 (defconst lsp-dart-devtools--buffer-name "*LSP Dart - DevTools*")
-(defconst lsp-dart-devtools--pub-list-packages-buffer-name "*LSP Dart - Pub list packages*")
 
 (defun lsp-dart-devtools-log (msg &rest args)
   "Custom logger for MSG and ARGS."
@@ -75,15 +74,9 @@ If URI is not found on buffer, schedule re-check."
 
 (defun lsp-dart-devtools--activated-p ()
   "Return non-nil if devtools is activated otherwise nil."
-  (lsp-dart-devtools--clean-buffer lsp-dart-devtools--pub-list-packages-buffer-name)
-  (let* ((pub (lsp-dart-pub-command))
-         (_proc (call-process pub
-                              nil
-                              lsp-dart-devtools--pub-list-packages-buffer-name
-                              nil
-                              "global" "list"))
-         (content (lsp-dart-devtools--buffer-whole-string lsp-dart-devtools--pub-list-packages-buffer-name)))
-    (string-match-p "devtools \\([0-9]\\.[0-9]\\.[0-9]\\)" content)))
+  (let ((output (shell-command-to-string
+                 (mapconcat 'identity `(,@(lsp-dart-pub-command) "global" "list") " "))))
+    (string-match-p "devtools \\([0-9]\\.[0-9]\\.[0-9]\\)" output)))
 
 (defun lsp-dart-devtools--activate (callback)
   "Activate Dart Devtools via pub then call CALLBACK."
@@ -95,7 +88,7 @@ If URI is not found on buffer, schedule re-check."
        (funcall callback))
      (lambda (_) (lsp-dart-devtools-log "Could not activate DevTools. \
 Try to activate manually running 'pub global activate devtools'"))
-     pub "global" "activate" "devtools")))
+     (mapconcat 'identity `(,@pub "global" "activate" "devtools") " "))))
 
 (defun lsp-dart-devtools--check-activated (callback)
   "Check if devtools is activated otherwise prompt for activate it.
@@ -120,13 +113,13 @@ If it is already activated or after activated successfully, call CALLBACK."
    (lambda ()
      (if-let ((uri (lsp-workspace-get-metadata "dart-debug-devtools-uri")))
       (funcall callback uri)
-    (let* ((pub (lsp-dart-pub-command))
-           (proc (start-process "Start DevTools"
-                                lsp-dart-devtools--buffer-name
-                                pub "global" "run" "devtools"
-                                "--machine"
-                                "--enable-notifications"
-                                "--try-ports" "10")))
+      (let* ((pub (lsp-dart-pub-command))
+             (proc (apply #'start-process "Start DevTools"
+                          lsp-dart-devtools--buffer-name
+                          `(,@pub "global" "run" "devtools"
+                                  "--machine"
+                                  "--enable-notifications"
+                                  "--try-ports" "10"))))
       (add-hook 'dap-terminated-hook (-partial #'lsp-dart-devtools--kill-proc proc))
       (when lsp-dart-devtools--check-uri-timer
         (cancel-timer lsp-dart-devtools--check-uri-timer))
