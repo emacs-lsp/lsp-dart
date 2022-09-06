@@ -150,6 +150,19 @@ matching names.
 
 You can also open the [Dart DevTools](https://dart.dev/tools/dart-devtools) on the current debug session with `lsp-dart-open-devtools`.
 
+It's also possible to spawn the devtools inside an
+[XWidgets](https://www.emacswiki.org/emacs/EmacsXWidgets) frame by enabling
+`lsp-dart-devtools-prefer-xwidgets` and ensuring that your emacs has proper
+support for xwidgets frames.
+
+NVIDIA users may have to enable the below environment variables:
+
+``` shell
+WEBKIT_DISABLE_COMPOSITING_MODE=1
+WEBKIT_FORCE_SANDBOX=0
+```
+
+
 ### Commands
 
 lsp-dart supports running Flutter and Dart commands as following:
