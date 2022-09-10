@@ -37,13 +37,6 @@
   :group 'lsp-dart
   :type 'string)
 
-(defcustom lsp-dart-devtools-prefer-xwidgets nil
-  "If t and xwidgets support exists, open the devtools in an xwidget-webkit
-  view.
-NOTE XWidgets are still quite buggy so only enable this if you know you have support"
-  :group 'lsp-dart
-  :type 'boolean)
-
 (defconst lsp-dart-devtools--buffer-name "*LSP Dart - DevTools*")
 
 (defun lsp-dart-devtools-log (msg &rest args)
@@ -140,12 +133,7 @@ If it is already activated or after activated successfully, call CALLBACK."
                                            (hide ,lsp-dart-devtools-hide-options)
                                            (theme ,lsp-dart-devtools-theme))))
          (url (concat "http://" uri "?" params)))
-    (if (and lsp-dart-devtools-prefer-xwidgets
-             (featurep 'xwidget-internal))
-        (progn
-          (select-window (split-window (selected-window) nil 'right))
-          (xwidget-webkit-browse-url url))
-      (browse-url url))))
+    (browse-url url)))
 
 
 ;;; Public interface
