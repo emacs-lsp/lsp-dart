@@ -114,8 +114,7 @@ If unspecified, diagnostics will not be generated."
   "Generate LSP startup command."
   (or lsp-dart-server-command
       (list (lsp-dart-dart-command)
-            (expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
-            "--lsp"
+            "language-server"
             "--client-id emacs.lsp-dart"
             (format "--client-version %s" lsp-dart-version-string))))
 
