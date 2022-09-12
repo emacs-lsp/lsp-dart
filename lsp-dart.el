@@ -110,11 +110,25 @@ If unspecified, diagnostics will not be generated."
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 
+(defun lsp-dart--dart-capabiliities (&optional sdk-root)
+  "Given an SDK-ROOT, return capabilities for that dart version.
+Default to `lsp-dart-get-sdk-dir' if no root is passed.
+Returns nil if an invalid SDK-ROOT has been passed."
+  (when-let* ((root (or sdk-root lsp-dart-sdk-dir (lsp-dart-get-sdk-dir)))
+              (dart-version (string-trim
+                             (with-temp-buffer
+                               (insert-file-contents (expand-file-name "version" root))
+                               (buffer-string)))))
+    `((canUseLanguageServer . ,(version<= "3.14.4" dart-version)))))
+
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
       (list (lsp-dart-dart-command)
-            "language-server"
+            (if (alist-get 'canUseLanguageServer (lsp-dart--dart-capabiliities))
+                "language-server"
+              (expand-file-name "bin/snapshots/analysis_server.dart.snapshot" (lsp-dart-get-sdk-dir))
+              "--lsp")
             "--client-id emacs.lsp-dart"
             (format "--client-version %s" lsp-dart-version-string))))
 
