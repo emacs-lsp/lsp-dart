@@ -90,10 +90,11 @@ Used by features that needs to know project entrypoint like DAP support."
       (eq lsp-dart--project-type-cache 'flutter)
     (let ((flutter-project? (or (-when-let (pubspec-path (-some->> (lsp-dart-get-project-root)
                                                            (expand-file-name "pubspec.yaml")))
-                                  (with-temp-buffer
-                                    (insert-file-contents (-some->> (lsp-dart-get-project-root) (expand-file-name "pubspec.yaml")))
-                                    (goto-char (point-min))
-                                    (re-search-forward "sdk\s*:\s*flutter" nil t)))
+                                  (when (file-exists-p pubspec-path)
+                                    (with-temp-buffer
+                                      (insert-file-contents (-some->> (lsp-dart-get-project-root) (expand-file-name "pubspec.yaml")))
+                                      (goto-char (point-min))
+                                      (re-search-forward "sdk\s*:\s*flutter" nil t))))
                                 (lsp-dart--flutter-repo-p))))
       (lsp-dart--set-project-type-cache flutter-project?)
       flutter-project?)))
