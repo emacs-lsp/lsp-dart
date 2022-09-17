@@ -145,7 +145,8 @@ FLUTTER_ROOT environment variable."
   (let* ((command (lsp-dart--executable-find "dart" (lsp-dart-get-sdk-dir))))
     (if command
         command
-      (lsp-dart-log "Dart command not found in path '%s'" command))))
+      (lsp-dart-log "Dart command not found in path '%s'" command)
+      nil)))
 
 (defun lsp-dart-pub-command ()
   "Return the pub executable path from Dart SDK path."
