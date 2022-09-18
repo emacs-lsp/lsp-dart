@@ -32,7 +32,7 @@
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
   (with-mock
     (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
-    (mock (file-regular-p "/sdk/bin/flutter") => nil)
+    (stub file-regular-p => nil)
     (should-not (lsp-dart--flutter-repo-p))))
 
 (ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()

@@ -110,14 +110,20 @@ If unspecified, diagnostics will not be generated."
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 
+(defun lsp-dart--dart-capabiliities ()
+  "Return capabilities for current dart version."
+  `((canUseLanguageServer . ,(lsp-dart-version-at-least-p "2.14.4"))))
+
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or lsp-dart-server-command
-      (list (lsp-dart-dart-command)
-            (expand-file-name (f-join (lsp-dart-get-sdk-dir) "bin/snapshots/analysis_server.dart.snapshot"))
-            "--lsp"
-            "--client-id emacs.lsp-dart"
-            (format "--client-version %s" lsp-dart-version-string))))
+      `(,(lsp-dart-dart-command)
+        ,@(if (alist-get 'canUseLanguageServer (lsp-dart--dart-capabiliities))
+              (list "language-server")
+            (list (expand-file-name "bin/snapshots/analysis_server.dart.snapshot" (lsp-dart-get-sdk-dir))
+                  "--lsp"))
+        "--client-id emacs.lsp-dart"
+        ,(format "--client-version %s" lsp-dart-version-string))))
 
 (defun lsp-dart--activate-features ()
   "Activate lsp-dart features if enabled."

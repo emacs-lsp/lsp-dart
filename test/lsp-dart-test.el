@@ -54,14 +54,26 @@
 
 (ert-deftest lsp-dart--server-command--default-test ()
   (with-mock
-    (stub lsp-dart-dart-command => "/sdk/bin/dart")
-    (stub lsp-dart-get-sdk-dir => "/sdk")
-    (should (equal (lsp-dart--server-command)
-                   `("/sdk/bin/dart"
-                     ,(f-expand "/sdk/bin/snapshots/analysis_server.dart.snapshot" (f-root))
-                     "--lsp"
-                     "--client-id emacs.lsp-dart"
-                     ,(concat "--client-version " lsp-dart-version-string))))))
+   (stub lsp-dart-dart-command => "/sdk/bin/dart")
+   (stub lsp-dart-get-sdk-dir => "/sdk")
+   (stub lsp-dart-get-dart-version => "2.14.1")
+   (should (equal (lsp-dart--server-command)
+                  `("/sdk/bin/dart"
+                    ,(f-expand "/sdk/bin/snapshots/analysis_server.dart.snapshot" (f-root))
+                    "--lsp"
+                    "--client-id emacs.lsp-dart"
+                    ,(concat "--client-version " lsp-dart-version-string))))))
+
+(ert-deftest lsp-dart--server-command--lsp-test ()
+  (with-mock
+   (stub lsp-dart-dart-command => "/sdk/bin/dart")
+   (stub lsp-dart-get-sdk-dir => "/sdk")
+   (stub lsp-dart-get-dart-version => "2.14.4")
+   (should (equal (lsp-dart--server-command)
+                  `("/sdk/bin/dart"
+                    "language-server"
+                    "--client-id emacs.lsp-dart"
+                    ,(concat "--client-version " lsp-dart-version-string))))))
 
 (ert-deftest lsp-dart-version--test ()
   (with-mock
