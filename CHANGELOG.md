@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Fix `lsp-dart-run` when default-directory is not the project root. #173
+* Add `lsp-dart-project-root-discovery-strategies` variable to search project root with different startegies and orders.
 
 ## 1.22.2
 

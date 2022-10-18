@@ -60,6 +60,15 @@ Used by features that needs to know project entrypoint like DAP support."
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-dart-project-root-discovery-strategies '(lsp-root closest-pubspec)
+  "Strategies to consider to find project-root for most lsp-dart commands.
+Order is important."
+  :group 'lsp-dart
+  :type '(repeat
+          (choice
+           (const :tag "lsp-mode workspace root" lsp-root)
+           (const :tag "Searches since the the current buffer until `/` for a pubspec file" closest-pubspec))))
+
 
 ;; Internal
 
@@ -176,10 +185,14 @@ FLUTTER_ROOT environment variable."
 
 (defun lsp-dart-get-project-root ()
   "Return the dart or flutter project root."
-  (or (lsp-workspace-root)
-      (-some-> default-directory
-        (locate-dominating-file "pubspec.yaml")
-        file-truename)))
+  (-some
+   (lambda (strategy)
+     (cl-case strategy
+       ('lsp-root (lsp-workspace-root))
+       ('closest-pubspec (-some-> default-directory
+                           (locate-dominating-file "pubspec.yaml")
+                           file-truename))))
+   lsp-dart-project-root-discovery-strategies))
 
 (defun lsp-dart-get-project-entrypoint ()
   "Return the dart or flutter project entrypoint."
