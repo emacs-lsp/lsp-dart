@@ -1,4 +1,4 @@
-(package "lsp-dart" "1.22.2" "Dart support lsp-mode")
+(package "lsp-dart" "1.23.0" "Dart support lsp-mode")
 
 (package-file "lsp-dart.el")
 
