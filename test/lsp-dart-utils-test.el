@@ -22,22 +22,22 @@
 (require 'lsp-dart-utils)
 (require 'el-mock)
 
-(ert-deftest lsp-dart--flutter-repo-p--true-test ()
+(ert-deftest lsp-dart--flutter-repo-p--on-flutter-project-root-test ()
   (with-mock
-    (mock (locate-dominating-file * "flutter") => "/sdk/bin")
+    (mock (locate-dominating-file * (f-join "bin" "flutter")) => (f-join (f-root) "sdk"))
     (mock (file-regular-p (f-join (f-root) "sdk/bin/flutter")) => t)
     (mock (file-directory-p (f-join (f-root) "sdk/bin/cache/dart-sdk")) => t)
     (should (lsp-dart--flutter-repo-p))))
 
-(ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
+(ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-1-test ()
   (with-mock
-    (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
+    (mock (locate-dominating-file * (f-join "bin" "flutter")) => "/not-sdk")
     (stub file-regular-p => nil)
     (should-not (lsp-dart--flutter-repo-p))))
 
-(ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-test ()
+(ert-deftest lsp-dart--flutter-repo-p--not-flutter-executable-2-test ()
   (with-mock
-    (mock (locate-dominating-file * "flutter") => "/not-sdk/bin")
+    (mock (locate-dominating-file * (f-join "bin" "flutter")) => "/not-sdk")
     (mock (file-regular-p (f-join (f-root) "not-sdk/bin/flutter")) => t)
     (mock (file-directory-p (f-join (f-root) "not-sdk/bin/cache/dart-sdk")) => nil)
     (should-not (lsp-dart--flutter-repo-p))))

@@ -106,7 +106,8 @@ If unspecified, diagnostics will not be generated."
   (let ((sdk-root (if (lsp-dart-flutter-project-p)
                       (lsp-dart-get-flutter-sdk-dir)
                     (lsp-dart-get-sdk-dir))))
-    (if (string-prefix-p sdk-root (buffer-file-name))
+    (if (or (string-prefix-p sdk-root (buffer-file-name))
+            (lsp-dart--flutter-repo-p))
         (append (list (file-name-directory (buffer-file-name))) lsp-dart-extra-library-directories)
       lsp-dart-extra-library-directories)))
 

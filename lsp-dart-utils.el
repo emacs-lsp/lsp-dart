@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 'lsp-mode)
 
 (defcustom lsp-dart-sdk-dir nil
@@ -87,11 +88,12 @@ Order is important."
 
 (defun lsp-dart--flutter-repo-p ()
   "Return non-nil if buffer is the flutter repository."
-  (if-let (bin-path (locate-dominating-file default-directory lsp-dart-flutter-executable))
-      (and (file-regular-p (expand-file-name lsp-dart-flutter-executable bin-path))
-           (->> bin-path
-                (expand-file-name "cache/dart-sdk")
-                file-directory-p))))
+  (let ((bin-command (f-join "bin" lsp-dart-flutter-executable)))
+    (when-let (root-path (locate-dominating-file default-directory bin-command))
+      (and (file-regular-p (expand-file-name bin-command root-path))
+           (->> root-path
+                (expand-file-name (f-join "bin" "cache" "dart-sdk"))
+                file-directory-p)))))
 
 (defun lsp-dart-flutter-project-p ()
   "Return non-nil if buffer is a flutter project."
@@ -119,12 +121,12 @@ Order is important."
     list))
 
 (defun lsp-dart-flutter-snap-install-p ()
-  ;; Detecting whether this is a Linux system with a Snap style install
+  "Detecting whether this is a Linux system with a Snap style install."
   (and (string= system-type "gnu/linux")
        (let ((first-dir (-some-> (executable-find lsp-dart-flutter-executable) f-split cdr car)))
-	 (and first-dir
-	      (string= first-dir "snap")
-	      (file-exists-p "~/snap/flutter/common/flutter/bin/flutter")))))
+         (and first-dir
+              (string= first-dir "snap")
+              (file-exists-p "~/snap/flutter/common/flutter/bin/flutter")))))
 
 
 ;; SDKs
