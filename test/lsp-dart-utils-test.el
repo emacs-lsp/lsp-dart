@@ -66,6 +66,7 @@
   (let ((dart-command (lsp-dart-test-command-fixture)))
     (lsp-dart-test-from-dart-project
      (mock (executable-find "dart") => dart-command)
+     (mock (lsp-dart-flutter-snap-install-p) => nil)
      (should (equal (lsp-dart-get-sdk-dir) (concat (-> dart-command
                                                        f-parent
                                                        f-parent)
@@ -81,14 +82,27 @@
      (mock (file-exists-p dart-sdk) => t)
      (should (equal (lsp-dart-get-sdk-dir) dart-sdk)))))
 
+(ert-deftest lsp-dart-get-sdk-dir--snap-install-test ()
+  (lsp-dart-test-from-dart-project
+   (mock (lsp-dart-flutter-snap-install-p) => t)
+   (should (equal (lsp-dart-get-sdk-dir) "~/snap/flutter/common/flutter/bin/cache/dart-sdk"))))
+
 (ert-deftest lsp-dart-get-sdk-dir--project-without-dart-on-path-test ()
   (lsp-dart-test-from-dart-project
    (mock (executable-find "dart") => nil)
+   (mock (lsp-dart-flutter-snap-install-p) => nil)
    (should (equal (lsp-dart-get-sdk-dir) nil))))
 
 (ert-deftest lsp-dart-get-flutter-sdk-dir--custom-dir-test ()
   (let ((lsp-dart-flutter-sdk-dir "/some/sdk"))
     (should (equal (lsp-dart-get-flutter-sdk-dir) "/some/sdk"))))
+
+(ert-deftest lsp-dart-get-flutter-sdk-dir--snap-install-test ()
+  (lsp-dart-test-from-flutter-project
+   (let ((system-type "gnu/linux"))
+     (mock (executable-find lsp-dart-flutter-executable) => "/snap/bin/flutter")
+     (mock (file-exists-p "~/snap/flutter/common/flutter/bin/flutter") => t)
+     (should (equal (lsp-dart-get-flutter-sdk-dir) "~/snap/flutter/common/flutter")))))
 
 (ert-deftest lsp-dart-get-flutter-sdk-dir--with-flutter-on-path-test ()
   (let ((flutter-command (lsp-dart-test-flutter-command-fixture)))

@@ -118,6 +118,14 @@ Order is important."
       (append list (list value))
     list))
 
+(defun lsp-dart-flutter-snap-install-p ()
+  ;; Detecting whether this is a Linux system with a Snap style install
+  (and (string= system-type "gnu/linux")
+       (let ((first-dir (-some-> (executable-find lsp-dart-flutter-executable) f-split cdr car)))
+	 (and first-dir
+	      (string= first-dir "snap")
+	      (file-exists-p "~/snap/flutter/common/flutter/bin/flutter")))))
+
 
 ;; SDKs
 
@@ -132,6 +140,7 @@ is used in preference."
           (if (file-exists-p dart-sdk)
               dart-sdk
             (error "Dart SDK not found inside flutter cache dir %s.  Consider setting `lsp-dart-sdk-dir` variable" dart-sdk))))
+      (and (lsp-dart-flutter-snap-install-p) "~/snap/flutter/common/flutter/bin/cache/dart-sdk")
       (-some-> (executable-find "dart")
         file-truename
         (locate-dominating-file "bin")
@@ -143,6 +152,7 @@ Check for `lsp-dart-flutter-sdk-dir` then
 flutter executable on PATH then
 FLUTTER_ROOT environment variable."
   (or lsp-dart-flutter-sdk-dir
+      (and (lsp-dart-flutter-snap-install-p) "~/snap/flutter/common/flutter")
       (-some-> (executable-find lsp-dart-flutter-executable)
         file-truename
         (locate-dominating-file "bin")
