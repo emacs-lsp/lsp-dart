@@ -160,10 +160,11 @@ of this command."
   (jsonrpc-async-request lsp-dart-flutter-daemon--conn
                          method params
                          :success-fn (lambda (result)
-                                       (funcall callback
-                                                (if (vectorp result)
-                                                    (-map #'lsp-dart-flutter-daemon--plist->hash-table result)
-                                                  (lsp-dart-flutter-daemon--plist->hash-table result))))))
+                                       (when result
+                                         (funcall callback
+                                                  (if (vectorp result)
+                                                      (-map #'lsp-dart-flutter-daemon--plist->hash-table result)
+                                                    (lsp-dart-flutter-daemon--plist->hash-table result)))))))
 
 (defun lsp-dart-flutter-daemon--device-removed (device)
   "Remove DEVICE from the devices list."
