@@ -14,6 +14,7 @@
 (depends-on "f")
 (depends-on "dash")
 (depends-on "dart-mode")
+(depends-on "jsonrpc")
 
 (development
  (depends-on "el-mock")
