@@ -144,7 +144,7 @@
                  :process (lambda ()
                             (make-process
                              :name lsp-dart-flutter-daemon-name
-                             :command `(,(lsp-dart-flutter-command) "daemon")
+                             :command `(,@(lsp-dart-flutter-command) "daemon")
                              :coding 'utf-8-emacs-unix
                              :connection-type 'pipe
                              :buffer lsp-dart-flutter-daemon-buffer-name
