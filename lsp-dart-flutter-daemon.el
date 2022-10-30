@@ -87,8 +87,7 @@
         (when (string-prefix-p "[" (string-trim string))
           (--> string
                string-trim
-               (replace-regexp-in-string (regexp-quote "\n") "" it nil 'literal)
-               (replace-regexp-in-string (regexp-quote "][") "," it nil 'literal)
+               (replace-regexp-in-string (regexp-quote "},{") "}\n{" it nil 'literal)
                (split-string it "\n")
                (-map (lambda (response)
                        (let ((hash-table (json-parse-string (if should-trim (substring response 1 -1) response)
