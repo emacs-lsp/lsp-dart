@@ -45,7 +45,8 @@
 (cl-defmethod jsonrpc-connection-send ((conn lsp-dart-flutter-daemon-connection)
                                        &rest args
                                        &key method params &allow-other-keys)
-  "Implement send method to format JSON properly."
+  "Implement send method to format JSON properly.
+CONN ARGS METHOD PARAMS"
   (when method
     (plist-put args :method
                (cond ((keywordp method) (substring (symbol-name method) 1))
@@ -60,21 +61,33 @@
      json)))
 
 (cl-defmethod initialize-instance ((conn lsp-dart-flutter-daemon-connection) _slots)
+  "CONN."
   (cl-call-next-method)
   (let ((proc (jsonrpc--process conn)))
     (when proc
       (set-process-filter proc #'lsp-dart-flutter-daemon--process-filter))))
 
-(defun lsp-dart-flutter-daemon--json-read-string (s)
-  (if (fboundp 'json-parse-string)
-      (json-parse-string s
-                         :object-type 'plist
-                         :false-object nil
-                         :null-object nil)
-    (let ((json-object-type 'plist)
-          (json-false :json-false)
-          (json-null nil))
-      (json-read-from-string s))))
+(defun lsp-dart-flutter-daemon--plist->hash-table (plist &optional test)
+  "Create a hash table initialized from PLIST.
+Optionally use TEST to compare the hash keys."
+  (let ((ht (ht-create test)))
+    (dolist (pair (nreverse (-partition 2 plist)) ht)
+      (let ((key (lsp-keyword->string (car pair)))
+            (value (cadr pair)))
+        (ht-set! ht key value)))))
+
+(defun lsp-dart-flutter-daemon--hash-table->plist (h)
+  "Convert hash-table H to plist recurevely."
+  (if (hash-table-p h)
+      (apply 'append
+             (ht-map (lambda (key value)
+                       (list (intern (concat ":" key))
+                             (if (or (vectorp value)
+                                     (listp value))
+                                 (-map #'lsp-dart-flutter-daemon--hash-table->plist value)
+                               (lsp-dart-flutter-daemon--hash-table->plist value))))
+                     h))
+    h))
 
 ;; TODO: Greatly reduce this complexity
 (defun lsp-dart-flutter-daemon--process-filter (proc string)
@@ -90,32 +103,32 @@
                (replace-regexp-in-string (regexp-quote "},{") "}\n{" it nil 'literal)
                (split-string it "\n")
                (-map (lambda (response)
-                       (let ((hash-table (json-parse-string (if should-trim (substring response 1 -1) response)
-                                                            :object-type 'hash-table
-                                                            :false-object :json-false
-                                                            :null-object nil))
-                             (json-message (condition-case-unless-debug oops
-                                               (lsp-dart-flutter-daemon--json-read-string (if should-trim
-                                                                                              (substring response 1 -1)
-                                                                                            response))
+                       (let ((json-message (condition-case-unless-debug oops
+                                               (lsp--read-json (if should-trim
+                                                                   (substring response 1 -1)
+                                                                 response))
                                              (error
                                               (jsonrpc--warn "Invalid JSON: %S %s"
                                                              oops (buffer-string))
                                               nil)))
                              (conn (process-get proc 'jsonrpc-connection)))
                          (when json-message
-                           (if (plist-get json-message :error)
-                               (lsp-dart-flutter-daemon--log "ERROR" (plist-get json-message :error) (plist-get json-message :trace)))
-                           (if (plist-get json-message :event)
-                               (pcase (plist-get json-message :event)
-                                 ("device.removed" (lsp-dart-flutter-daemon--device-removed (gethash "params" hash-table)))
-                                 ("device.added" (lsp-dart-flutter-daemon--device-added (gethash "params" hash-table)))
+                           (if (lsp-get json-message :error)
+                               (lsp-dart-flutter-daemon--log "ERROR" (lsp-get json-message :error) (lsp-get json-message :trace)))
+                           (if (lsp-get json-message :event)
+                               (pcase (lsp-get json-message :event)
+                                 ("device.removed" (lsp-dart-flutter-daemon--device-removed (lsp-get json-message :params)))
+                                 ("device.added" (lsp-dart-flutter-daemon--device-added (lsp-get json-message :params)))
                                  ("daemon.connected" (lsp-dart-flutter-daemon--send "device.enable"))
-                                 ("daemon.logMessage" (lsp-dart-flutter-daemon--log (plist-get (plist-get json-message :params) :level) (plist-get json-message :params))))
+                                 ("daemon.logMessage" (lsp-dart-flutter-daemon--log (lsp-get (lsp-get json-message :params) :level)
+                                                                                    (lsp-get json-message :params))))
                              (with-temp-buffer
-                               (jsonrpc-connection-receive conn
-                                                           json-message))))))
+                               (jsonrpc-connection-receive conn (if lsp-use-plists
+                                                                    json-message
+                                                                  (lsp-dart-flutter-daemon--hash-table->plist json-message))))))))
                      it)))))))
+
+;; (lsp-dart-flutter-daemon-get-devices #'identity)
 
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
@@ -149,6 +162,19 @@
                                       (format "*%s stderr*" lsp-dart-flutter-daemon-name)))))))
       (setq lsp-dart-flutter-daemon--conn conn))))
 
+(defun lsp-dart-flutter-daemon-->safe-object-type (obj)
+  "Convert OBJ to the object type following lsp-use-plists variable.
+OBJ should be a hash-table or plist."
+  (if lsp-use-plists
+      (if (or (vectorp obj)
+            (listp obj))
+          (-map #'lsp-dart-flutter-daemon--hash-table->plist obj)
+        (lsp-dart-flutter-daemon--hash-table->plist obj))
+    (if (or (vectorp obj)
+            (listp obj))
+          (-map #'lsp-dart-flutter-daemon--plist->hash-table obj)
+        (lsp-dart-flutter-daemon--plist->hash-table obj))))
+
 (defun lsp-dart-flutter-daemon--send (method &optional params callback)
   "Build and send command with METHOD with optional PARAMS.
 Call CALLBACK if provided when the receive a response with the built id
@@ -156,40 +182,32 @@ of this command."
   (unless (lsp-dart-flutter-daemon--running-p)
     (lsp-dart-flutter-daemon-start))
   (jsonrpc-async-request lsp-dart-flutter-daemon--conn
-                         method params
+                         method (when params
+                                  (if lsp-use-plists
+                                      params
+                                    (lsp-dart-flutter-daemon--hash-table->plist params)))
                          :success-fn (lambda (result)
                                        (when result
                                          (funcall callback
-                                                  (if (vectorp result)
-                                                      (-map #'lsp-dart-flutter-daemon--plist->hash-table result)
-                                                    (lsp-dart-flutter-daemon--plist->hash-table result)))))))
+                                                  (lsp-dart-flutter-daemon-->safe-object-type result))))))
 
 (defun lsp-dart-flutter-daemon--device-removed (device)
   "Remove DEVICE from the devices list."
-  (--> (gethash "id" device)
+  (--> (lsp-get device :id)
        (lsp-dart-remove-from-alist it lsp-dart-flutter-daemon-devices)
        (setq lsp-dart-flutter-daemon-devices it)))
 
-(defun lsp-dart-flutter-daemon--plist->hash-table (plist &optional test)
-  "Create a hash table initialized from PLIST.
-
-Optionally use TEST to compare the hash keys."
-  (let ((ht (ht-create test)))
-    (dolist (pair (nreverse (-partition 2 plist)) ht)
-      (let ((key (substring (symbol-name (car pair)) 1))
-            (value (cadr pair)))
-        (ht-set! ht key value)))))
-
-(lsp-defun lsp-dart-flutter-daemon--device-added ((device &as &FlutterDaemonDevice :id))
+(defun lsp-dart-flutter-daemon--device-added (device)
   "Add DEVICE to the devices list."
-  (-let ((device-to-add (cons id device)))
+  (-let* ((device-id (lsp:flutter-daemon-device-id device))
+          (device-to-add (cons device-id device)))
     (lsp:set-flutter-daemon-device-is-device? device t)
     (setq lsp-dart-flutter-daemon-devices
-          (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-devices))
+          (lsp-dart-remove-from-alist device-id lsp-dart-flutter-daemon-devices))
     (add-to-list 'lsp-dart-flutter-daemon-devices device-to-add)
-    (-when-let (listener (alist-get id lsp-dart-flutter-daemon-device-added-listeners))
+    (-when-let (listener (alist-get device-id lsp-dart-flutter-daemon-device-added-listeners))
       (setq lsp-dart-flutter-daemon-device-added-listeners
-            (lsp-dart-remove-from-alist id lsp-dart-flutter-daemon-device-added-listeners))
+            (lsp-dart-remove-from-alist device-id lsp-dart-flutter-daemon-device-added-listeners))
       (funcall (plist-get listener :callback) device))))
 
 (defun lsp-dart-flutter-daemon-get-devices (callback)
@@ -207,20 +225,22 @@ Optionally use TEST to compare the hash keys."
             (append emulators)
             (funcall callback))))))
 
-(lsp-defun lsp-dart-flutter-daemon-launch ((device &as &FlutterDaemonDevice :id :is-device?) callback)
+(defun lsp-dart-flutter-daemon-launch (device callback)
   "Launch DEVICE and wait for connected state and call CALLBACK."
-  (if is-device?
-      (funcall callback device)
-    (lsp-dart-flutter-daemon--send
-     "device.getDevices"
-     nil
-     (-lambda (devices)
-       (if-let (emulator-running (-first (-lambda ((&FlutterDaemonDevice :emulator-id?)) (string= emulator-id? id)) (append devices nil)))
-           (funcall callback emulator-running)
-         (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id id)))
-           (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
-                        (cons id (list :callback callback)))
-           (lsp-dart-flutter-daemon--send "emulator.launch" params callback)))))))
+  (let* ((device-id (lsp:flutter-daemon-device-id device))
+         (is-device? (lsp:flutter-daemon-device-is-device? device)))
+    (if is-device?
+        (funcall callback device)
+      (lsp-dart-flutter-daemon--send
+       "device.getDevices"
+       nil
+       (-lambda (devices)
+         (if-let (emulator-running (-first (-lambda ((&FlutterDaemonDevice :emulator-id?)) (string= emulator-id? device-id)) (append devices nil)))
+             (funcall callback emulator-running)
+           (-let* ((params (lsp-make-flutter-daemon-emulator-launch :emulator-id device-id)))
+             (add-to-list 'lsp-dart-flutter-daemon-device-added-listeners
+                          (cons device-id (list :callback callback)))
+             (lsp-dart-flutter-daemon--send "emulator.launch" params callback))))))))
 
 (provide 'lsp-dart-flutter-daemon)
 ;;; lsp-dart-flutter-daemon.el ends here
