@@ -104,7 +104,6 @@
                                               nil)))
                              (conn (process-get proc 'jsonrpc-connection)))
                          (when json-message
-                           (message "json: %S\nresponse: %S" json-message response)
                            (if (plist-get json-message :error)
                                (lsp-dart-flutter-daemon--log "ERROR" (plist-get json-message :error) (plist-get json-message :trace)))
                            (if (plist-get json-message :event)
@@ -115,8 +114,7 @@
                                  ("daemon.logMessage" (lsp-dart-flutter-daemon--log (plist-get (plist-get json-message :params) :level) (plist-get json-message :params))))
                              (with-temp-buffer
                                (jsonrpc-connection-receive conn
-                                                           json-message)))))
-                       )
+                                                           json-message))))))
                      it)))))))
 
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
