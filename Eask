@@ -14,6 +14,8 @@
 (depends-on "f")
 (depends-on "dash")
 (depends-on "dart-mode")
+(depends-on "jsonrpc")
+(depends-on "ht") ; Remove after plists is implemented
 
 (development
  (depends-on "el-mock")

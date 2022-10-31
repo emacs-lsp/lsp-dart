@@ -4,6 +4,7 @@ EMACS ?= emacs
 EASK ?= eask
 
 build:
+	$(EASK) install-deps
 	$(EASK) package
 	$(EASK) install
 
