@@ -5,6 +5,7 @@
 * Handle `flutter.appStarted` notification during debug.
 * Better handle `snap` installings of flutter on linux.
 * Replace communication implementation with flutter daemon with `jsonrpc` avoiding exception parsing jsons.
+* Bump legacy debugger extension to 3.50.0
 
 ## 1.23.0
 
