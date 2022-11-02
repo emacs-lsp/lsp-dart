@@ -2,10 +2,15 @@
 
 ## Unreleased
 
+* Handle `flutter.appStarted` notification during debug.
+* Better handle `snap` installings of flutter on linux.
+* Replace communication implementation with flutter daemon with `jsonrpc` avoiding exception parsing jsons.
+
+## 1.23.0
+
 * Fix `lsp-dart-run` when default-directory is not the project root. #173
 * Add `lsp-dart-project-root-discovery-strategies` variable to search project root with different startegies and orders.
 * Fix find definition of external files on Flutter, not asking for project root anymore.
-* Handle `flutter.appStarted` notification during debug.
 
 ## 1.22.2
 
