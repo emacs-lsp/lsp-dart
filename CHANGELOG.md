@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.24.0
+
 * Handle `flutter.appStarted` notification during debug.
 * Better handle `snap` installings of flutter on linux.
 * Replace communication implementation with flutter daemon with `jsonrpc` avoiding exception parsing jsons.
