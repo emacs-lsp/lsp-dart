@@ -372,6 +372,8 @@ Call CALLBACK when the device is chosen and started successfully."
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql flutter.serviceExtensionStateChanged)) _session _params)
   "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql flutter.appStarted)) _session _params)
+  "Ignore this event.")
 
 (cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
   "Ignore this event.")
