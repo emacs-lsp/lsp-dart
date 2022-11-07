@@ -108,8 +108,8 @@ Optionally use TEST to compare the hash keys."
                                                                    (substring response 1 -1)
                                                                  response))
                                              (error
-                                              (jsonrpc--warn "Invalid JSON: %S %s"
-                                                             oops (buffer-string))
+                                              (jsonrpc--warn "Invalid JSON: %S %s %s"
+                                                             oops (buffer-string) response)
                                               nil)))
                              (conn (process-get proc 'jsonrpc-connection)))
                          (when json-message
