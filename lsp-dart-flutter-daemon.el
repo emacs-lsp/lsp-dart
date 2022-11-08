@@ -89,46 +89,41 @@ Optionally use TEST to compare the hash keys."
                      h))
     h))
 
-;; TODO: Greatly reduce this complexity
-(defun lsp-dart-flutter-daemon--process-filter (proc string)
-  "Invoked when a new STRING has arrived from PROC."
+(defun lsp-dart-flutter-daemon--process-filter (proc response)
+  "Invoked when a new RESPONSE has arrived from PROC."
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
-      (let ((should-trim (not (string-match-p (regexp-quote "][") (string-trim string))))
-            (inhibit-read-only t))
-        (goto-char (process-mark proc))
-        (when (string-prefix-p "[" (string-trim string))
-          (--> string
-               string-trim
-               (replace-regexp-in-string (regexp-quote "},{") "}\n{" it nil 'literal)
-               (split-string it "\n")
-               (-map (lambda (response)
-                       (let ((json-message (condition-case-unless-debug oops
-                                               (lsp--read-json (if should-trim
-                                                                   (substring response 1 -1)
-                                                                 response))
-                                             (error
-                                              (jsonrpc--warn "Invalid JSON: %S %s %s"
-                                                             oops (buffer-string) response)
-                                              nil)))
-                             (conn (process-get proc 'jsonrpc-connection)))
-                         (when json-message
-                           (if (lsp-get json-message :error)
-                               (lsp-dart-flutter-daemon--log "ERROR" (lsp-get json-message :error) (lsp-get json-message :trace)))
-                           (if (lsp-get json-message :event)
-                               (pcase (lsp-get json-message :event)
-                                 ("device.removed" (lsp-dart-flutter-daemon--device-removed (lsp-get json-message :params)))
-                                 ("device.added" (lsp-dart-flutter-daemon--device-added (lsp-get json-message :params)))
-                                 ("daemon.connected" (lsp-dart-flutter-daemon--send "device.enable"))
-                                 ("daemon.logMessage" (lsp-dart-flutter-daemon--log (lsp-get (lsp-get json-message :params) :level)
-                                                                                    (lsp-get json-message :params))))
-                             (with-temp-buffer
-                               (jsonrpc-connection-receive conn (if lsp-use-plists
-                                                                    json-message
-                                                                  (lsp-dart-flutter-daemon--hash-table->plist json-message))))))))
-                     it)))))))
-
-;; (lsp-dart-flutter-daemon-get-devices #'identity)
+      (goto-char (process-mark proc))
+      (let* ((response (string-trim response))
+             (should-trim (and (string-prefix-p (regexp-quote "][") response))))
+        (when (string-prefix-p "[" response)
+          (-map (lambda (msg)
+                  (let ((json-message (condition-case-unless-debug oops
+                                          (lsp--read-json (if should-trim
+                                                              (substring msg 1 -1)
+                                                            msg))
+                                        (error
+                                         (jsonrpc--warn "Invalid JSON: %S %s %s"
+                                                        oops (buffer-string) msg)
+                                         nil)))
+                        (conn (process-get proc 'jsonrpc-connection)))
+                    (when-let ((json (if (vectorp json-message)
+                                         (aref json-message 0)
+                                       json-message)))
+                      (if (lsp-get json :error)
+                          (lsp-dart-flutter-daemon--log "ERROR" (lsp-get json :error) (lsp-get json :trace)))
+                      (if (lsp-get json :event)
+                          (pcase (lsp-get json :event)
+                            ("device.removed" (lsp-dart-flutter-daemon--device-removed (lsp-get json :params)))
+                            ("device.added" (lsp-dart-flutter-daemon--device-added (lsp-get json :params)))
+                            ("daemon.connected" (lsp-dart-flutter-daemon--send "device.enable"))
+                            ("daemon.logMessage" (lsp-dart-flutter-daemon--log (lsp-get (lsp-get json :params) :level)
+                                                                               (lsp-get (lsp-get json :params) :message))))
+                        (with-temp-buffer
+                          (jsonrpc-connection-receive conn (if lsp-use-plists
+                                                               json
+                                                             (lsp-dart-flutter-daemon--hash-table->plist json))))))))
+                (split-string response "\n")))))))
 
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
   "Log for LEVEL, MSG with ARGS adding lsp-dart-flutter-daemon prefix."
@@ -167,13 +162,13 @@ Optionally use TEST to compare the hash keys."
 OBJ should be a hash-table or plist."
   (if lsp-use-plists
       (if (or (vectorp obj)
-            (listp obj))
+              (listp obj))
           (-map #'lsp-dart-flutter-daemon--hash-table->plist obj)
         (lsp-dart-flutter-daemon--hash-table->plist obj))
     (if (or (vectorp obj)
             (listp obj))
-          (-map #'lsp-dart-flutter-daemon--plist->hash-table obj)
-        (lsp-dart-flutter-daemon--plist->hash-table obj))))
+        (-map #'lsp-dart-flutter-daemon--plist->hash-table obj)
+      (lsp-dart-flutter-daemon--plist->hash-table obj))))
 
 (defun lsp-dart-flutter-daemon--send (method &optional params callback)
   "Build and send command with METHOD with optional PARAMS.
