@@ -26,7 +26,7 @@ test:
 	$(EASK) test ert ./test/*.el
 
 clean:
-	$(EASK) clean-all
+	$(EASK) clean all
 
 tag:
 	$(eval TAG := $(filter-out $@,$(MAKECMDGOALS)))
