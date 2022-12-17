@@ -54,7 +54,7 @@
   :type '(repeat string)
   :group 'lsp-dart)
 
-(defcustom lsp-dart-extra-library-directories '()
+(defcustom lsp-dart-extra-library-directories (list (expand-file-name "~/.pub-cache"))
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)

@@ -159,6 +159,9 @@ NOTIFICATION is the event notification.")
   "Handle error NOTIFICATION."
   (run-hook-with-args 'lsp-dart-test-error-notification-hook notification))
 
+(cl-defmethod lsp-dart-test--handle-notification ((_event (eql debug)) _notification)
+  "Ignore this event")
+
 (defun lsp-dart-test--clean-process-buffer ()
   "Clean test process buffer."
   (when-let (process-buffer (get-buffer lsp-dart-test--process-buffer-name))
