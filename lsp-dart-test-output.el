@@ -35,8 +35,8 @@ When set to `display-only' the buffer will be displayed, but it will
 not become focused, otherwise the buffer is displayed and focused."
   :group 'lsp-dart
   :type '(choice (const :tag "Create the buffer, but don't display it" nil)
-                 (const :tag "Create and display the buffer, but don't focus it" display-only)
-                 (const :tag "Create, display, and focus the buffer" t)))
+          (const :tag "Create and display the buffer, but don't focus it" display-only)
+          (const :tag "Create, display, and focus the buffer" t)))
 
 
 ;;; Internal
@@ -49,7 +49,7 @@ not become focused, otherwise the buffer is displayed and focused."
 
 (defvar lsp-dart-test-output--tests-count 0)
 (defvar lsp-dart-test-output--tests-passed 0)
-(defvar lsp-dart-test-output--first-log t)
+(defvar lsp-dart-test-output--show-loading-tests-message t)
 
 (defconst lsp-dart-test-output--buffer-name "*LSP Dart tests*")
 
@@ -142,12 +142,13 @@ not become focused, otherwise the buffer is displayed and focused."
 
 (defun lsp-dart-test-output--handle-run-started ()
   "Handle test run started."
-  (setq lsp-dart-test-output--first-log t)
+  (setq lsp-dart-test-output--show-loading-tests-message t)
   (lsp-dart-test-output--show-buffer)
-  (lsp-dart-test-output--send "Running tests...\n"))
+  (lsp-dart-test-output--send "Spawning test process..."))
 
 (defun lsp-dart-test-output--handle-all-start (_notification)
   "Handle all start notification."
+  (lsp-dart-test-output--send "Running tests...")
   (setq lsp-dart-test-output--tests-count 0)
   (setq lsp-dart-test-output--tests-passed 0))
 
@@ -157,11 +158,11 @@ not become focused, otherwise the buffer is displayed and focused."
 
 (lsp-defun lsp-dart-test-output--handle-done ((notification &as &TestDoneNotification :result :time :hidden) test-name test-start-time)
   "Handle test done notification."
-  (when lsp-dart-test-output--first-log
+  (when lsp-dart-test-output--show-loading-tests-message
     (with-current-buffer (lsp-dart-test-output--get-buffer-create)
       (let ((inhibit-read-only t))
         (erase-buffer)))
-    (setq lsp-dart-test-output--first-log nil))
+    (setq lsp-dart-test-output--show-loading-tests-message nil))
   (let ((text (propertize (concat (lsp-dart-test-output--get-icon notification)
                                   " "
                                   test-name)

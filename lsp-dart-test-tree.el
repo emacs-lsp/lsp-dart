@@ -322,7 +322,7 @@ POSITION is the test start position."
   (lsp-dart-test-tree-add-suite suite))
 
 (lsp-defun lsp-dart-test-tree--handle-group ((&GroupNotification :group))
-    (lsp-dart-test-tree-set-group group))
+  (lsp-dart-test-tree-set-group group))
 
 (lsp-defun lsp-dart-test-tree--handle-start ((&TestStartNotification :test))
   "Handle test start notification."
@@ -332,9 +332,17 @@ POSITION is the test start position."
   "Handle test done notification."
   (lsp-dart-test-tree-mark-as-done test-id (- time test-start-time) result skipped))
 
+(defun lsp-dart-test-tree--render-final (suite-or-group)
+  "Rebuild the test tree for SUITE-OR-GROUP one last time."
+  (seq-map
+   (-lambda ((_group-id . group))
+     (lsp-dart-test-tree--render-final group)
+     (lsp-dart-test-tree--render))
+   (plist-get suite-or-group :groups)))
+
 (defun lsp-dart-test-tree--handle-all-done (_params)
   "Handle test done notification."
-  (lsp-dart-test-tree--render))
+  (seq-map #'lsp-dart-test-tree--render-final (map-values lsp-dart-test-tree--suites)))
 
 
 ;;; Public

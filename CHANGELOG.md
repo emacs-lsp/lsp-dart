@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Avoid outdated test tree after tests run.
+* Improve test output to be more precise on output messages.
 
 ## 1.24.1
 
