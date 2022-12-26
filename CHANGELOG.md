@@ -2,9 +2,12 @@
 
 ## Unreleased
 
+* Avoid outdated test tree after tests run.
+
+## 1.24.1
+
 * Understand by default that dart codes inside `~/.pub-cache` are libraries and not projects, avoiding asking to import the project.
 * Avoid warnings about "No event handler for 'debug' during dap-debug tests".
-* Avoid outdated test tree after tests run.
 
 ## 1.24.0
 
