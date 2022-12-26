@@ -332,6 +332,10 @@ POSITION is the test start position."
   "Handle test done notification."
   (lsp-dart-test-tree-mark-as-done test-id (- time test-start-time) result skipped))
 
+(defun lsp-dart-test-tree--handle-all-done (_params)
+  "Handle test done notification."
+  (lsp-dart-test-tree--render))
+
 
 ;;; Public
 
@@ -408,6 +412,7 @@ POSITION is the test start position."
 (add-hook 'lsp-dart-test-group-notification-hook #'lsp-dart-test-tree--handle-group)
 (add-hook 'lsp-dart-test-start-notification-hook #'lsp-dart-test-tree--handle-start)
 (add-hook 'lsp-dart-test-done-notification-hook #'lsp-dart-test-tree--handle-done)
+(add-hook 'lsp-dart-test-all-done-notification-hook #'lsp-dart-test-tree--handle-all-done)
 
 (provide 'lsp-dart-test-tree)
 ;;; lsp-dart-test-tree.el ends here
