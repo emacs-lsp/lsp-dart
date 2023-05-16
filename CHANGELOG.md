@@ -4,6 +4,7 @@
 
 * Avoid outdated test tree after tests run.
 * Improve test output to be more precise on output messages.
+* Fix `lsp-dart-run` not working for dart ^3.0.0. #197
 
 ## 1.24.1
 

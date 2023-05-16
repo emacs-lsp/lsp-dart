@@ -120,6 +120,12 @@ Order is important."
       (append list (list value))
     list))
 
+(defun lsp-dart-plist-put-if (plist predicate key value)
+  "plist-put KEY VALUE to PLIST if PREDICATE is t."
+  (if predicate
+      (plist-put plist key value)
+    plist))
+
 (defun lsp-dart-flutter-snap-install-p ()
   "Detecting whether this is a Linux system with a Snap style install."
   (and (string= system-type "gnu/linux")

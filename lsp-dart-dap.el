@@ -408,8 +408,8 @@ Run program PATH if not nil passing ARGS if not nil."
   (-> (list :type "dart"
             :name "Dart Run"
             :program path
-            :args args
             :noDebug t)
+      (lsp-dart-plist-put-if args :args args)
       lsp-dart-dap--populate-dart-start-file-args
       dap-start-debugging))
 
@@ -419,8 +419,8 @@ Run program PATH if not nil passing ARGS if not nil."
   (-> (list :type "flutter"
             :name "Flutter Run"
             :program path
-            :args args
             :noDebug t)
+      (lsp-dart-plist-put-if args :args args)
       lsp-dart-dap--populate-flutter-start-file-args
       (funcall #'dap-start-debugging)))
 
@@ -445,8 +445,8 @@ Run program PATH if not nil passing ARGS if not nil."
                                lsp-dart-dap-dart-test-debugger-program)
             :program path
             :noDebug nil
-            :shouldConnectDebugger t
-            :args args)
+            :shouldConnectDebugger t)
+      (lsp-dart-plist-put-if args :args args)
       lsp-dart-dap--base-debugger-args
       dap-start-debugging))
 
@@ -460,8 +460,8 @@ Run program PATH if not nil passing ARGS if not nil."
             :program path
             :noDebug nil
             :shouldConnectDebugger t
-            :flutterMode "debug"
-            :args args)
+            :flutterMode "debug")
+      (lsp-dart-plist-put-if args :args args)
       lsp-dart-dap--base-debugger-args
       dap-start-debugging))
 
