@@ -1,4 +1,4 @@
-(package "lsp-dart" "1.24.1" "Dart support lsp-mode")
+(package "lsp-dart" "1.24.2" "Dart support lsp-mode")
 
 (website-url "https://emacs-lsp.github.io/lsp-dart")
 (keywords "languages" "extensions")
