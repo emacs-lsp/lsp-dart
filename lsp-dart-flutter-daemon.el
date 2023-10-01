@@ -208,7 +208,7 @@ of this command."
 (defun lsp-dart-flutter-daemon-get-devices (callback)
   "Call CALLBACK with the available emulators and devices from Flutter daemon."
   (lsp-dart-flutter-daemon--send
-   "emulator.getEmulators"
+   "device.getDevices"
    nil
    (-lambda (emulators)
      (let ((devices-excluding-emulators (-remove (-lambda ((&FlutterDaemonDevice :emulator-id?))
