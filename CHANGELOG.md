@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add `lsp-dart-dap-tools-args` to configure custom args for DAP process.
+
 ## 1.24.2
 
 * Avoid outdated test tree after tests run.
