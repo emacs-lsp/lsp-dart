@@ -3,7 +3,7 @@
 ## Unreleased
 
 * Add `lsp-dart-dap-tools-args` to configure custom args for DAP process.
-* Fix flutter daemon failing to initialize on recent emacs versions.
+* Fix flutter daemon failing to initialize on recent emacs versions. #209
 * Ignore flutter DAP message avoiding unecessary warning during debug.
 
 ## 1.24.2
