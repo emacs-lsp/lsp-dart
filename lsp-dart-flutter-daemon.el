@@ -60,15 +60,9 @@ CONN ARGS METHOD PARAMS"
      (jsonrpc--process conn)
      json)))
 
-(cl-defmethod initialize-instance ((conn lsp-dart-flutter-daemon-connection) _slots)
+(cl-defmethod initialize-instance :after ((conn lsp-dart-flutter-daemon-connection) _slots)
   "CONN."
-  (cl-call-next-method)
-  (let* ((proc-raw (jsonrpc--process conn))
-         (proc (if (functionp proc-raw)
-                   (if (zerop (cdr (func-arity proc-raw)))
-                       (funcall proc-raw)
-                     (funcall proc-raw conn))
-                 proc-raw)))
+  (let ((proc (jsonrpc--process conn)))
     (when proc
       (set-process-filter proc #'lsp-dart-flutter-daemon--process-filter))))
 
