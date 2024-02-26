@@ -217,6 +217,7 @@ lsp-dart supports running Flutter and Dart commands as following:
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
 * [company-capf](https://github.com/company-mode/company-mode) : Completion back-end support.
 * [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
+* [flutter.el](https://github.com/amake/flutter.el) : Tool to run flutter binary as an inferior process and interact with it from Emacs.
 
 ## FAQ
 
