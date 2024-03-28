@@ -203,7 +203,8 @@ lsp-dart supports running Flutter and Dart commands as following:
 | `lsp-dart-dap-flutter-test-debugger-program`     | The command to execute the test debugger extension on flutter projects.                                                                                                              | Check source file              |
 | `lsp-dart-dap-debug-external-libraries`          | Whether to enable the debug on external libraries                                                                                                                                    | `nil`                          |
 | `lsp-dart-dap-debug-sdk-libraries`               | Whether to enable the debug on Dart SDK libraries                                                                                                                                    | `nil`                          |
-| `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.                                                                                                                            | `""`                           |
+| `lsp-dart-dap-vm-additional-args`                | Additional args for dart debugging VM when the debugging.          
+| `lsp-dart-dap-tool-args`                         | Arguments to be passed to the Dart or Flutter tool.                                                                                                                       | `""`                           |
 | `lsp-dart-dap-flutter-track-widget-creation`     | Whether to pass –track-widget-creation to Flutter apps. Required to support 'Inspect Widget'.                                                                                        | `t`                            |
 | `lsp-dart-dap-flutter-structured-errors`         | Whether to use Flutter’s structured error support for improve error display.                                                                                                         | `t`                            |
 | `lsp-dart-dap-flutter-hot-reload-on-save`        | When enabled, every buffer save triggers a `lsp-dart-dap-flutter-hot-reload`                                                                                                         | `nil`                          |
@@ -216,6 +217,7 @@ lsp-dart supports running Flutter and Dart commands as following:
 * [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) : `lsp-mode` GUI controls implemented using treemacs.
 * [company-capf](https://github.com/company-mode/company-mode) : Completion back-end support.
 * [hover.el](https://github.com/ericdallo/hover.el) : Tool to run flutter mobile apps from desktop without the need of an emulator.
+* [flutter.el](https://github.com/amake/flutter.el) : Tool to run flutter binary as an inferior process and interact with it from Emacs.
 
 ## FAQ
 

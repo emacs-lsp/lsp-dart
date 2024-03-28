@@ -101,6 +101,11 @@
   :group 'lsp-dart
   :type '(repeat string))
 
+(defcustom lsp-dart-dap-tool-args []
+  "Additional args for the dart or flutter tool"
+  :group 'lsp-dart
+  :type '(repeat string))
+
 (defcustom lsp-dart-dap-vm-service-port 0
   "Service port for dart debugging VM."
   :group 'lsp-dart
@@ -164,6 +169,7 @@ Required to support 'Inspect Widget'."
   (dap--put-if-absent conf :maxLogLineLength lsp-dart-dap-max-log-line-length)
   (dap--put-if-absent conf :cwd (lsp-dart-get-project-root))
   (dap--put-if-absent conf :vmAdditionalArgs lsp-dart-dap-vm-additional-args)
+  (dap--put-if-absent conf :toolArgs lsp-dart-dap-tool-args)
   (dap--put-if-absent conf :vmServicePort lsp-dart-dap-vm-service-port)
   (dap--put-if-absent conf :debugExternalLibraries lsp-dart-dap-debug-external-libraries)
   (dap--put-if-absent conf :debugSdkLibraries lsp-dart-dap-debug-sdk-libraries)
@@ -373,6 +379,8 @@ Call CALLBACK when the device is chosen and started successfully."
 (cl-defmethod dap-handle-event ((_event (eql flutter.serviceExtensionStateChanged)) _session _params)
   "Ignore this event.")
 (cl-defmethod dap-handle-event ((_event (eql flutter.appStarted)) _session _params)
+  "Ignore this event.")
+(cl-defmethod dap-handle-event ((_event (eql flutter.appStart)) _session _params)
   "Ignore this event.")
 
 (cl-defmethod dap-handle-event ((_event (eql dart.testRunNotification)) _session _params)
