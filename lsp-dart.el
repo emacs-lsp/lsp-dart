@@ -168,7 +168,7 @@ If unspecified, diagnostics will not be generated."
                                                                                                 (run-hook-with-args 'lsp-dart-flutter-outline-arrived-hook notification))))
                                                  ("$/analyzerStatus" #'ignore))
                   :after-open-fn #'lsp-dart--activate-features
-                  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
+                  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp #'yas-minor-mode))))))
                   :server-id 'dart_analysis_server))
 
 
