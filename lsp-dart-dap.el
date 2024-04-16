@@ -261,7 +261,7 @@ Call CALLBACK when the device is chosen and started successfully."
                                                        (buffer-file-name))))))
     (lambda (start-debugging-callback)
       (lsp-dart-dap--flutter-get-or-start-device
-       (-lambda ((&hash "id" device-id "name" device-name))
+       (-lambda ((&plist :id device-id :name device-name))
          (funcall start-debugging-callback
                   (-> pre-conf
                       (dap--put-if-absent :deviceId device-id)
