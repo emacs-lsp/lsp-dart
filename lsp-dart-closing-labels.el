@@ -64,7 +64,7 @@ The hook will receive the notification data as argument."
             (overlay-put overlay 'after-string (propertize (concat lsp-dart-closing-labels-prefix " " (lsp:closing-label-label label))
                                                            'display `((height ,lsp-dart-closing-labels-size))
                                                            'cursor t
-                                                           'font-lock-face 'font-lock-comment-face))))))))
+                                                           'font-lock-face 'lsp-inlay-hint-face))))))))
 
 (define-minor-mode lsp-dart-closing-labels-mode
   "Mode for displaying flutter closing labels on the end of methods/contructors."
