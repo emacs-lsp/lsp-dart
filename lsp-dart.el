@@ -44,6 +44,8 @@
 (require 'lsp-dart-flutter-widget-guide)
 (require 'lsp-dart-commands)
 
+(declare-function yas-minor-mode "ext:yasnippet.el")
+
 (defgroup lsp-dart nil
   "LSP support for Dart, using dart analysis server."
   :prefix "lsp-dart-"

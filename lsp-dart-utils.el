@@ -206,8 +206,8 @@ FLUTTER_ROOT environment variable."
   (-some
    (lambda (strategy)
      (cl-case strategy
-       ('lsp-root (lsp-workspace-root))
-       ('closest-pubspec (-some-> default-directory
+       (`lsp-root (lsp-workspace-root))
+       (`closest-pubspec (-some-> default-directory
                            (locate-dominating-file "pubspec.yaml")
                            file-truename))))
    lsp-dart-project-root-discovery-strategies))
