@@ -261,18 +261,22 @@ Call CALLBACK when the device is chosen and started successfully."
                                                        (buffer-file-name))))))
     (lambda (start-debugging-callback)
       (lsp-dart-dap--flutter-get-or-start-device
-       (-lambda ((&plist :id device-id :name device-name))
-         (funcall start-debugging-callback
-                  (-> pre-conf
-                      (dap--put-if-absent :deviceId device-id)
-                      (dap--put-if-absent :deviceName device-name)
-                      (dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
-                                                               (append (lsp-dart-flutter-command) (list "debug_adapter" "-d" device-id))
-                                                             lsp-dart-dap-flutter-debugger-program))
-                      (dap--put-if-absent :flutterPlatform "default")
-                      (dap--put-if-absent :toolArgs `("-d" ,device-id))
-                      (dap--put-if-absent :name (concat "Flutter (" device-name ")")))))))))
+       (lambda (device-params)
+	 (let ((device-id (lsp-get device-params :id))
+	       (device-name (lsp-get device-params :name)))
 
+           (funcall start-debugging-callback
+                    (-> pre-conf
+			(dap--put-if-absent :deviceId device-id)
+			(dap--put-if-absent :deviceName device-name)
+			(dap--put-if-absent :dap-server-path (if (lsp-dart-dap-use-sdk-debugger-p)
+								 (append (lsp-dart-flutter-command) (list "debug_adapter" "-d" device-id))
+                                                               lsp-dart-dap-flutter-debugger-program))
+			(dap--put-if-absent :flutterPlatform "default")
+			(dap--put-if-absent :toolArgs `("-d" ,device-id))
+			(dap--put-if-absent :name (concat "Flutter (" device-name ")"))))
+	   ))))))
+  
 (dap-register-debug-provider "flutter" 'lsp-dart-dap--populate-flutter-start-file-args)
 (dap-register-debug-template "Flutter :: Debug"
                              (list :type "flutter"))
