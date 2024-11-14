@@ -47,18 +47,19 @@
                                        &key method params &allow-other-keys)
   "Implement send method to format JSON properly.
 CONN ARGS METHOD PARAMS"
-  (when method
-    (plist-put args :method
-               (cond ((keywordp method) (substring (symbol-name method) 1))
-                     ((and method (symbolp method)) (symbol-name method))
-                     ((stringp method) method))))
-  (unless params
-    (cl-remf args :params))
-  (let ((json (concat "[" (jsonrpc--json-encode args) "]\r\n")))
-    (jsonrpc--log-event conn args 'client)
-    (process-send-string
-     (jsonrpc--process conn)
-     json)))
+  (with-temp-buffer
+    (when method
+      (plist-put args :method
+                 (cond ((keywordp method) (substring (symbol-name method) 1))
+                       ((and method (symbolp method)) (symbol-name method))
+                       ((stringp method) method))))
+    (unless params
+      (cl-remf args :params))
+    (let ((json (concat "[" (jsonrpc--json-encode args) "]\r\n")))
+      (jsonrpc--log-event conn args 'client)
+      (process-send-string
+       (jsonrpc--process conn)
+       json))))
 
 (cl-defmethod initialize-instance :after ((conn lsp-dart-flutter-daemon-connection) _slots)
   "CONN."

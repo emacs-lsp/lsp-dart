@@ -1,5 +1,7 @@
 # Changelog
 
+* fix json string being insert to curretn buffer when running `lsp-dart-run`. #224
+
 ## 1.24.3
 
 * Add `lsp-dart-dap-tools-args` to configure custom args for DAP process.
