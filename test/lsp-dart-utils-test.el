@@ -159,7 +159,7 @@
    (should (equal (lsp-dart-get-project-entrypoint) (f-expand "lib/main.dart")))
    (f-delete "lib" t)))
 
-(ert-deftest lsp-dart-get-project-entrypoint--lib-test ()
+(ert-deftest lsp-dart-get-project-entrypoint--bin-test ()
   (lsp-dart-test-from-dart-project
    (f-mkdir "bin")
    (f-touch "bin/main.dart")
