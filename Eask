@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-dart" "1.24.3" "Dart support lsp-mode")
 
 (website-url "https://emacs-lsp.github.io/lsp-dart")
