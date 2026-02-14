@@ -26,13 +26,15 @@
   (with-mock
     (stub lsp-dart-get-sdk-dir => "/sdk")
     (stub buffer-file-name => "/project/main.dart")
-    (should (equal (lsp-dart--library-folders) '()))))
+    (let ((lsp-dart-extra-library-directories nil))
+      (should (equal (lsp-dart--library-folders) '())))))
 
 (ert-deftest lsp-dart--library-folders--lib-file-test ()
   (with-mock
     (stub lsp-dart-get-sdk-dir => "/sdk")
     (stub buffer-file-name => "/sdk/lib/main.dart")
-    (should (equal (lsp-dart--library-folders) '("/sdk/lib/")))))
+    (let ((lsp-dart-extra-library-directories nil))
+      (should (equal (lsp-dart--library-folders) '("/sdk/lib/"))))))
 
 (ert-deftest lsp-dart--library-folders--extra-folder-test ()
   (with-mock
