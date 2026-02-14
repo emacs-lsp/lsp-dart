@@ -119,10 +119,12 @@ Optionally use TEST to compare the hash keys."
                             ("daemon.connected" (lsp-dart-flutter-daemon--send "device.enable"))
                             ("daemon.logMessage" (lsp-dart-flutter-daemon--log (lsp-get (lsp-get json :params) :level)
                                                                                (lsp-get (lsp-get json :params) :message))))
-                        (with-temp-buffer
-                          (jsonrpc-connection-receive conn (if lsp-use-plists
-                                                               json
-                                                             (lsp-dart-flutter-daemon--hash-table->plist json))))))))
+                        (condition-case nil
+                            (with-temp-buffer
+                              (jsonrpc-connection-receive conn (if lsp-use-plists
+                                                                   json
+                                                                 (lsp-dart-flutter-daemon--hash-table->plist json))))
+                          (quit nil))))))
                 (split-string response "\n")))))))
 
 (defun lsp-dart-flutter-daemon--log (level msg &rest args)
