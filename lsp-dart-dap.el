@@ -273,7 +273,7 @@ Call CALLBACK when the device is chosen and started successfully."
 								 (append (lsp-dart-flutter-command) (list "debug_adapter" "-d" device-id))
                                                                lsp-dart-dap-flutter-debugger-program))
 			(dap--put-if-absent :flutterPlatform "default")
-			(dap--put-if-absent :toolArgs `("-d" ,device-id))
+			(plist-put :toolArgs (append (append lsp-dart-dap-tool-args nil) `("-d" ,device-id)))
 			(dap--put-if-absent :name (concat "Flutter (" device-name ")"))))
 	   ))))))
   
