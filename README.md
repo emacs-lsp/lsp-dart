@@ -35,6 +35,9 @@ The following has a example to setup `lsp-dart`.
 
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024))
+
+(setq lsp-dart-flutter-sdk-dir "<your Flutter directory>")
+(setq lsp-dart-sdk-dir "<your Flutter directory>/bin/cache/dart-sdk")
 ```
 
 ## Features
